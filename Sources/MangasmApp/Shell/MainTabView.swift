@@ -22,7 +22,7 @@ struct MainTabView: View {
                 weather: state.weather,
                 night: state.night,
                 onSettings: {
-                    // TODO(Task 16): present Settings
+                    state.showSettings = true
                 },
                 onMessages: {
                     state.showChatList = true
@@ -83,6 +83,12 @@ struct MainTabView: View {
             )
             .environmentObject(state)
             .environmentObject(env)
+        }
+        // Settings sheet — Task 16
+        .sheet(isPresented: $state.showSettings) {
+            SettingsScreen(onClose: { state.showSettings = false })
+                .environmentObject(state)
+                .environmentObject(env)
         }
     }
 

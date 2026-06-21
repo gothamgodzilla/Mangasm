@@ -17,6 +17,7 @@ public final class AppState: ObservableObject {
     @Published public var selectedMatch: Candidate? = nil
     @Published public var activeChat: Conversation? = nil
     @Published public var showChatList: Bool = false
+    @Published public var showSettings: Bool = false
     @Published public var profile: Profile = .sample
     @Published public var visibility: Visibility = .sample
     public init() {}
