@@ -24,7 +24,7 @@ public struct LamborghiniBackground: View {
                         .scaledToFill()
                         .frame(width: geo.size.width, height: geo.size.height, alignment: .bottom)
                         .clipped()
-                        .brightness(night ? -0.42 : -0.02)
+                        .colorMultiply(Color(white: night ? 0.58 : 0.98))
                         .saturation(night ? 1.18 : 1.16)
                         .contrast(night ? 1.08 : 1.04)
                 } else {
