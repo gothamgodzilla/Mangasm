@@ -8,6 +8,7 @@ import SwiftUI
 
 struct MainTabView: View {
     @EnvironmentObject var state: AppState
+    @EnvironmentObject var env: AppEnvironment
 
     var body: some View {
         ZStack {
@@ -38,7 +39,7 @@ struct MainTabView: View {
                 state.selectedMatch = nil
             }
             .environmentObject(state)
-            .environmentObject(AppEnvironment.mock)
+            .environmentObject(env)
         }
     }
 

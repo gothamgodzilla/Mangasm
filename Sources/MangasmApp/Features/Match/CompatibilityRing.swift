@@ -12,10 +12,12 @@ import SwiftUI
 public struct CompatibilityRing: View {
     let percent: Int
     var size: CGFloat
+    var label: String
 
-    public init(percent: Int, size: CGFloat = 64) {
+    public init(percent: Int, size: CGFloat = 64, label: String = "MATCH") {
         self.percent = percent
         self.size = size
+        self.label = label
     }
 
     @State private var filled: Bool = false
@@ -53,7 +55,7 @@ public struct CompatibilityRing: View {
                     .font(MGFont.serif(size * 20 / 64, .bold))
                     .foregroundStyle(MGGradient.goldButton)
                     .lineLimit(1)
-                Text("MATCH")
+                Text(label)
                     .font(MGFont.mono(size * 5.5 / 64))
                     .tracking((size * 5.5 / 64) * 0.10)
                     .foregroundStyle(MGColor.inkFaint)

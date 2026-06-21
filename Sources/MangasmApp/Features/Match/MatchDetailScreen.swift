@@ -181,7 +181,7 @@ public struct MatchDetailScreen: View {
                 // Ring + tagline row
                 HStack(alignment: .center, spacing: 12) {
                     // Larger ring (72pt)
-                    CompatibilityRing(percent: candidate.matchPct, size: 72)
+                    CompatibilityRing(percent: candidate.matchPct, size: 72, label: "COMPAT")
                         .id(candidate.id + "_detail")
 
                     VStack(alignment: .leading, spacing: 3) {
@@ -320,58 +320,6 @@ public struct MatchDetailScreen: View {
                     )
             }
             .buttonStyle(.plain)
-        }
-    }
-}
-
-// MARK: - CompatRow (local copy for MatchDetailScreen)
-// Duplicate needed because AIMatchScreen.CompatRow is file-private.
-
-private struct CompatRow: View {
-    let label: String
-    let you: String
-    let them: String
-    let ok: Bool
-    let note: String
-
-    var body: some View {
-        HStack(alignment: .center, spacing: 9) {
-            ZStack {
-                Circle()
-                    .fill(ok
-                        ? AnyShapeStyle(LinearGradient(
-                            colors: [MGColor.goldBright, MGColor.goldDeep],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing))
-                        : AnyShapeStyle(MGColor.ink.opacity(0.12))
-                    )
-                if ok {
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 6.5, weight: .bold))
-                        .foregroundStyle(Color(red: 42/255, green: 29/255, blue: 5/255))
-                }
-            }
-            .frame(width: 17, height: 17)
-
-            VStack(alignment: .leading, spacing: 1) {
-                HStack {
-                    Text(label)
-                        .font(MGFont.mono(7.5))
-                        .tracking(7.5 * 0.12)
-                        .foregroundStyle(MGColor.inkFaint)
-                    Spacer()
-                    Text("\(you) × \(them)")
-                        .font(MGFont.sans(10.5, .bold))
-                        .foregroundStyle(MGColor.ink)
-                }
-                Text(note)
-                    .font(MGFont.sans(9.5, .light))
-                    .foregroundStyle(MGColor.inkSoft)
-            }
-        }
-        .padding(.vertical, 7)
-        .overlay(alignment: .top) {
-            Divider().opacity(0.3)
         }
     }
 }
