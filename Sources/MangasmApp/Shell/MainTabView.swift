@@ -30,6 +30,16 @@ struct MainTabView: View {
             GlassTabBar()
         }
         .ignoresSafeArea()
+        // Match detail sheet — shared entry point for AIMatch and Discover taps.
+        // Candidate is Identifiable, so .sheet(item:) drives presentation automatically.
+        .sheet(item: $state.selectedMatch) { candidate in
+            MatchDetailScreen(candidate: candidate) {
+                // TODO(Task 15): route to chat (dismiss + open chat tab)
+                state.selectedMatch = nil
+            }
+            .environmentObject(state)
+            .environmentObject(AppEnvironment.mock)
+        }
     }
 
     @ViewBuilder
@@ -37,7 +47,7 @@ struct MainTabView: View {
         switch state.tab {
         case .discover: DiscoverScreen(mode: .nearby)
         case .search:   DiscoverScreen(mode: .nearby)
-        case .aiMatch:  PlaceholderScreen(title: "AI Match")
+        case .aiMatch:  AIMatchScreen()
         case .likes:    DiscoverScreen(mode: .likes)
         case .profile:  ProfileScreen()
         }
