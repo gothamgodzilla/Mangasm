@@ -788,12 +788,16 @@ git commit -m "feat: settings screen with field editors + visibility toggles"
 - Create: `Sources/MangasmApp/Resources/Fonts/.gitkeep`
 - Create: `README.md`
 
-- [ ] **Step 1: Copy assets**
+- [ ] **Step 1: Copy assets** (from the durable zip at `~/Mangasmfinal.zip`)
 
 ```bash
-cp /tmp/mangasm_handoff/design_handoff_mangasm_launch/prototype/assets/lambo_hero.jpg Sources/MangasmApp/Resources/
-cp /tmp/mangasm_handoff/design_handoff_mangasm_launch/prototype/assets/runway.mp4 Sources/MangasmApp/Resources/
 mkdir -p Sources/MangasmApp/Resources/Fonts && touch Sources/MangasmApp/Resources/Fonts/.gitkeep
+TMP=$(mktemp -d)
+unzip -j -o ~/Mangasmfinal.zip \
+  'design_handoff_mangasm_launch/prototype/assets/lambo_hero.jpg' \
+  'design_handoff_mangasm_launch/prototype/assets/runway.mp4' -d "$TMP"
+cp "$TMP/lambo_hero.jpg" "$TMP/runway.mp4" Sources/MangasmApp/Resources/
+rm -rf "$TMP"
 ```
 
 - [ ] **Step 2: Full test + macOS build**
