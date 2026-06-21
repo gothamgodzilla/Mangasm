@@ -17,6 +17,40 @@ public struct FlowLayout: Layout {
         self.lineSpacing = lineSpacing
     }
 
+    // MARK: Shared layout engine
+    // Both sizeThatFits and placeSubviews derive all values from this single function
+    // so row-break decisions are guaranteed identical and heights cannot disagree.
+
+    private func layout(sizes: [CGSize], maxWidth: CGFloat) -> (offsets: [CGPoint], size: CGSize) {
+        var offsets: [CGPoint] = []
+        var rowX: CGFloat = 0
+        var rowY: CGFloat = 0
+        var rowHeight: CGFloat = 0
+        var maxRowWidth: CGFloat = 0
+        for size in sizes {
+            // Wrap if this item won't fit on the current (non-empty) row
+            if rowX > 0, rowX + spacing + size.width > maxWidth {
+                rowY += rowHeight + lineSpacing
+                rowX = 0
+                rowHeight = 0
+            }
+            let x = rowX == 0 ? 0 : rowX + spacing
+            offsets.append(CGPoint(x: x, y: rowY))
+            rowX = x + size.width
+            rowHeight = max(rowHeight, size.height)
+            maxRowWidth = max(maxRowWidth, rowX)
+        }
+        return (offsets, CGSize(width: maxRowWidth, height: rowY + rowHeight))
+    }
+
+    /// Returns a finite container width.
+    /// Guards both `.infinity` and unspecified (nil) width — `replacingUnspecifiedDimensions()`
+    /// with no args substitutes 10, which collapses the layout to one chip per line.
+    private func resolvedWidth(_ proposal: ProposedViewSize) -> CGFloat {
+        if let w = proposal.width, w.isFinite, w > 0 { return w }
+        return 320 // sane fallback for unspecified/infinite width
+    }
+
     // MARK: Layout protocol
 
     public func sizeThatFits(
@@ -24,27 +58,8 @@ public struct FlowLayout: Layout {
         subviews: Subviews,
         cache: inout ()
     ) -> CGSize {
-        let containerWidth = resolvedWidth(proposal)
-        var rowX: CGFloat = 0
-        var rowY: CGFloat = 0
-        var rowHeight: CGFloat = 0
-        var totalHeight: CGFloat = 0
-
-        for (index, subview) in subviews.enumerated() {
-            let size = subview.sizeThatFits(.unspecified)
-            if index > 0, rowX + spacing + size.width > containerWidth {
-                // Wrap
-                totalHeight += rowHeight + lineSpacing
-                rowX = 0
-                rowY += rowHeight + lineSpacing
-                rowHeight = 0
-            }
-            rowX += size.width + (rowX > 0 ? spacing : 0)
-            rowHeight = max(rowHeight, size.height)
-        }
-        totalHeight += rowHeight
-
-        return CGSize(width: containerWidth, height: totalHeight)
+        let sizes = subviews.map { $0.sizeThatFits(.unspecified) }
+        return layout(sizes: sizes, maxWidth: resolvedWidth(proposal)).size
     }
 
     public func placeSubviews(
@@ -53,34 +68,16 @@ public struct FlowLayout: Layout {
         subviews: Subviews,
         cache: inout ()
     ) {
-        let containerWidth = resolvedWidth(proposal)
-        var rowX: CGFloat = 0
-        var rowY: CGFloat = 0
-        var rowHeight: CGFloat = 0
-
-        for (index, subview) in subviews.enumerated() {
-            let size = subview.sizeThatFits(.unspecified)
-            if index > 0, rowX + spacing + size.width > containerWidth {
-                // Wrap to next row
-                rowY += rowHeight + lineSpacing
-                rowX = 0
-                rowHeight = 0
-            }
-            subview.place(
-                at: CGPoint(x: bounds.minX + rowX, y: bounds.minY + rowY),
-                proposal: ProposedViewSize(size)
+        let sizes = subviews.map { $0.sizeThatFits(.unspecified) }
+        let result = layout(sizes: sizes, maxWidth: resolvedWidth(proposal))
+        for (i, sub) in subviews.enumerated() {
+            let o = result.offsets[i]
+            sub.place(
+                at: CGPoint(x: bounds.minX + o.x, y: bounds.minY + o.y),
+                anchor: .topLeading,
+                proposal: ProposedViewSize(sizes[i])
             )
-            rowX += size.width + spacing
-            rowHeight = max(rowHeight, size.height)
         }
-    }
-
-    // MARK: Private
-
-    /// Returns a finite container width, falling back to 320 if the proposal is nil or infinite.
-    private func resolvedWidth(_ proposal: ProposedViewSize) -> CGFloat {
-        let w = proposal.replacingUnspecifiedDimensions().width
-        return w.isFinite ? w : 320
     }
 }
 

@@ -202,13 +202,16 @@ private struct ProfileCard: View {
                     HIVRow(hiv: profile.hiv, lastTested: profile.lastTested)
                 }
 
-                // Socials — require at least one platform to be visible (avoids empty HStack + phantom padding)
-                if visibility.socials, visibility.instagram || visibility.x {
+                // Socials — require at least one platform to be visible AND have a non-empty handle
+                // (avoids empty HStack + phantom padding when flags are on but handles are blank)
+                let showIG = visibility.instagram && !profile.instagram.isEmpty
+                let showX  = visibility.x && !profile.x.isEmpty
+                if visibility.socials, showIG || showX {
                     HStack(spacing: 8) {
-                        if visibility.instagram, !profile.instagram.isEmpty {
+                        if showIG {
                             SocialRow(kind: .ig, handle: profile.instagram)
                         }
-                        if visibility.x, !profile.x.isEmpty {
+                        if showX {
                             SocialRow(kind: .x, handle: profile.x)
                         }
                     }
