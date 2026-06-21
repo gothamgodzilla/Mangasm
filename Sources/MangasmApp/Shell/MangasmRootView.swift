@@ -2,6 +2,7 @@ import SwiftUI
 
 public struct MangasmRootView: View {
     @StateObject private var state = AppState()
+    @StateObject private var env = AppEnvironment.mock
     public init() {}
     public var body: some View {
         Group {
@@ -11,5 +12,6 @@ public struct MangasmRootView: View {
             }
         }
         .environmentObject(state)
+        .environmentObject(env)
     }
 }
