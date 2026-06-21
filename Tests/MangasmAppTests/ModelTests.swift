@@ -24,10 +24,22 @@ final class ModelTests: XCTestCase {
         XCTAssertEqual(p.chinese, "Dragon")
         XCTAssertEqual(p.lifePath, 7)
     }
-    func testRepTierCases() {
-        XCTAssertNotNil(RepTier.rising)
-        XCTAssertNotNil(RepTier.veteran)
-        XCTAssertNotNil(RepTier.elite)
+    func testRepTierBoundaries() {
+        // Test lowest value of each band
+        XCTAssertEqual(RepTier.tier(for: 0), .new)
+        XCTAssertEqual(RepTier.tier(for: 20), .rising)
+        XCTAssertEqual(RepTier.tier(for: 40), .veteran)
+        XCTAssertEqual(RepTier.tier(for: 70), .elite)
+        XCTAssertEqual(RepTier.tier(for: 90), .legend)
+        // Test prototype display value (42 = "Veteran")
+        XCTAssertEqual(RepTier.tier(for: 42), .veteran)
+        // Test one below each boundary
+        XCTAssertEqual(RepTier.tier(for: 19), .new)
+        XCTAssertEqual(RepTier.tier(for: 39), .rising)
+        XCTAssertEqual(RepTier.tier(for: 69), .veteran)
+        XCTAssertEqual(RepTier.tier(for: 89), .elite)
+        // Test max value
+        XCTAssertEqual(RepTier.tier(for: 100), .legend)
     }
     func testCandidateSamplesPopulated() {
         XCTAssertGreaterThanOrEqual(Candidate.samples.count, 4)

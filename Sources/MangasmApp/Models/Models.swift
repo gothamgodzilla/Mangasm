@@ -40,6 +40,10 @@ public struct Profile: Identifiable, Hashable, Sendable {
     public var lifePath: Int             // numerology life path
     public var repScore: Int
     public var avatarURL: String?        // remote URL string; not fetched at runtime
+    public var photos: [String] = []
+    public var vouches: Int = 0
+    public var aiMatch: Double = 0.0
+    public var premium: Bool = false
 
     public init(
         id: UUID = UUID(),
@@ -59,7 +63,11 @@ public struct Profile: Identifiable, Hashable, Sendable {
         chinese: String,
         lifePath: Int,
         repScore: Int = 0,
-        avatarURL: String? = nil
+        avatarURL: String? = nil,
+        photos: [String] = [],
+        vouches: Int = 0,
+        aiMatch: Double = 0.0,
+        premium: Bool = false
     ) {
         self.id = id
         self.name = name
@@ -79,6 +87,10 @@ public struct Profile: Identifiable, Hashable, Sendable {
         self.lifePath = lifePath
         self.repScore = repScore
         self.avatarURL = avatarURL
+        self.photos = photos
+        self.vouches = vouches
+        self.aiMatch = aiMatch
+        self.premium = premium
     }
 
     /// Bio character limit — 300 free, 600 M+ (matches prototype Settings bio field max)
@@ -101,7 +113,15 @@ public struct Profile: Identifiable, Hashable, Sendable {
         astro: "Scorpio",
         chinese: "Dragon",
         lifePath: 7,
-        repScore: 42
+        repScore: 42,
+        photos: [
+            "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&q=80&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=500&q=80&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=500&q=80&auto=format&fit=crop"
+        ],
+        vouches: 1204,
+        aiMatch: 98,
+        premium: false
     )
 }
 
