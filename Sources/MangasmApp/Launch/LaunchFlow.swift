@@ -37,6 +37,8 @@ public struct LaunchFlow: View {
 /// Temporary stub — Task 9 replaces this with the real SignInView.
 private struct SignInStub: View {
     let onEnter: () -> Void
+    // Guard: prevents the 2s auto-advance and the button from both firing onEnter().
+    @State private var entered = false
 
     var body: some View {
         ZStack {
@@ -50,7 +52,7 @@ private struct SignInStub: View {
                     .tracking(9 * 0.28)
                     .foregroundStyle(Color.white.opacity(0.6))
                 Button {
-                    onEnter()
+                    enterOnce()
                 } label: {
                     Text("Enter the community →")
                         .font(MGFont.serif(16, .bold))
@@ -65,7 +67,14 @@ private struct SignInStub: View {
         }
         .onAppear {
             // Auto-advance after 2s so simulator walkthroughs don't stall.
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) { onEnter() }
+            // TODO(Task 9): remove when real SignInView replaces this stub.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) { enterOnce() }
         }
+    }
+
+    private func enterOnce() {
+        guard !entered else { return }
+        entered = true
+        onEnter()
     }
 }

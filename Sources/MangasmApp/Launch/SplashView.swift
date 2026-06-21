@@ -54,9 +54,6 @@ public struct SplashView: View {
     @State private var shimmerOffset: CGFloat = -1.0
     @State private var shimmerVisible = false
 
-    // Auto-advance task handle
-    @State private var autoTask: Task<Void, Never>? = nil
-
     public var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .top) {
@@ -147,11 +144,10 @@ public struct SplashView: View {
                 .padding(.trailing, 18)
                 .zIndex(10)
 
-                // ── Bottom lockup + CTA ──────────────────────────────────
-                VStack(spacing: 0) {
+                // ── Layer: lockup pinned 132pt above screen bottom ───────
+                VStack {
                     Spacer()
-
-                    // Lockup (bottom ≈ 132 from screen bottom → padding bottom 132)
+                    // Lockup: kicker / wordmark / tagline
                     VStack(spacing: 0) {
                         // Kicker — delay 0.4s
                         Text("EST. MMXXVI")
@@ -192,8 +188,15 @@ public struct SplashView: View {
                             .offset(y: showTagline ? 0 : 20)
                     }
                     .multilineTextAlignment(.center)
-                    .padding(.bottom, 132)
+                    .frame(width: geo.size.width)
+                }
+                .frame(maxHeight: .infinity, alignment: .bottom)
+                .padding(.bottom, 132)
+                .zIndex(9)
 
+                // ── Layer: CTA pinned 46pt above screen bottom ───────────
+                VStack {
+                    Spacer()
                     // CTA button — delay 3.1s
                     VStack(spacing: 11) {
                         ZStack {
@@ -249,13 +252,14 @@ public struct SplashView: View {
                             .foregroundStyle(Color.white.opacity(0.50))
                     }
                     .padding(.horizontal, 24)
-                    .padding(.bottom, 46)
                     .opacity(showCTA ? 1 : 0)
                     .offset(y: showCTA ? 0 : 20)
                 }
-                .frame(width: geo.size.width)
+                .frame(maxHeight: .infinity, alignment: .bottom)
+                .padding(.bottom, 46)
+                .zIndex(9)
 
-                // ── Full-screen tap-catcher (z below SKIP and CTA) ───────
+                // ── Full-screen tap-catcher (z below lockup+CTA, above video) ──
                 Color.clear
                     .contentShape(Rectangle())
                     .onTapGesture { go() }
@@ -330,7 +334,6 @@ public struct SplashView: View {
     private func go() {
         guard !didContinue else { return }
         didContinue = true
-        autoTask?.cancel()
         withAnimation(.easeOut(duration: 0.48)) { opacity = 0 }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.48) {
             onContinue()
