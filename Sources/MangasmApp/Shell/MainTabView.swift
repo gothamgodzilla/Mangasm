@@ -39,7 +39,7 @@ struct MainTabView: View {
         case .search:   PlaceholderScreen(title: "Search")
         case .aiMatch:  PlaceholderScreen(title: "AI Match")
         case .likes:    PlaceholderScreen(title: "Likes")
-        case .profile:  PlaceholderScreen(title: "Profile")
+        case .profile:  ProfileScreen()
         }
     }
 }
