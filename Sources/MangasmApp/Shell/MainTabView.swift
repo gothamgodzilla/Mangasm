@@ -23,6 +23,9 @@ struct MainTabView: View {
                 night: state.night,
                 onSettings: {
                     // TODO(Task 16): present Settings
+                },
+                onMessages: {
+                    state.showChatList = true
                 }
             )
         }
@@ -35,9 +38,47 @@ struct MainTabView: View {
         // Candidate is Identifiable, so .sheet(item:) drives presentation automatically.
         .sheet(item: $state.selectedMatch) { candidate in
             MatchDetailScreen(candidate: candidate) {
-                // TODO(Task 15): route to chat (dismiss + open chat tab)
+                // Route to chat: resolve/create conversation, dismiss detail, open thread
+                let convo = env.chat.conversation(
+                    for: candidate.id,
+                    name: candidate.name,
+                    avatarURL: candidate.avatarURL
+                )
                 state.selectedMatch = nil
+                state.activeChat = convo
             }
+            .environmentObject(state)
+            .environmentObject(env)
+        }
+        // Chat thread — fullScreenCover on iOS, sheet on macOS (fullScreenCover is iOS-only)
+        #if os(iOS)
+        .fullScreenCover(item: $state.activeChat) { conversation in
+            ChatThreadScreen(conversation: conversation) {
+                state.activeChat = nil
+            }
+            .environmentObject(state)
+            .environmentObject(env)
+        }
+        #else
+        .sheet(item: $state.activeChat) { conversation in
+            ChatThreadScreen(conversation: conversation) {
+                state.activeChat = nil
+            }
+            .environmentObject(state)
+            .environmentObject(env)
+        }
+        #endif
+        // Chat list sheet
+        .sheet(isPresented: $state.showChatList) {
+            ChatListScreen(
+                onOpen: { conversation in
+                    state.activeChat = conversation
+                    state.showChatList = false
+                },
+                onClose: {
+                    state.showChatList = false
+                }
+            )
             .environmentObject(state)
             .environmentObject(env)
         }

@@ -12,13 +12,20 @@ public struct TopBar: View {
     let weather: Weather
     let night: Bool                    // Reserved for future glass night variant
     let onSettings: () -> Void
+    let onMessages: () -> Void
 
     @EnvironmentObject private var state: AppState
 
-    public init(weather: Weather, night: Bool = false, onSettings: @escaping () -> Void) {
+    public init(
+        weather: Weather,
+        night: Bool = false,
+        onSettings: @escaping () -> Void,
+        onMessages: @escaping () -> Void = {}
+    ) {
         self.weather = weather
         self.night = night
         self.onSettings = onSettings
+        self.onMessages = onMessages
     }
 
     public var body: some View {
@@ -108,6 +115,22 @@ public struct TopBar: View {
                 .shadow(color: Color(red: 40/255, green: 30/255, blue: 15/255).opacity(0.4),
                         radius: 8, x: 0, y: 6)
                 .allowsHitTesting(false)
+
+                // Messages button — glass square button (envelope icon)
+                Button(action: onMessages) {
+                    Image(systemName: "envelope")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 14, height: 14)
+                        .foregroundStyle(MGColor.goldDeep)
+                        .frame(width: 30, height: 30)
+                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(MGColor.gold.opacity(0.33), lineWidth: 0.7)
+                        )
+                }
+                .buttonStyle(.plain)
 
                 // Settings button — glass square button
                 Button(action: onSettings) {

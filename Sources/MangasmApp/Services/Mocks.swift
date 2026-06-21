@@ -72,6 +72,24 @@ public final class MockChatService: ChatService {
             convos[idx].messages.append(msg)
         }
     }
+
+    /// Returns the existing conversation matching the candidateID, or creates and stores a new one.
+    @discardableResult
+    public func conversation(for candidateID: String, name: String, avatarURL: String?) -> Conversation {
+        if let existing = convos.first(where: { $0.candidateID == candidateID }) {
+            return existing
+        }
+        let newConvo = Conversation(
+            id: "conv-\(candidateID)",
+            candidateID: candidateID,
+            candidateName: name,
+            candidateAvatarURL: avatarURL,
+            messages: []
+        )
+        convos.append(newConvo)
+        messagesByConversation[newConvo.id] = []
+        return newConvo
+    }
 }
 
 // MARK: - MockEventService

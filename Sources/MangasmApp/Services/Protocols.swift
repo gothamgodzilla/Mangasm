@@ -27,6 +27,8 @@ public protocol ChatService {
     func conversations() -> [Conversation]
     func messages(for conversationID: String) -> [Message]
     func send(_ text: String, to conversationID: String)
+    /// Find an existing conversation for a candidate, or create a new empty one.
+    func conversation(for candidateID: String, name: String, avatarURL: String?) -> Conversation
 }
 
 // MARK: - EventService
