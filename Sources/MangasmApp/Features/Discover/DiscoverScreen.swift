@@ -262,7 +262,7 @@ private struct DiscoverTabsControl: View {
                         .tracking(12 * 0.05)
                         .foregroundStyle(
                             selected == tab
-                                ? AnyShapeStyle(Color(red: 42/255, green: 29/255, blue: 5/255))
+                                ? AnyShapeStyle(MGColor.goldText)
                                 : AnyShapeStyle(MGColor.inkSoft)
                         )
                         .frame(maxWidth: .infinity)

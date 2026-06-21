@@ -322,7 +322,7 @@ private struct VisibilityToggleRow: View {
 
 // MARK: - Helpers
 
-/// Parses an age string to a valid Int (18–99). Returns nil for invalid input.
+/// Parses an age string to a valid Int (accepts 1–129; returns nil otherwise).
 /// Pure function — testable without view state.
 func parseAge(_ text: String) -> Int? {
     guard let val = Int(text.trimmingCharacters(in: .whitespaces)), val > 0, val < 130 else {

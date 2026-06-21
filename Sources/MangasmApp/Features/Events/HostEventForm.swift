@@ -279,7 +279,7 @@ struct HostEventForm: View {
                     Text("Publish Event")
                         .font(MGFont.serif(15, .bold))
                         .tracking(15 * 0.06)
-                        .foregroundStyle(Color(red: 42/255, green: 29/255, blue: 5/255))
+                        .foregroundStyle(MGColor.goldText)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
                         .background(

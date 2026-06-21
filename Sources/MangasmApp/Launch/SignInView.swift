@@ -88,7 +88,7 @@ private struct AuthSheet: View {
                 Text("Enter the community →")
                     .font(MGFont.serif(16, .bold))
                     .tracking(16 * 0.04)
-                    .foregroundStyle(Color(red: 42/255, green: 29/255, blue: 5/255))
+                    .foregroundStyle(MGColor.goldText)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 15)
                     .background(

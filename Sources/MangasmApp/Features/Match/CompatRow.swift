@@ -27,7 +27,7 @@ struct CompatRow: View {
                 if ok {
                     Image(systemName: "checkmark")
                         .font(.system(size: 6.5, weight: .bold))
-                        .foregroundStyle(Color(red: 42/255, green: 29/255, blue: 5/255))
+                        .foregroundStyle(MGColor.goldText)
                 }
             }
             .frame(width: 17, height: 17)

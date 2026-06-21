@@ -63,7 +63,14 @@ struct AIMatchScreen: View {
 
                     // Venue cards — each has its own @State for idle/requested/declined
                     ForEach(Venue.samples) { venue in
-                        VenueCard(venue: venue, matchName: featured.name)
+                        VenueCard(venue: venue, matchName: featured.name) {
+                            let convo = env.chat.conversation(
+                                for: featured.id,
+                                name: featured.name,
+                                avatarURL: featured.avatarURL
+                            )
+                            state.activeChat = convo
+                        }
                     }
 
                     // Bottom padding for tab bar
@@ -321,6 +328,7 @@ private struct TrioCard: View {
 struct VenueCard: View {
     let venue: Venue
     let matchName: String
+    let onMessage: () -> Void
 
     enum VenueState { case idle, requested, declined }
     @State private var cardState: VenueState = .idle
@@ -382,7 +390,7 @@ struct VenueCard: View {
                             Text("RSVP")
                                 .font(MGFont.serif(13, .bold))
                                 .tracking(13 * 0.08)
-                                .foregroundStyle(Color(red: 42/255, green: 29/255, blue: 5/255))
+                                .foregroundStyle(MGColor.goldText)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 8)
                                 .background(MGGradient.goldButton, in: RoundedRectangle(cornerRadius: 10))
@@ -391,7 +399,7 @@ struct VenueCard: View {
                         .buttonStyle(.plain)
 
                         Button {
-                            // Message tapped — stays idle (would navigate to chat in Task 15)
+                            onMessage()
                         } label: {
                             Text("Message")
                                 .font(MGFont.sans(10, .semibold))

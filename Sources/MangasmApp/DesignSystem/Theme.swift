@@ -22,6 +22,7 @@ public enum MGColor {
     public static let goldDeep = Color(hex: "#9A7B2C")
     public static let goldBright = Color(hex: "#E4C97E")
     public static let ink = Color(hex: "#2A2117")
+    public static let goldText = Color(hex: "#2A1D05")
     public static let inkSoft = Color(red: 42/255, green: 33/255, blue: 23/255, opacity: 0.70)
     public static let inkFaint = Color(red: 42/255, green: 33/255, blue: 23/255, opacity: 0.50)
     public static let spotify = Color(hex: "#138A3E")

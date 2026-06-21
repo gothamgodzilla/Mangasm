@@ -13,6 +13,7 @@ import SwiftUI
 public struct LandmarkSlides: View {
     @State private var index: Int = 0
     @State private var dotIndex: Int = 0   // lags index by fade duration so dots flip at cross-fade start
+    @State private var isActive: Bool = true
 
     private let cycleDuration: Double = 4.2
     private let fadeDuration: Double = 1.4
@@ -71,6 +72,9 @@ public struct LandmarkSlides: View {
         .onAppear {
             startCycle()
         }
+        .onDisappear {
+            isActive = false
+        }
     }
 
     private func startCycle() {
@@ -81,6 +85,7 @@ public struct LandmarkSlides: View {
 
     private func scheduleNext() {
         DispatchQueue.main.asyncAfter(deadline: .now() + cycleDuration) {
+            guard isActive else { return }
             let next = (index + 1) % City.allCases.count
             withAnimation(.easeInOut(duration: fadeDuration)) {
                 index = next

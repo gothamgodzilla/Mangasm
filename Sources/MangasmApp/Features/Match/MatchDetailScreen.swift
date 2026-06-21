@@ -276,11 +276,11 @@ public struct MatchDetailScreen: View {
                 HStack(spacing: 8) {
                     Image(systemName: "bubble.left")
                         .font(.system(size: 16, weight: .regular))
-                        .foregroundStyle(Color(red: 42/255, green: 29/255, blue: 5/255))
+                        .foregroundStyle(MGColor.goldText)
                     Text("Message")
                         .font(MGFont.serif(16, .bold))
                         .tracking(16 * 0.06)
-                        .foregroundStyle(Color(red: 42/255, green: 29/255, blue: 5/255))
+                        .foregroundStyle(MGColor.goldText)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 13)

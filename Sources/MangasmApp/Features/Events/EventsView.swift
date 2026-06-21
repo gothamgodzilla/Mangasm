@@ -134,14 +134,14 @@ private struct FilterChip: View {
                     EventTypeIcon(
                         type: icon,
                         size: 13,
-                        color: isSelected ? Color(red: 42/255, green: 29/255, blue: 5/255) : MGColor.inkSoft
+                        color: isSelected ? MGColor.goldText : MGColor.inkSoft
                     )
                 }
                 Text(label)
                     .font(MGFont.sans(9.5, .bold))
                     .foregroundStyle(
                         isSelected
-                            ? AnyShapeStyle(Color(red: 42/255, green: 29/255, blue: 5/255))
+                            ? AnyShapeStyle(MGColor.goldText)
                             : AnyShapeStyle(MGColor.inkSoft)
                     )
                     .lineLimit(1)
@@ -213,7 +213,7 @@ private struct HostUpsellCard: View {
                     Text("Unlock M+ \u{00B7} $9.99/mo")
                         .font(MGFont.serif(14.5, .bold))
                         .tracking(14.5 * 0.04)
-                        .foregroundStyle(Color(red: 42/255, green: 29/255, blue: 5/255))
+                        .foregroundStyle(MGColor.goldText)
                         .padding(.vertical, 11)
                         .padding(.horizontal, 22)
                         .background(

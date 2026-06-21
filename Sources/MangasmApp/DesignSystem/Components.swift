@@ -161,7 +161,7 @@ public struct Seal: View {
                         radius: 4, x: 0, y: 0)
 
             // Check mark — dark ink per prototype (#2a1d05), not white
-            let checkInk = Color(red: 42/255, green: 29/255, blue: 5/255)
+            let checkInk = MGColor.goldText
             Path { p in
                 let s = size * 0.55
                 let ox = (size - s) / 2

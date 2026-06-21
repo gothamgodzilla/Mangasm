@@ -150,7 +150,7 @@ struct EventCard: View {
                             .foregroundStyle(
                                 rsvped
                                     ? AnyShapeStyle(MGColor.spotify)
-                                    : AnyShapeStyle(Color(red: 42/255, green: 29/255, blue: 5/255))
+                                    : AnyShapeStyle(MGColor.goldText)
                             )
                             .padding(.vertical, 8)
                             .padding(.horizontal, 16)

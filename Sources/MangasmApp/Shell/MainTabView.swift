@@ -74,8 +74,8 @@ struct MainTabView: View {
         .sheet(isPresented: $state.showChatList) {
             ChatListScreen(
                 onOpen: { conversation in
-                    state.activeChat = conversation
                     state.showChatList = false
+                    DispatchQueue.main.async { state.activeChat = conversation }
                 },
                 onClose: {
                     state.showChatList = false
