@@ -123,7 +123,7 @@ Until the files are present, `MGFont` falls back transparently to system `.serif
 
 ## Spec and plan
 
-- Design spec: [`docs/superpowers/plans/2026-06-21-mangasm-launch-and-app-design.md`](docs/superpowers/plans/2026-06-21-mangasm-launch-and-app-design.md)
+- Design spec: [`docs/superpowers/specs/2026-06-21-mangasm-launch-and-app-design.md`](docs/superpowers/specs/2026-06-21-mangasm-launch-and-app-design.md)
 - Implementation plan: [`docs/superpowers/plans/2026-06-21-mangasm-launch-and-app.md`](docs/superpowers/plans/2026-06-21-mangasm-launch-and-app.md)
 
 ## Known limitations
