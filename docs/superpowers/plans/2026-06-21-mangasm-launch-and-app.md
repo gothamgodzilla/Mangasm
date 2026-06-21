@@ -27,6 +27,7 @@
 
 **Files:**
 - Create: `Package.swift`
+- Create: `Sources/MangasmApp/Resources/lambo_hero.jpg`, `Sources/MangasmApp/Resources/runway.mp4` (from `~/Mangasmfinal.zip`)
 - Create: `Sources/MangasmApp/Shell/AppState.swift`
 - Create: `Sources/MangasmApp/Shell/MangasmRootView.swift`
 - Create: `Sources/MangasmApp/Shell/MainTabView.swift`
@@ -34,10 +35,28 @@
 - Create: `Sources/MangasmPreview/main.swift`
 - Test: `Tests/MangasmAppTests/AppStateTests.swift`
 
+> **Why assets now:** `.process("Resources")` requires the dir to exist and be
+> non-empty of unhandled files, and `Bundle.module` (used by Tasks 4 & 8) only
+> exists when a target declares resources. So the two real assets are bundled in
+> Task 1; Task 17 only adds fonts + verifies + writes the README.
+
 **Interfaces:**
 - Produces: `enum AppPhase { case launch, app }`; `enum AppTab: String, CaseIterable { case discover, search, aiMatch, likes, profile }`; `final class AppState: ObservableObject` with `@Published var phase`, `@Published var tab`; `struct MangasmRootView: View`; `struct MainTabView: View`.
 
-- [ ] **Step 1: Write `Package.swift`**
+- [ ] **Step 1: Create Resources dir + copy assets** (from durable zip)
+
+```bash
+mkdir -p Sources/MangasmApp/Resources
+TMP=$(mktemp -d)
+unzip -j -o ~/Mangasmfinal.zip \
+  'design_handoff_mangasm_launch/prototype/assets/lambo_hero.jpg' \
+  'design_handoff_mangasm_launch/prototype/assets/runway.mp4' -d "$TMP"
+cp "$TMP/lambo_hero.jpg" "$TMP/runway.mp4" Sources/MangasmApp/Resources/
+rm -rf "$TMP"
+ls -la Sources/MangasmApp/Resources/   # expect both files
+```
+
+- [ ] **Step 2: Write `Package.swift`**
 
 ```swift
 // swift-tools-version: 6.0
