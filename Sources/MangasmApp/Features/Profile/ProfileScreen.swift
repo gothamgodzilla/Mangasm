@@ -202,8 +202,8 @@ private struct ProfileCard: View {
                     HIVRow(hiv: profile.hiv, lastTested: profile.lastTested)
                 }
 
-                // Socials
-                if visibility.socials {
+                // Socials — require at least one platform to be visible (avoids empty HStack + phantom padding)
+                if visibility.socials, visibility.instagram || visibility.x {
                     HStack(spacing: 8) {
                         if visibility.instagram, !profile.instagram.isEmpty {
                             SocialRow(kind: .ig, handle: profile.instagram)
@@ -325,42 +325,17 @@ private struct AvatarNameRow: View {
 }
 
 // MARK: - FlowChips
-/// Wrapping chip layout. SwiftUI doesn't have a native flow layout pre-iOS 16.
-/// Approximation: HStack with wrapping done manually via a ViewThatFits-style approach.
-/// Using a simple HStack with wrapping via `LazyVGrid` for compatibility.
+/// Wrapping chip layout backed by the reusable `FlowLayout` from the design system.
+/// Chips flow left-to-right and wrap to the next line based on actual measured widths —
+/// no fixed row count, handles labels of any length correctly.
 private struct FlowChips: View {
     let items: [String]
     let tone: Chip.Tone
 
     var body: some View {
-        // Approximation: single HStack allows natural wrapping by using a flexible grid.
-        // Uses a simple horizontal wrap by stacking horizontally, wrapping into rows.
-        WrappingHStack(items: items, tone: tone)
-    }
-}
-
-/// Simple wrapping HStack using a VStack of HStacks.
-/// Approximation: fixed row packing; wraps at ~3 items per row as a reasonable default.
-/// A proper flow layout would require GeometryReader + preference keys (over-engineered for this screen).
-private struct WrappingHStack: View {
-    let items: [String]
-    let tone: Chip.Tone
-
-    private var rows: [[String]] {
-        // Pack chips into rows of up to 4 items each
-        stride(from: 0, to: items.count, by: 4).map {
-            Array(items[$0..<min($0 + 4, items.count)])
-        }
-    }
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
-                HStack(spacing: 6) {
-                    ForEach(row, id: \.self) { item in
-                        Chip(item, tone: tone)
-                    }
-                }
+        FlowLayout(spacing: 6, lineSpacing: 7) {
+            ForEach(items, id: \.self) { item in
+                Chip(item, tone: tone)
             }
         }
     }

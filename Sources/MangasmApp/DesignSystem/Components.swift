@@ -1,5 +1,89 @@
 import SwiftUI
 
+// MARK: - FlowLayout
+
+/// A reusable wrapping flow layout (SwiftUI `Layout` protocol, iOS 16 / macOS 13+).
+/// Flows subviews left-to-right; wraps to the next line when the row width is exceeded.
+/// - Parameters:
+///   - spacing: Horizontal gap between chips (default 6).
+///   - lineSpacing: Vertical gap between rows (default 7).
+@available(iOS 16, macOS 13, *)
+public struct FlowLayout: Layout {
+    public var spacing: CGFloat
+    public var lineSpacing: CGFloat
+
+    public init(spacing: CGFloat = 6, lineSpacing: CGFloat = 7) {
+        self.spacing = spacing
+        self.lineSpacing = lineSpacing
+    }
+
+    // MARK: Layout protocol
+
+    public func sizeThatFits(
+        proposal: ProposedViewSize,
+        subviews: Subviews,
+        cache: inout ()
+    ) -> CGSize {
+        let containerWidth = resolvedWidth(proposal)
+        var rowX: CGFloat = 0
+        var rowY: CGFloat = 0
+        var rowHeight: CGFloat = 0
+        var totalHeight: CGFloat = 0
+
+        for (index, subview) in subviews.enumerated() {
+            let size = subview.sizeThatFits(.unspecified)
+            if index > 0, rowX + spacing + size.width > containerWidth {
+                // Wrap
+                totalHeight += rowHeight + lineSpacing
+                rowX = 0
+                rowY += rowHeight + lineSpacing
+                rowHeight = 0
+            }
+            rowX += size.width + (rowX > 0 ? spacing : 0)
+            rowHeight = max(rowHeight, size.height)
+        }
+        totalHeight += rowHeight
+
+        return CGSize(width: containerWidth, height: totalHeight)
+    }
+
+    public func placeSubviews(
+        in bounds: CGRect,
+        proposal: ProposedViewSize,
+        subviews: Subviews,
+        cache: inout ()
+    ) {
+        let containerWidth = resolvedWidth(proposal)
+        var rowX: CGFloat = 0
+        var rowY: CGFloat = 0
+        var rowHeight: CGFloat = 0
+
+        for (index, subview) in subviews.enumerated() {
+            let size = subview.sizeThatFits(.unspecified)
+            if index > 0, rowX + spacing + size.width > containerWidth {
+                // Wrap to next row
+                rowY += rowHeight + lineSpacing
+                rowX = 0
+                rowHeight = 0
+            }
+            subview.place(
+                at: CGPoint(x: bounds.minX + rowX, y: bounds.minY + rowY),
+                proposal: ProposedViewSize(size)
+            )
+            rowX += size.width + spacing
+            rowHeight = max(rowHeight, size.height)
+        }
+    }
+
+    // MARK: Private
+
+    /// Returns a finite container width, falling back to 320 if the proposal is nil or infinite.
+    private func resolvedWidth(_ proposal: ProposedViewSize) -> CGFloat {
+        let w = proposal.replacingUnspecifiedDimensions().width
+        return w.isFinite ? w : 320
+    }
+}
+
 // MARK: - Pill
 
 /// Glass pill container — used for weather pill, starlink badge, etc.
