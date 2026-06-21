@@ -7,7 +7,7 @@ public struct MangasmRootView: View {
     public var body: some View {
         Group {
             switch state.phase {
-            case .launch: PlaceholderScreen(title: "Mangasm — Launch")
+            case .launch: LaunchFlow { state.enterApp() }
             case .app:    MainTabView()
             }
         }
