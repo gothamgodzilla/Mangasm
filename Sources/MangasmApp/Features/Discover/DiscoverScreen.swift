@@ -70,12 +70,10 @@ struct DiscoverScreen: View {
                     // Sub-tab content
                     switch (mode == .likes ? SubTab.nearby : subTab) {
                     case .communities:
-                        // TODO(Task 14): embed CommunitiesView
-                        SubTabPlaceholder(label: "Communities")
+                        CommunitiesView()
 
                     case .events:
-                        // TODO(Task 14): embed EventsView
-                        SubTabPlaceholder(label: "Events")
+                        EventsView(premium: state.premium)
 
                     case .nearby:
                         // Nearby / Likes grid content
@@ -302,24 +300,3 @@ private struct DiscoverTabsControl: View {
     }
 }
 
-// MARK: - SubTabPlaceholder
-// Placeholder for Community / Events sub-tabs pending Task 14.
-private struct SubTabPlaceholder: View {
-    let label: String
-    var body: some View {
-        VStack(spacing: 12) {
-            Image(systemName: label == "Communities" ? "person.3" : "calendar")
-                .font(.system(size: 36))
-                .foregroundStyle(MGColor.gold.opacity(0.5))
-            Text(label)
-                .font(MGFont.serif(18, .bold))
-                .foregroundStyle(MGColor.inkFaint)
-            Text("Coming soon")
-                .font(MGFont.mono(10))
-                .foregroundStyle(MGColor.inkFaint.opacity(0.7))
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 60)
-        // TODO(Task 14): embed CommunitiesView / EventsView here
-    }
-}

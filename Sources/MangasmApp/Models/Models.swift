@@ -463,11 +463,32 @@ public struct Venue: Identifiable, Hashable, Sendable {
     ]
 }
 
+// MARK: - EventType
+// Typed enum replacing raw String "glory"|"cumgo"|"circle"|"cosplay".
+// rawValue matches prototype ids for Codable round-trip and filter comparisons.
+public enum EventType: String, CaseIterable, Sendable, Codable, Identifiable {
+    case glory   = "glory"
+    case cumgo   = "cumgo"
+    case circle  = "circle"
+    case cosplay = "cosplay"
+
+    public var id: String { rawValue }
+
+    public var label: String {
+        switch self {
+        case .glory:   return "Glory Hole"
+        case .cumgo:   return "Cum & Go"
+        case .circle:  return "Circle Jerk"
+        case .cosplay: return "Cosplay / Roleplay"
+        }
+    }
+}
+
 // MARK: - EventItem
 // Seeded from SEED_EVENTS in mangasm-events.jsx
 public struct EventItem: Identifiable, Hashable, Sendable {
     public let id: String
-    public var type: String             // "glory" | "cumgo" | "circle" | "cosplay"
+    public var type: EventType
     public var title: String
     public var hostName: String
     public var hostRep: Int
@@ -482,7 +503,7 @@ public struct EventItem: Identifiable, Hashable, Sendable {
 
     public init(
         id: String,
-        type: String,
+        type: EventType,
         title: String,
         hostName: String,
         hostRep: Int,
@@ -516,7 +537,7 @@ public struct EventItem: Identifiable, Hashable, Sendable {
     public static let samples: [EventItem] = [
         EventItem(
             id: "e1",
-            type: "circle",
+            type: .circle,
             title: "Sunset Circle",
             hostName: "Marco",
             hostRep: 88,
@@ -531,7 +552,7 @@ public struct EventItem: Identifiable, Hashable, Sendable {
         ),
         EventItem(
             id: "e2",
-            type: "cosplay",
+            type: .cosplay,
             title: "Latex & Leather Night",
             hostName: "Sven",
             hostRep: 74,
@@ -546,7 +567,7 @@ public struct EventItem: Identifiable, Hashable, Sendable {
         ),
         EventItem(
             id: "e3",
-            type: "glory",
+            type: .glory,
             title: "Anon Booth",
             hostName: "Rafa",
             hostRep: 81,
@@ -561,7 +582,7 @@ public struct EventItem: Identifiable, Hashable, Sendable {
         ),
         EventItem(
             id: "e4",
-            type: "cumgo",
+            type: .cumgo,
             title: "Lunch Express",
             hostName: "Theo",
             hostRep: 69,
