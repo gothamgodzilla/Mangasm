@@ -433,8 +433,6 @@ private struct ChatBubble: View {
 // MARK: - TypingIndicator
 
 private struct TypingIndicator: View {
-    @State private var phase: Double = 0
-
     var body: some View {
         HStack {
             HStack(spacing: 4) {
