@@ -45,7 +45,9 @@ struct MainTabView: View {
                     avatarURL: candidate.avatarURL
                 )
                 state.selectedMatch = nil
-                state.activeChat = convo
+                DispatchQueue.main.async {
+                    state.activeChat = convo
+                }
             }
             .environmentObject(state)
             .environmentObject(env)
