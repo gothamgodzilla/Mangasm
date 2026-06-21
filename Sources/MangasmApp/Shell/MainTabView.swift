@@ -35,10 +35,10 @@ struct MainTabView: View {
     @ViewBuilder
     private var currentScreen: some View {
         switch state.tab {
-        case .discover: PlaceholderScreen(title: "Discover")
-        case .search:   PlaceholderScreen(title: "Search")
+        case .discover: DiscoverScreen(mode: .nearby)
+        case .search:   DiscoverScreen(mode: .nearby)
         case .aiMatch:  PlaceholderScreen(title: "AI Match")
-        case .likes:    PlaceholderScreen(title: "Likes")
+        case .likes:    DiscoverScreen(mode: .likes)
         case .profile:  ProfileScreen()
         }
     }
