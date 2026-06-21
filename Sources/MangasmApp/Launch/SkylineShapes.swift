@@ -166,14 +166,7 @@ private func londonPath(
 
     // Big Ben shaft + header + spire
     p.addRect(band(150, 16, 92))     // main tower
-    p.addRect(band(149, 18, 9))      // clock header (y = 150-100-9 = 41, h=9 → but from band(149,18,9) top = 150-9=141)
-    // Actually Big Ben: shaft y58 h92 → band(150,16,92); header y50 h9 → band(149,18,9)
-    // Note: in the prototype rect x=150 y=58 width=16 height=92 + rect x=149 y=50 width=18 height=9
-    // Bands represent from bottom: h=92 reaches y=58 from bottom (150-92=58) ✓
-    // Header: y=50, h=9 → 150-50-9=91 up from top? No: rect is at y=50, h=9 → top=50, bottom=59
-    // In band terms: from bottom h = 150-50 = 100 but rect is only 9 tall starting at y=50
-    // So the header is NOT a full band — it's a small rect at design y=50
-    // Let's add header rect explicitly:
+    // Big Ben clock header (explicit rect, not a full band)
     p.addRect(CGRect(
         x: ox + 149 * sx, y: oy + 50 * sy,
         width: 18 * sx, height: 9 * sy
