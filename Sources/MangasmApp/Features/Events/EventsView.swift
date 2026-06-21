@@ -38,10 +38,13 @@ struct EventsView: View {
 
             // Host CTA or form
             if hosting {
-                HostEventForm {
-                    // onPublish — close form (event not appended: no Binding on list)
-                    hosting = false
-                }
+                HostEventForm(
+                    onPublish: {
+                        // onPublish — close form (event not appended: no Binding on list)
+                        hosting = false
+                    },
+                    onCancel: { hosting = false }
+                )
                 .padding(.bottom, 16)
             } else {
                 if premium {

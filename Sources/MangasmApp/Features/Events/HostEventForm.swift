@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HostEventForm: View {
     let onPublish: () -> Void
+    var onCancel: (() -> Void)? = nil
 
     @State private var eventType: EventType = .circle
     @State private var title: String = ""
@@ -61,7 +62,7 @@ struct HostEventForm: View {
                 )
 
             VStack(alignment: .leading, spacing: 0) {
-                // Header: "Host an Event" + M+ badge
+                // Header: "Host an Event" + M+ badge + optional × close
                 HStack(spacing: 7) {
                     Text("Host an Event")
                         .font(MGFont.serif(18, .bold))
@@ -82,6 +83,28 @@ struct HostEventForm: View {
                                         .stroke(MGColor.gold.opacity(0.4), lineWidth: 1)
                                 )
                         )
+
+                    Spacer()
+
+                    if onCancel != nil {
+                        Button {
+                            onCancel?()
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 11, weight: .semibold))
+                                .foregroundStyle(MGColor.inkSoft)
+                                .padding(7)
+                                .background(
+                                    Circle()
+                                        .fill(Color.white.opacity(0.18))
+                                        .overlay(
+                                            Circle()
+                                                .stroke(MGColor.inkFaint.opacity(0.25), lineWidth: 1)
+                                        )
+                                )
+                        }
+                        .buttonStyle(.plain)
+                    }
                 }
                 .padding(.bottom, 13)
 
@@ -309,26 +332,36 @@ private struct HostField: View {
             .padding(.bottom, 5)
 
             if isMultiline {
-                TextEditor(text: $text)
-                    .scrollContentBackground(.hidden)
-                    .font(MGFont.sans(12, .semibold))
-                    .foregroundStyle(MGColor.ink)
-                    .frame(minHeight: 60, maxHeight: 80)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 8)
-                    .background(
-                        RoundedRectangle(cornerRadius: 9)
-                            .fill(Color.white.opacity(0.5))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 9)
-                                    .stroke(MGColor.gold.opacity(0.33), lineWidth: 1)
-                            )
-                    )
-                    .onChange(of: text) { _, newValue in
-                        if newValue.count > maxLength {
-                            text = String(newValue.prefix(maxLength))
-                        }
+                ZStack(alignment: .topLeading) {
+                    if text.isEmpty {
+                        Text(placeholder)
+                            .font(MGFont.sans(12, .semibold))
+                            .foregroundStyle(MGColor.inkFaint)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 16)
+                            .allowsHitTesting(false)
                     }
+                    TextEditor(text: $text)
+                        .scrollContentBackground(.hidden)
+                        .font(MGFont.sans(12, .semibold))
+                        .foregroundStyle(MGColor.ink)
+                        .frame(minHeight: 60, maxHeight: 80)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 8)
+                }
+                .background(
+                    RoundedRectangle(cornerRadius: 9)
+                        .fill(Color.white.opacity(0.5))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 9)
+                                .stroke(MGColor.gold.opacity(0.33), lineWidth: 1)
+                        )
+                )
+                .onChange(of: text) { _, newValue in
+                    if newValue.count > maxLength {
+                        text = String(newValue.prefix(maxLength))
+                    }
+                }
             } else {
                 TextField(placeholder, text: $text)
                     .font(MGFont.sans(12, .semibold))
