@@ -2,12 +2,18 @@ import Foundation
 
 // MARK: - MockAuthService
 public final class MockAuthService: AuthService {
+    /// Number of times deleteAccount() was invoked — lets tests assert the
+    /// destructive action reached the service layer.
+    public private(set) var deleteAccountCallCount = 0
+
     public init() {}
     public func enter() {
         // No-op: mock auth entry always succeeds
     }
     public func deleteAccount() {
-        // No-op: mock deletion — clears no real session; real impl would call Supabase auth delete
+        // Mock deletion: records the call. The live impl calls the delete-account
+        // Edge Function (revoke sessions + cascade-delete the auth.users row).
+        deleteAccountCallCount += 1
         print("[MockAuthService] deleteAccount() called")
     }
 }

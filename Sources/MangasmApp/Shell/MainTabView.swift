@@ -157,6 +157,7 @@ private struct GlassTabBar: View {
                 radius: 20, x: 0, y: 7)
         .padding(.horizontal, 14)
         .padding(.bottom, 14)
+        .accessibilityIdentifier("main_tab_bar")   // stable marker: app entered
     }
 }
 

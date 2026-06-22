@@ -5,7 +5,7 @@ import SwiftUI
 /// Four landmark cities for the sign-in slideshow.
 /// sky: 3-stop gradient colors [bottom dark, mid, horizon].
 public enum City: CaseIterable, Hashable, Sendable {
-    case dubai, london, mykonos, tokyo
+    case dubai, london, mykonos, tokyo, blackRockCity
 
     public var name: String {
         switch self {
@@ -13,6 +13,7 @@ public enum City: CaseIterable, Hashable, Sendable {
         case .london:  return "London"
         case .mykonos: return "Mykonos"
         case .tokyo:   return "Tokyo"
+        case .blackRockCity: return "Black Rock City"
         }
     }
 
@@ -22,6 +23,7 @@ public enum City: CaseIterable, Hashable, Sendable {
         case .london:  return "51.50° N · 0.12° W"
         case .mykonos: return "37.44° N · 25.32° E"
         case .tokyo:   return "35.67° N · 139.65° E"
+        case .blackRockCity: return "40.78° N · 119.18° W"
         }
     }
 
@@ -32,6 +34,7 @@ public enum City: CaseIterable, Hashable, Sendable {
         case .london:  return "after-hours, members only"
         case .mykonos: return "white walls, gold nights"
         case .tokyo:   return "neon, velvet & rain"
+        case .blackRockCity: return "dust, fire & deep house"
         }
     }
 
@@ -42,6 +45,7 @@ public enum City: CaseIterable, Hashable, Sendable {
         case .london:  return [Color(hex: "#161f3c"), Color(hex: "#3c3a64"), Color(hex: "#bf6a7e")]
         case .mykonos: return [Color(hex: "#102634"), Color(hex: "#2f6f7c"), Color(hex: "#e7bd6e")]
         case .tokyo:   return [Color(hex: "#191334"), Color(hex: "#5a2a4c"), Color(hex: "#d4585a")]
+        case .blackRockCity: return [Color(hex: "#1b1430"), Color(hex: "#7a3b54"), Color(hex: "#e8b15e")]
         }
     }
 }
@@ -92,6 +96,8 @@ public struct Skyline: Shape {
             mykonosPath(&p, band: band, pt: pt, sx: sx, sy: sy, ox: ox, oy: oy)
         case .tokyo:
             tokyoPath(&p, band: band, pt: pt, sx: sx, sy: sy, ox: ox, oy: oy)
+        case .blackRockCity:
+            blackRockPath(&p, band: band, pt: pt, sx: sx, sy: sy, ox: ox, oy: oy)
         }
 
         return p
@@ -312,6 +318,61 @@ private func tokyoPath(
 
     // Right building cluster
     for (x, w, h) in [(290, 20, 72), (318, 14, 40), (336, 22, 90), (366, 16, 50)] as [(CGFloat, CGFloat, CGFloat)] {
+        p.addRoundedRect(in: band(x, w, h), cornerSize: CGSize(width: sx, height: sy))
+    }
+}
+
+// MARK: - Black Rock City (Burning Man / the Playa)
+// Desert horizon: distant mountain range, the Man effigy on a stepped base
+// centre, and a couple of art structures + a domed camp — a silhouette in the
+// same 400×150 design space as the city skylines.
+
+private func blackRockPath(
+    _ p: inout Path,
+    band: (CGFloat, CGFloat, CGFloat) -> CGRect,
+    pt: (CGFloat, CGFloat) -> CGPoint,
+    sx: CGFloat, sy: CGFloat, ox: CGFloat, oy: CGFloat
+) {
+    // Distant mountain range (two soft peaks) across the back
+    p.move(to: pt(0, 150))
+    p.addLine(to: pt(0, 120))
+    p.addLine(to: pt(70, 92))
+    p.addLine(to: pt(140, 116))
+    p.addLine(to: pt(210, 86))
+    p.addLine(to: pt(300, 112))
+    p.addLine(to: pt(360, 96))
+    p.addLine(to: pt(400, 118))
+    p.addLine(to: pt(400, 150))
+    p.closeSubpath()
+
+    // The Man — stepped base (pyramid platform)
+    p.move(to: pt(176, 150))
+    p.addLine(to: pt(224, 150))
+    p.addLine(to: pt(212, 120))
+    p.addLine(to: pt(188, 120))
+    p.closeSubpath()
+
+    // The Man — body (torso as a tapered column on the base)
+    p.addRect(band(197, 6, 54))                 // torso, ~y 96..120 then up
+    // legs (slight A-stance)
+    p.move(to: pt(197, 120)); p.addLine(to: pt(193, 96)); p.addLine(to: pt(196, 96)); p.closeSubpath()
+    p.move(to: pt(203, 120)); p.addLine(to: pt(207, 96)); p.addLine(to: pt(204, 96)); p.closeSubpath()
+    // arms raised in a V
+    p.move(to: pt(200, 96)); p.addLine(to: pt(184, 78)); p.addLine(to: pt(186, 76)); p.addLine(to: pt(200, 92)); p.closeSubpath()
+    p.move(to: pt(200, 96)); p.addLine(to: pt(216, 78)); p.addLine(to: pt(214, 76)); p.addLine(to: pt(200, 92)); p.closeSubpath()
+    // head
+    p.addEllipse(in: CGRect(x: ox + 196.5 * sx, y: oy + 68 * sy, width: 7 * sx, height: 7 * sy))
+
+    // Domed camp (geodesic dome) left of centre
+    let domeCX: CGFloat = 96, domeCY: CGFloat = 150, domeR: CGFloat = 22
+    p.addEllipse(in: CGRect(x: ox + (domeCX - domeR) * sx, y: oy + (domeCY - domeR) * sy,
+                            width: domeR * 2 * sx, height: domeR * 2 * sy))
+    p.addRect(band(74, 44, 22))   // base under the dome
+
+    // Tall art-installation spire right of centre
+    p.move(to: pt(300, 150)); p.addLine(to: pt(308, 150)); p.addLine(to: pt(304, 64)); p.closeSubpath()
+    // small art structures
+    for (x, w, h) in [(40, 14, 18), (330, 18, 24), (360, 12, 30), (376, 16, 20)] as [(CGFloat, CGFloat, CGFloat)] {
         p.addRoundedRect(in: band(x, w, h), cornerSize: CGSize(width: sx, height: sy))
     }
 }

@@ -29,6 +29,22 @@ public struct SignInView: View {
 private struct AuthSheet: View {
     let onEnter: () -> Void
 
+    // Onboarding gate (Guideline 1.2 + 18+ assurance): entry is blocked until the
+    // user affirms they are 18+ and accepts the Community Guidelines / Privacy.
+    @State private var accepted = false
+    @State private var nudge = false
+
+    private let cream = Color(red: 245/255, green: 235/255, blue: 214/255)
+
+    /// Provider / Enter taps route through here — only proceed when consent is given.
+    private func attemptEnter() {
+        if OnboardingConsent(ageAffirmed: accepted, termsAccepted: accepted).mayEnter {
+            onEnter()
+        } else {
+            withAnimation(.easeInOut(duration: 0.2)) { nudge = true }
+        }
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             // Grab handle
@@ -56,9 +72,9 @@ private struct AuthSheet: View {
 
             // Provider buttons
             VStack(spacing: 9) {
-                ProviderButton(kind: .apple,  action: onEnter)
-                ProviderButton(kind: .google, action: onEnter)
-                ProviderButton(kind: .phone,  action: onEnter)
+                ProviderButton(kind: .apple,  action: attemptEnter)
+                ProviderButton(kind: .google, action: attemptEnter)
+                ProviderButton(kind: .phone,  action: attemptEnter)
             }
 
             // OR divider
@@ -84,7 +100,7 @@ private struct AuthSheet: View {
             .padding(.horizontal, 4)
 
             // "Enter the community" gold CTA button
-            Button(action: onEnter) {
+            Button(action: attemptEnter) {
                 Text("Enter the community →")
                     .font(MGFont.serif(16, .bold))
                     .tracking(16 * 0.04)
@@ -108,31 +124,37 @@ private struct AuthSheet: View {
             }
             .buttonStyle(.plain)
 
-            // Legal line — non-interactive per prototype (spans, not buttons)
-            VStack(spacing: 0) {
-                Text("18+ ONLY · VERIFIED PROFILES · BY CONTINUING YOU ACCEPT THE")
-                    .font(MGFont.mono(7.5))
-                    .tracking(7.5 * 0.04)
-                    .foregroundStyle(Color(red: 245/255, green: 235/255, blue: 214/255).opacity(0.5))
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(7.5 * 0.7)
+            // Consent gate — must be checked before entry (Guideline 1.2 + 18+).
+            VStack(spacing: 7) {
+                Button {
+                    accepted.toggle()
+                    if accepted { nudge = false }
+                } label: {
+                    HStack(alignment: .top, spacing: 8) {
+                        Image(systemName: accepted ? "checkmark.square.fill" : "square")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(accepted ? MGColor.goldDeep
+                                             : (nudge ? Color(red: 0.85, green: 0.3, blue: 0.3) : cream.opacity(0.6)))
+                        Text("I confirm I'm 18+ and accept the Community Guidelines & Privacy Policy.")
+                            .font(MGFont.mono(7.5))
+                            .tracking(7.5 * 0.04)
+                            .foregroundStyle(cream.opacity(0.72))
+                            .multilineTextAlignment(.leading)
+                            .lineSpacing(7.5 * 0.7)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("accept_toggle")
+                .accessibilityLabel("I am 18 or older and accept the Community Guidelines and Privacy Policy")
+                .accessibilityAddTraits(accepted ? [.isSelected] : [])
 
-                HStack(spacing: 6) {
-                    Text("COMMUNITY GUIDELINES")
+                if nudge {
+                    Text("Please confirm to continue.")
                         .font(MGFont.mono(7.5))
                         .tracking(7.5 * 0.04)
-                        .foregroundStyle(Color(red: 245/255, green: 235/255, blue: 214/255).opacity(0.72))
-                        .underline(true, color: Color(red: 245/255, green: 235/255, blue: 214/255).opacity(0.5))
-
-                    Text("·")
-                        .font(MGFont.mono(7.5))
-                        .foregroundStyle(Color(red: 245/255, green: 235/255, blue: 214/255).opacity(0.5))
-
-                    Text("PRIVACY")
-                        .font(MGFont.mono(7.5))
-                        .tracking(7.5 * 0.04)
-                        .foregroundStyle(Color(red: 245/255, green: 235/255, blue: 214/255).opacity(0.72))
-                        .underline(true, color: Color(red: 245/255, green: 235/255, blue: 214/255).opacity(0.5))
+                        .foregroundStyle(Color(red: 0.9, green: 0.4, blue: 0.4))
+                        .accessibilityIdentifier("accept_nudge")
                 }
             }
             .padding(.top, 14)

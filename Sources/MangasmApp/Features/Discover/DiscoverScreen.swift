@@ -123,10 +123,10 @@ private struct NearbyContent: View {
                 .padding(.bottom, 14)
             }
 
-            // 2-column grid
+            // 4-column grid — denser face grid
             LazyVGrid(
-                columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)],
-                spacing: 12
+                columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 4),
+                spacing: 6
             ) {
                 ForEach(candidates) { candidate in
                     UserGridCard(candidate: candidate)
@@ -156,8 +156,8 @@ private struct UserGridCard: View {
                 RoundedRectangle(cornerRadius: 18)
                     .fill(MGGradient.holo)
                     .shadow(
-                        color: Color(red: 40/255, green: 30/255, blue: 15/255).opacity(0.5),
-                        radius: 17, x: 0, y: 14
+                        color: Color(red: 40/255, green: 30/255, blue: 15/255).opacity(0.4),
+                        radius: 6, x: 0, y: 4   // smaller shadow so cards don't bleed past the edge
                     )
 
                 // Inner glass surface
@@ -197,12 +197,13 @@ private struct UserGridCard: View {
                         VStack(alignment: .leading, spacing: 2) {
                             HStack(spacing: 5) {
                                 Text(candidate.name)
-                                    .font(MGFont.serif(17, .bold))
+                                    .font(MGFont.serif(12, .bold))
                                     .foregroundStyle(.white)
+                                    .lineLimit(1)
                                     .shadow(color: .black.opacity(0.6), radius: 2, x: 0, y: 1)
                                 Circle()
                                     .fill(MGColor.spotify)
-                                    .frame(width: 7, height: 7)
+                                    .frame(width: 5, height: 5)
                                     .shadow(color: MGColor.spotify.opacity(1), radius: 3)
                             }
                             HStack {
@@ -215,16 +216,16 @@ private struct UserGridCard: View {
                                     .foregroundStyle(MGColor.goldBright)
                             }
                         }
-                        .padding(.horizontal, 9)
-                        .padding(.bottom, 8)
+                        .padding(.horizontal, 6)
+                        .padding(.bottom, 6)
                     }
 
                     // Match-% badge — top right
                     Text("\(candidate.matchPct)%")
-                        .font(MGFont.serif(12, .bold))
+                        .font(MGFont.serif(9, .bold))
                         .foregroundStyle(MGGradient.goldHeading)
-                        .padding(.vertical, 3)
-                        .padding(.horizontal, 7)
+                        .padding(.vertical, 2)
+                        .padding(.horizontal, 5)
                         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
                         .overlay(
                             RoundedRectangle(cornerRadius: 8)
@@ -236,7 +237,7 @@ private struct UserGridCard: View {
                         .padding(.top, 7)
                         .padding(.trailing, 7)
                 }
-                .frame(height: 150)
+                .frame(height: 120)
                 .clipShape(RoundedRectangle(cornerRadius: 17))
                 .padding(1)
             }

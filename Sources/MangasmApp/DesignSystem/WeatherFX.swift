@@ -450,6 +450,8 @@ public struct WeatherFX: View {
     public let kind: Weather
     public let night: Bool
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     public init(kind: Weather, night: Bool) {
         self.kind = kind
         self.night = night
@@ -486,31 +488,35 @@ public struct WeatherFX: View {
                     .allowsHitTesting(false)
             }
 
-            // GodRays: clear OR night
-            if kind == .clear || night {
-                GodRays(night: night)
-            }
+            // Animated FX — suppressed when Reduce Motion is enabled (accessibility).
+            // The static per-kind tint above still conveys the weather.
+            if !reduceMotion {
+                // GodRays: clear OR night
+                if kind == .clear || night {
+                    GodRays(night: night)
+                }
 
-            // SunFlare: clear day only
-            if kind == .clear && !night {
-                SunFlare()
-            }
+                // SunFlare: clear day only
+                if kind == .clear && !night {
+                    SunFlare()
+                }
 
-            // Clouds: cloudy or any wet
-            if kind == .cloudy || isWet {
-                Clouds()
-            }
+                // Clouds: cloudy or any wet
+                if kind == .cloudy || isWet {
+                    Clouds()
+                }
 
-            // Rain layers: any wet (heavy = not plain rain)
-            if isWet {
-                Rain(heavy: kind != .rain)
-                RainGlass(heavy: kind != .rain)
-            }
+                // Rain layers: any wet (heavy = not plain rain)
+                if isWet {
+                    Rain(heavy: kind != .rain)
+                    RainGlass(heavy: kind != .rain)
+                }
 
-            // Snow/frost: snow or sleet
-            if kind == .snow || kind == .sleet {
-                Snow()
-                Frost()
+                // Snow/frost: snow or sleet
+                if kind == .snow || kind == .sleet {
+                    Snow()
+                    Frost()
+                }
             }
         }
         .allowsHitTesting(false)

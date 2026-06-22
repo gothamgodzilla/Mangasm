@@ -26,16 +26,49 @@ targets:
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         SWIFT_VERSION: "6.0"
+  MangasmTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - Tests/iOS/Unit
+      - path: Mangasm.storekit
+        buildPhase: resources
+    dependencies:
+      - target: Mangasm
+      - package: MangasmApp
+        product: MangasmApp
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_VERSION: "6.0"
+  MangasmUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - Tests/iOS/UI
+    dependencies:
+      - target: Mangasm
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_VERSION: "6.0"
 schemes:
   Mangasm:
     build:
       targets:
         Mangasm: all
+        MangasmTests: [test]
+        MangasmUITests: [test]
     run:
       config: Debug
       storeKitConfiguration: Mangasm.storekit
     test:
       config: Debug
+      # StoreKitFlowTests drives StoreKit via SKTestSession (programmatic), so no
+      # scheme-level storeKitConfiguration here (the two conflict).
+      targets:
+        - MangasmTests
+        - MangasmUITests
     profile:
       config: Release
     analyze:

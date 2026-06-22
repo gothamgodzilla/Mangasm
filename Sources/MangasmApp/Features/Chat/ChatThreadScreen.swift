@@ -5,7 +5,8 @@ import SwiftUI
 // Prototype ref: mangasm-chat.jsx ChatScreen().
 //
 // Glass header: back button, avatar (gold ring), name, "Online · X away", match-% pill.
-// E2E banner: "END-TO-END ENCRYPTED · PRIVACY ZONES ON"
+// Encryption banner: "ENCRYPTED IN TRANSIT · PRIVACY ZONES ON"
+// Honest label until real end-to-end encryption ships (roadmap Decision B).
 // Bubbles: received (cream-white, left, left tail), sent (gold-gradient, right, right tail).
 // Typing indicator: 3 pulsing dots.
 // Composer: glass text field + gold circular send button.
@@ -260,7 +261,7 @@ public struct ChatThreadScreen: View {
     // MARK: - E2E Banner
 
     private var e2eBanner: some View {
-        Text("END-TO-END ENCRYPTED · PRIVACY ZONES ON")
+        Text("ENCRYPTED IN TRANSIT · PRIVACY ZONES ON")
             .font(MGFont.mono(7.5))
             .tracking(7.5 * 0.14)
             .foregroundStyle(MGColor.inkSoft)

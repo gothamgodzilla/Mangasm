@@ -31,8 +31,6 @@ public struct Profile: Identifiable, Hashable, Sendable {
     public var hobbies: [String]
     public var position: String          // "Top" | "Vers" | "Bottom"
     public var into: [String]            // fetishes (M+ only to show)
-    public var hiv: String
-    public var lastTested: String
     public var instagram: String
     public var x: String
     public var astro: String             // western zodiac
@@ -55,8 +53,6 @@ public struct Profile: Identifiable, Hashable, Sendable {
         hobbies: [String] = [],
         position: String,
         into: [String] = [],
-        hiv: String,
-        lastTested: String,
         instagram: String = "",
         x: String = "",
         astro: String,
@@ -78,8 +74,6 @@ public struct Profile: Identifiable, Hashable, Sendable {
         self.hobbies = hobbies
         self.position = position
         self.into = into
-        self.hiv = hiv
-        self.lastTested = lastTested
         self.instagram = instagram
         self.x = x
         self.astro = astro
@@ -106,8 +100,6 @@ public struct Profile: Identifiable, Hashable, Sendable {
         hobbies: ["Sailing", "Mixology", "Vintage cars", "House music"],
         position: "Vers",
         into: ["Feet", "Roleplay"],
-        hiv: "Negative · on PrEP",
-        lastTested: "May 2026",
         instagram: "julianv",
         x: "julian_v",
         astro: "Scorpio",
@@ -132,7 +124,6 @@ public struct Visibility: Hashable, Sendable {
     public var hobbies: Bool
     public var position: Bool
     public var into: Bool       // fetishes — hidden by default, M+ required
-    public var hiv: Bool
     public var anthem: Bool
     public var photos: Bool
     public var socials: Bool
@@ -144,7 +135,6 @@ public struct Visibility: Hashable, Sendable {
         hobbies: Bool = true,
         position: Bool = true,
         into: Bool = false,
-        hiv: Bool = true,
         anthem: Bool = true,
         photos: Bool = true,
         socials: Bool = true,
@@ -155,7 +145,6 @@ public struct Visibility: Hashable, Sendable {
         self.hobbies = hobbies
         self.position = position
         self.into = into
-        self.hiv = hiv
         self.anthem = anthem
         self.photos = photos
         self.socials = socials
@@ -163,7 +152,7 @@ public struct Visibility: Hashable, Sendable {
         self.x = x
     }
 
-    /// Exactly matches VIS_DEFAULT in mangasm-shell.jsx
+    /// Fetishes ("into") default to HIDDEN; users opt in explicitly.
     public static let sample = Visibility()
 }
 
@@ -551,7 +540,7 @@ public struct EventItem: Identifiable, Hashable, Sendable {
             when: "Tonight · 10:30 PM",
             place: "Marina Penthouse",
             area: "Dubai Marina",
-            description: "Low-lit lounge, house music, clothing optional. Discreet, respectful crowd only.",
+            description: "Rooftop lounge, house sets, skyline views. Hosted, members-only, verified guests.",
             going: 9,
             capacity: 12,
             privacy: "approval"
@@ -566,7 +555,7 @@ public struct EventItem: Identifiable, Hashable, Sendable {
             when: "Sat · 11:00 PM",
             place: "Private villa",
             area: "Palm Jumeirah",
-            description: "Full gear encouraged — officer, athlete, exec themes. Lockers & wash on site.",
+            description: "Statement-style night — bold looks encouraged. Hosted, dress to impress, members verified.",
             going: 18,
             capacity: 30,
             privacy: "public"
@@ -574,14 +563,14 @@ public struct EventItem: Identifiable, Hashable, Sendable {
         EventItem(
             id: "e3",
             type: .openDoor,
-            title: "Anon Booth",
+            title: "Open House",
             hostName: "Rafa",
             hostRep: 81,
             avatarURL: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=120&h=120&q=80&auto=format&fit=crop&crop=faces",
             when: "Fri · 9:00 PM",
             place: "Studio loft",
             area: "JBR",
-            description: "Anonymous setup, sanitized booths, condoms & PrEP-friendly. ID checked at door.",
+            description: "Hosted open house with welcome drinks. ID-verified entry, hosts on site.",
             going: 6,
             capacity: 10,
             privacy: "approval"
@@ -596,7 +585,7 @@ public struct EventItem: Identifiable, Hashable, Sendable {
             when: "Today · 1:00 PM",
             place: "Business Bay tower",
             area: "Business Bay",
-            description: "Quick, discreet, in-and-out. Twenty-minute slots — book your time ahead.",
+            description: "Midday professionals' mixer over coffee. Book a slot, verified members, intros hosted.",
             going: 4,
             capacity: 8,
             privacy: "public"
@@ -629,7 +618,7 @@ public struct Community: Identifiable, Hashable, Sendable {
         Community(id: "c2", name: "Bears & Cubs UAE",      tagline: "Body positive",             memberCount: "2.8k", monogram: "BC"),
         Community(id: "c3", name: "Leather & Fetish",      tagline: "Kink · Gear",               memberCount: "1.9k", monogram: "LF"),
         Community(id: "c4", name: "Trans+ & Allies",       tagline: "Support · Safe space",      memberCount: "1.1k", monogram: "TA"),
-        Community(id: "c5", name: "PrEP & Poz Friendly",   tagline: "Health · Stigma-free",      memberCount: "3.5k", monogram: "PP"),
+        Community(id: "c5", name: "Black Rock Brotherhood", tagline: "Playa · radical inclusion",  memberCount: "3.5k", monogram: "BR"),
         Community(id: "c6", name: "House & After-Hours",   tagline: "Music · Nightlife",         memberCount: "5.6k", monogram: "HA"),
     ]
 }

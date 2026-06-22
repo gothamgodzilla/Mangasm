@@ -164,8 +164,6 @@ public struct SettingsScreen: View {
                                 lockedHint: "M+ required"
                             )
                             Divider().opacity(0.2).padding(.horizontal, 13)
-                            VisibilityToggleRow(label: "HIV Status", isOn: $state.visibility.hiv)
-                            Divider().opacity(0.2).padding(.horizontal, 13)
                             VisibilityToggleRow(label: "Socials",   isOn: $state.visibility.socials)
                             Divider().opacity(0.2).padding(.horizontal, 13)
                             VisibilityToggleRow(label: "Instagram", isOn: $state.visibility.instagram)
@@ -240,9 +238,12 @@ public struct SettingsScreen: View {
                         VStack(spacing: 0) {
                             VisibilityToggleRow(label: "Night mode", isOn: $state.night)
                             Divider().opacity(0.2).padding(.horizontal, 13)
-                            // (debug) toggle — bypasses StoreKit for simulator/preview testing
+                            #if DEBUG
+                            // (debug) bypasses StoreKit for simulator/preview testing only —
+                            // compiled out of release builds so it can never unlock M+ in production.
                             VisibilityToggleRow(label: "(debug) M+ Premium", isOn: $state.premium)
                             Divider().opacity(0.2).padding(.horizontal, 13)
+                            #endif
 
                             // Weather picker
                             HStack {
@@ -311,15 +312,21 @@ public struct SettingsScreen: View {
                                 .padding(.horizontal, 13)
                             }
                             .buttonStyle(.plain)
+                            .accessibilityIdentifier("delete_account_row")
+                            // Distinct label so the destructive dialog button ("Delete
+                            // Account") is unambiguous in UI tests.
+                            .accessibilityLabel("Open delete account confirmation")
                             .confirmationDialog(
                                 "Delete Account",
                                 isPresented: $showDeleteConfirm,
                                 titleVisibility: .visible
                             ) {
                                 Button("Delete Account", role: .destructive) {
+                                    // Server-side erasure (cascades all data); local
+                                    // session is wiped so sensitive data doesn't linger.
                                     env.auth.deleteAccount()
                                     onClose()
-                                    state.phase = .launch
+                                    state.resetForSignOut()
                                 }
                                 Button("Cancel", role: .cancel) {}
                             } message: {

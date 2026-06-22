@@ -14,9 +14,9 @@ final class AppStateTests: XCTestCase {
     func testAllTabsHaveStableRawValues() {
         XCTAssertEqual(AppTab.allCases.count, 5)
     }
-    func testDefaultWeatherIsRain() {
+    func testDefaultWeatherIsSunny() {
         let s = AppState()
-        XCTAssertEqual(s.weather, .rain)
+        XCTAssertEqual(s.weather, .clear, "app opens sunny by default (no rain)")
     }
     func testSelectedMatchDefaultsToNil() {
         let s = AppState()
