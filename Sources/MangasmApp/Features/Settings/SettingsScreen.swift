@@ -314,15 +314,21 @@ public struct SettingsScreen: View {
                                 .padding(.horizontal, 13)
                             }
                             .buttonStyle(.plain)
+                            .accessibilityIdentifier("delete_account_row")
+                            // Distinct label so the destructive dialog button ("Delete
+                            // Account") is unambiguous in UI tests.
+                            .accessibilityLabel("Open delete account confirmation")
                             .confirmationDialog(
                                 "Delete Account",
                                 isPresented: $showDeleteConfirm,
                                 titleVisibility: .visible
                             ) {
                                 Button("Delete Account", role: .destructive) {
+                                    // Server-side erasure (cascades all data); local
+                                    // session is wiped so sensitive data doesn't linger.
                                     env.auth.deleteAccount()
                                     onClose()
-                                    state.phase = .launch
+                                    state.resetForSignOut()
                                 }
                                 Button("Cancel", role: .cancel) {}
                             } message: {

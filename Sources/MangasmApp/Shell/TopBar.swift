@@ -147,6 +147,8 @@ public struct TopBar: View {
                         )
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("settings_button")
+                .accessibilityLabel("Settings")
             }
         }
         .padding(.horizontal, 14)
