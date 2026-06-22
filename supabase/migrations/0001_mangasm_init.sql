@@ -26,7 +26,7 @@ create table profiles (
     bio           text default '',
     hobbies       text[] not null default '{}',
     position      text default '',
-    into          text[] not null default '{}',
+    "into"        text[] not null default '{}',   -- quoted: INTO is a reserved word
     hiv           text default '',
     last_tested   text default '',
     instagram     text default '',
