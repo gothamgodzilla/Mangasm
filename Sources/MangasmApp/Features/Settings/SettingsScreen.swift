@@ -240,9 +240,12 @@ public struct SettingsScreen: View {
                         VStack(spacing: 0) {
                             VisibilityToggleRow(label: "Night mode", isOn: $state.night)
                             Divider().opacity(0.2).padding(.horizontal, 13)
-                            // (debug) toggle — bypasses StoreKit for simulator/preview testing
+                            #if DEBUG
+                            // (debug) bypasses StoreKit for simulator/preview testing only —
+                            // compiled out of release builds so it can never unlock M+ in production.
                             VisibilityToggleRow(label: "(debug) M+ Premium", isOn: $state.premium)
                             Divider().opacity(0.2).padding(.horizontal, 13)
+                            #endif
 
                             // Weather picker
                             HStack {
