@@ -131,6 +131,8 @@ public struct TopBar: View {
                         )
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("messages_button")
+                .accessibilityLabel("Messages")
 
                 // Settings button — glass square button
                 Button(action: onSettings) {
