@@ -1,4 +1,22 @@
 import SwiftUI
+#if canImport(UIKit)
+import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
+
+/// Loads a RAW resource file (not an asset catalog) from the package bundle as
+/// a SwiftUI `Image`. `Image(name:bundle:)` only finds asset-catalog images, so
+/// a bundled `lambo_hero.jpg` file silently renders empty with that initializer.
+func bundledFileImage(_ name: String, _ ext: String) -> Image? {
+    guard let url = Bundle.module.url(forResource: name, withExtension: ext) else { return nil }
+    #if canImport(UIKit)
+    if let img = UIImage(contentsOfFile: url.path) { return Image(uiImage: img) }
+    #elseif canImport(AppKit)
+    if let img = NSImage(contentsOf: url) { return Image(nsImage: img) }
+    #endif
+    return nil
+}
 
 // MARK: - LamborghiniBackground
 // Layered ZStack: lambo_hero image (bottom-anchored, scaledToFill) with day/night
@@ -17,14 +35,13 @@ public struct LamborghiniBackground: View {
         GeometryReader { geo in
             ZStack {
                 // ── 1. Hero image (bottom-anchored, scaledToFill) ───────────────
-                let imageAvailable = Bundle.module.url(forResource: "lambo_hero", withExtension: "jpg") != nil
-                if imageAvailable {
-                    Image("lambo_hero", bundle: .module)
+                if let hero = bundledFileImage("lambo_hero", "jpg") {
+                    hero
                         .resizable()
                         .scaledToFill()
                         .frame(width: geo.size.width, height: geo.size.height, alignment: .bottom)
                         .clipped()
-                        .colorMultiply(Color(white: night ? 0.58 : 0.98))
+                        .colorMultiply(Color(white: night ? 0.62 : 1.0))
                         .saturation(night ? 1.18 : 1.16)
                         .contrast(night ? 1.08 : 1.04)
                 } else {
