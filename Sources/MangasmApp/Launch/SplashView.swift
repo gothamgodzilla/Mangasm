@@ -111,6 +111,8 @@ public struct SplashView: View {
 
     @StateObject private var runway = RunwayPlayer()
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     // Double-fire guard — set true the first time go() is called.
     @State private var didContinue = false
 
@@ -364,8 +366,10 @@ public struct SplashView: View {
         // Glow loop starts at 1.8s (0.7 + 1.1)
         try? await Task.sleep(for: .seconds(1.1))
         if Task.isCancelled { return }
-        withAnimation(.easeInOut(duration: 1.7).repeatForever(autoreverses: true)) {
-            glowPulse = true
+        if !reduceMotion {
+            withAnimation(.easeInOut(duration: 1.7).repeatForever(autoreverses: true)) {
+                glowPulse = true
+            }
         }
 
         // Tagline at 1.5s from start: we're at ~1.8s; fire immediately
@@ -380,15 +384,19 @@ public struct SplashView: View {
         if Task.isCancelled { return }
         withAnimation(.easeOut(duration: 0.9)) { showCTA = true }
         // Prototype mgctaPulse is a 2.4s beat; 1.2s in+out (autoreverse) ≈ 2.4s cycle.
-        withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
-            ctaPulse = true
+        if !reduceMotion {
+            withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
+                ctaPulse = true
+            }
         }
 
         // Shimmer starts at 3.6s total → 0.5s after CTA
         try? await Task.sleep(for: .seconds(0.5))
         if Task.isCancelled { return }
-        shimmerVisible = true
-        startShimmerLoop()
+        if !reduceMotion {
+            shimmerVisible = true
+            startShimmerLoop()
+        }
 
         // Auto-advance at 8.6s total from start. Elapsed ≈ 3.6s → wait 5.0s more.
         try? await Task.sleep(for: .seconds(5.0))
