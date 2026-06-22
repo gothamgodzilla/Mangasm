@@ -281,7 +281,11 @@ private struct Snow: View {
                         let r = flake.size / 2
                         let rect = CGRect(x: fx - r, y: fy - r, width: flake.size, height: flake.size)
                         let circle = Path(ellipseIn: rect)
-                        ctx.fill(circle, with: .color(white: 1, opacity: flake.op))
+                        // Prototype flakes carry a soft white glow (boxShadow 0 0 4px rgba(255,255,255,.6)).
+                        ctx.drawLayer { layer in
+                            layer.addFilter(.shadow(color: .white.opacity(0.6), radius: 4))
+                            layer.fill(circle, with: .color(white: 1, opacity: flake.op))
+                        }
                     }
                 }
                 .frame(width: w, height: h)
@@ -295,17 +299,20 @@ private struct Snow: View {
 // Radial vignette (screen blend) giving frosted edges for snow/sleet.
 private struct Frost: View {
     var body: some View {
-        RadialGradient(
-            stops: [
-                .init(color: Color.clear, location: 0),
-                .init(color: Color.clear, location: 0.56),
-                .init(color: Color(red: 214/255, green: 230/255, blue: 248/255, opacity: 0.14), location: 0.82),
-                .init(color: Color(red: 232/255, green: 244/255, blue: 255/255, opacity: 0.32), location: 1),
-            ],
-            center: .center,
-            startRadius: 0,
-            endRadius: 600
-        )
+        GeometryReader { geo in
+            RadialGradient(
+                stops: [
+                    .init(color: Color.clear, location: 0),
+                    .init(color: Color.clear, location: 0.56),
+                    .init(color: Color(red: 214/255, green: 230/255, blue: 248/255, opacity: 0.14), location: 0.82),
+                    .init(color: Color(red: 232/255, green: 244/255, blue: 255/255, opacity: 0.32), location: 1),
+                ],
+                center: .center,
+                startRadius: 0,
+                // Prototype: `120% 92% at 50% 50%` — scale to the screen, not a fixed 600.
+                endRadius: max(geo.size.width, geo.size.height) * 0.85
+            )
+        }
         .blendMode(.screen)
         .allowsHitTesting(false)
     }
@@ -315,6 +322,8 @@ private struct Frost: View {
 // 6 light beams radiating from top (sun position depends on night).
 private struct GodRays: View {
     let night: Bool
+    // Prototype `mgray 7s ease-in-out infinite alternate`: the ray group breathes.
+    @State private var sway = false
 
     var body: some View {
         let angles: [Double] = [-22, -12, -3, 7, 17, 28]
@@ -343,9 +352,16 @@ private struct GodRays: View {
                                   y: geo.size.height * 0.5)
                 }
             }
+            .rotationEffect(.degrees(sway ? 2.5 : -2.5), anchor: .top)
+            .opacity(sway ? 1.0 : 0.85)
         }
         .blendMode(.screen)
         .allowsHitTesting(false)
+        .onAppear {
+            withAnimation(.easeInOut(duration: 7).repeatForever(autoreverses: true)) {
+                sway = true
+            }
+        }
     }
 }
 

@@ -44,7 +44,7 @@ public struct TopBar: View {
                         // Big serif score number — goldText gradient + goldGlow
                         Text("\(state.profile.repScore)")
                             .font(MGFont.serif(38, .bold))
-                            .foregroundStyle(MGGradient.goldButton)
+                            .foregroundStyle(MGGradient.goldHeading)
                             .shadow(color: MGColor.gold.opacity(0.30), radius: 5, x: 0, y: 1)
                             .shadow(color: .white.opacity(0.4), radius: 0.5, x: 0, y: 1)
                             .lineHeight(0.8)
@@ -73,7 +73,7 @@ public struct TopBar: View {
                 Text("Mangasm")
                     .font(MGFont.serif(31, .bold))
                     .tracking(31 * 0.01)
-                    .foregroundStyle(MGGradient.goldButton)
+                    .foregroundStyle(MGGradient.goldHeading)
                     .shadow(color: MGColor.gold.opacity(0.40), radius: 6, x: 0, y: 1)
                     .shadow(color: .white.opacity(0.5), radius: 1, x: 0, y: 1)
                     .padding(.top, 2)

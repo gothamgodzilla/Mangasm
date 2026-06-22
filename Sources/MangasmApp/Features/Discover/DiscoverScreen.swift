@@ -222,7 +222,7 @@ private struct UserGridCard: View {
                     // Match-% badge — top right
                     Text("\(candidate.matchPct)%")
                         .font(MGFont.serif(12, .bold))
-                        .foregroundStyle(MGGradient.goldButton)
+                        .foregroundStyle(MGGradient.goldHeading)
                         .padding(.vertical, 3)
                         .padding(.horizontal, 7)
                         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))

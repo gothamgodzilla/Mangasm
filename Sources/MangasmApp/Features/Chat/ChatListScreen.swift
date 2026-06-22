@@ -99,7 +99,7 @@ public struct ChatListScreen: View {
 
                 Text("Messages")
                     .font(MGFont.serif(22, .bold))
-                    .foregroundStyle(MGGradient.goldButton)
+                    .foregroundStyle(MGGradient.goldHeading)
 
                 Spacer()
             }

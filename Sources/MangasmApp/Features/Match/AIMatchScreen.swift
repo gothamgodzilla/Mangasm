@@ -95,7 +95,7 @@ struct AIMatchScreen: View {
 
                 Text("AI MATCHMAKING")
                     .font(MGFont.serif(22, .bold))
-                    .foregroundStyle(MGGradient.goldButton)
+                    .foregroundStyle(MGGradient.goldHeading)
                     .shadow(color: MGColor.gold.opacity(0.30), radius: 5, x: 0, y: 1)
             }
 
@@ -237,7 +237,7 @@ struct AIMatchScreen: View {
                 Text("Request 3 new suggestions")
                     .font(MGFont.serif(15, .bold))
                     .tracking(15 * 0.08)
-                    .foregroundStyle(MGGradient.goldButton)
+                    .foregroundStyle(MGGradient.goldHeading)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)

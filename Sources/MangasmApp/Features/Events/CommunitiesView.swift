@@ -82,7 +82,7 @@ private struct CommunityCard: View {
                             )
                         Text(community.monogram)
                             .font(MGFont.serif(15, .bold))
-                            .foregroundStyle(MGGradient.goldButton)
+                            .foregroundStyle(MGGradient.goldHeading)
                     }
                     .frame(width: 42, height: 42)
 

@@ -194,7 +194,7 @@ public struct SectionLabel: View {
         Text(text)
             .font(MGFont.serif(15, .bold))
             .tracking(15 * 0.16) // 0.16em at 15pt = 2.4pt
-            .foregroundStyle(MGGradient.goldButton)
+            .foregroundStyle(MGGradient.goldHeading)
             // goldGlow: 0 1px 10px rgba(201,168,76,.30), 0 1px 1px rgba(255,255,255,.4)
             .shadow(color: MGColor.gold.opacity(0.30), radius: 5, x: 0, y: 1)
             .shadow(color: .white.opacity(0.4), radius: 0.5, x: 0, y: 1)
@@ -343,7 +343,7 @@ public struct RepRing: View {
                 Text("\(value)")
                     .font(MGFont.serif(34, .bold))
                     .tracking(0)
-                    .foregroundStyle(MGGradient.goldButton)
+                    .foregroundStyle(MGGradient.goldHeading)
                     .shadow(color: MGColor.gold.opacity(0.30), radius: 5, x: 0, y: 1)
                     .shadow(color: .white.opacity(0.4), radius: 0.5, x: 0, y: 1)
                     .lineLimit(1)

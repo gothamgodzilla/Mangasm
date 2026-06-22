@@ -54,4 +54,12 @@ public enum MGGradient {
     public static let launchCTA = LinearGradient(
         colors: [MGColor.launchOrange, MGColor.launchOrangeDeep],
         startPoint: .topLeading, endPoint: .bottomTrailing)
+    /// Gold gradient for TEXT (wordmarks, section labels, ring centers): 3-stop
+    /// vertical bright→gold@48%→deep, matching the prototype's `goldText`.
+    /// (Not to be confused with `MGColor.goldText`, the dark ink used ON gold.)
+    public static let goldHeading = LinearGradient(
+        stops: [.init(color: MGColor.goldBright, location: 0),
+                .init(color: MGColor.gold, location: 0.48),
+                .init(color: MGColor.goldDeep, location: 1)],
+        startPoint: .top, endPoint: .bottom)
 }

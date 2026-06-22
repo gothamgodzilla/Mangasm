@@ -189,7 +189,7 @@ public struct ChatThreadScreen: View {
                 HStack(spacing: 4) {
                     Text(matchPctLabel)
                         .font(MGFont.serif(13, .bold))
-                        .foregroundStyle(MGGradient.goldButton)
+                        .foregroundStyle(MGGradient.goldHeading)
                 }
                 .padding(.vertical, 4)
                 .padding(.horizontal, 9)

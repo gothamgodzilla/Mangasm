@@ -31,7 +31,7 @@ public struct SettingsScreen: View {
                     HStack {
                         Text("Settings")
                             .font(MGFont.serif(26, .bold))
-                            .foregroundStyle(MGGradient.goldButton)
+                            .foregroundStyle(MGGradient.goldHeading)
                             .shadow(color: MGColor.gold.opacity(0.30), radius: 5, x: 0, y: 1)
 
                         Spacer()

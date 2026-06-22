@@ -305,7 +305,8 @@ public struct SplashView: View {
         try? await Task.sleep(for: .seconds(1.3))
         if Task.isCancelled { return }
         withAnimation(.easeOut(duration: 0.9)) { showCTA = true }
-        withAnimation(.easeInOut(duration: 2.4).repeatForever(autoreverses: true)) {
+        // Prototype mgctaPulse is a 2.4s beat; 1.2s in+out (autoreverse) ≈ 2.4s cycle.
+        withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
             ctaPulse = true
         }
 

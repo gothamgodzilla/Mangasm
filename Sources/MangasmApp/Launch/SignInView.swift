@@ -43,7 +43,7 @@ private struct AuthSheet: View {
                 Text("Mangasm")
                     .font(MGFont.serif(38, .bold))
                     .tracking(38 * 0.01)
-                    .foregroundStyle(MGGradient.goldButton)
+                    .foregroundStyle(MGGradient.goldHeading)
                     .shadow(color: MGColor.gold.opacity(0.4), radius: 7, x: 0, y: 1)
 
                 Text("BY INVITATION · MEMBERS ONLY")

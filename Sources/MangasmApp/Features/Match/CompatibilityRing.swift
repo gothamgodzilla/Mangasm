@@ -53,7 +53,7 @@ public struct CompatibilityRing: View {
             VStack(spacing: 1) {
                 Text("\(percent)")
                     .font(MGFont.serif(size * 20 / 64, .bold))
-                    .foregroundStyle(MGGradient.goldButton)
+                    .foregroundStyle(MGGradient.goldHeading)
                     .lineLimit(1)
                 Text(label)
                     .font(MGFont.mono(size * 5.5 / 64))

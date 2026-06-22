@@ -85,7 +85,7 @@ private struct VouchesAIStrip: View {
             HStack(spacing: 8) {
                 Text(aiMatchString)
                     .font(MGFont.serif(21, .bold))
-                    .foregroundStyle(MGGradient.goldButton)
+                    .foregroundStyle(MGGradient.goldHeading)
                     .shadow(color: MGColor.gold.opacity(0.40), radius: 5, x: 0, y: 1)
                     .shadow(color: Color.white.opacity(0.4), radius: 0.5, x: 0, y: 1)
 
@@ -134,7 +134,7 @@ private struct HeadlineView: View {
         Text("\u{201C}\(text)\u{201D}")
             .font(MGFont.serif(19, .bold))
             .italic()
-            .foregroundStyle(MGGradient.goldButton)
+            .foregroundStyle(MGGradient.goldHeading)
             .shadow(color: MGColor.gold.opacity(0.40), radius: 5, x: 0, y: 1)
             .shadow(color: Color.white.opacity(0.4), radius: 0.5, x: 0, y: 1)
             .multilineTextAlignment(.center)

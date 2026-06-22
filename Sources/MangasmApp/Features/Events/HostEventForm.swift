@@ -66,7 +66,7 @@ struct HostEventForm: View {
                 HStack(spacing: 7) {
                     Text("Host an Event")
                         .font(MGFont.serif(18, .bold))
-                        .foregroundStyle(MGGradient.goldButton)
+                        .foregroundStyle(MGGradient.goldHeading)
                         .shadow(color: MGColor.gold.opacity(0.30), radius: 5, x: 0, y: 1)
 
                     Text("M+")

@@ -59,7 +59,7 @@ struct EventsView: View {
                             Text("Host an Event")
                                 .font(MGFont.serif(15.5, .bold))
                                 .tracking(15.5 * 0.05)
-                                .foregroundStyle(MGGradient.goldButton)
+                                .foregroundStyle(MGGradient.goldHeading)
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 13)

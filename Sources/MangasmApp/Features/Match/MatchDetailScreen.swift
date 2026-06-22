@@ -123,7 +123,7 @@ public struct MatchDetailScreen: View {
                         HStack(spacing: 4) {
                             Text("\(candidate.matchPct)%")
                                 .font(MGFont.serif(16, .bold))
-                                .foregroundStyle(MGGradient.goldButton)
+                                .foregroundStyle(MGGradient.goldHeading)
                             Text("MATCH")
                                 .font(MGFont.mono(7))
                                 .tracking(7 * 0.12)
@@ -187,7 +187,7 @@ public struct MatchDetailScreen: View {
                     VStack(alignment: .leading, spacing: 3) {
                         Text("Cosmically aligned")
                             .font(MGFont.serif(17, .bold))
-                            .foregroundStyle(MGGradient.goldButton)
+                            .foregroundStyle(MGGradient.goldHeading)
                             .shadow(color: MGColor.gold.opacity(0.30), radius: 5, x: 0, y: 1)
 
                         Text("Esoteric & behavioral signals point the same way — rare.")
