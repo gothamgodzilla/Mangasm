@@ -618,7 +618,7 @@ public struct Community: Identifiable, Hashable, Sendable {
         Community(id: "c2", name: "Bears & Cubs UAE",      tagline: "Body positive",             memberCount: "2.8k", monogram: "BC"),
         Community(id: "c3", name: "Leather & Fetish",      tagline: "Kink · Gear",               memberCount: "1.9k", monogram: "LF"),
         Community(id: "c4", name: "Trans+ & Allies",       tagline: "Support · Safe space",      memberCount: "1.1k", monogram: "TA"),
-        Community(id: "c5", name: "PrEP & Poz Friendly",   tagline: "Health · Stigma-free",      memberCount: "3.5k", monogram: "PP"),
+        Community(id: "c5", name: "Black Rock Brotherhood", tagline: "Playa · radical inclusion",  memberCount: "3.5k", monogram: "BR"),
         Community(id: "c6", name: "House & After-Hours",   tagline: "Music · Nightlife",         memberCount: "5.6k", monogram: "HA"),
     ]
 }
