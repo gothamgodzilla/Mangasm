@@ -33,17 +33,19 @@ public enum MGColor {
 
 public enum MGFont {
     // Custom fonts fall back to system if not registered.
-    // `relativeTo:` makes every size scale with the user's Dynamic Type setting
-    // (accessibility) while keeping the DEFAULT appearance identical — so the app
-    // adapts to larger/smaller text preferences instead of being fixed-size.
+    // `scale` trims the DEFAULT baseline (the UI read too large); Dynamic Type
+    // still scales relative to this baseline via `relativeTo:`, so the app also
+    // adapts to the user's text-size preference.
+    static let scale: CGFloat = 0.9
+
     public static func serif(_ size: CGFloat, _ w: Font.Weight = .bold) -> Font {
-        .custom("CormorantGaramond-Bold", size: size, relativeTo: .title2).weight(w)
+        .custom("CormorantGaramond-Bold", size: size * scale, relativeTo: .title2).weight(w)
     }
     public static func sans(_ size: CGFloat, _ w: Font.Weight = .semibold) -> Font {
-        .custom("Mulish", size: size, relativeTo: .body).weight(w)
+        .custom("Mulish", size: size * scale, relativeTo: .body).weight(w)
     }
     public static func mono(_ size: CGFloat, _ w: Font.Weight = .regular) -> Font {
-        .custom("SpaceMono-Regular", size: size, relativeTo: .caption).weight(w)
+        .custom("SpaceMono-Regular", size: size * scale, relativeTo: .caption).weight(w)
     }
 }
 
