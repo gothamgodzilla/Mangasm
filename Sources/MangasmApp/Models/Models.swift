@@ -31,8 +31,6 @@ public struct Profile: Identifiable, Hashable, Sendable {
     public var hobbies: [String]
     public var position: String          // "Top" | "Vers" | "Bottom"
     public var into: [String]            // fetishes (M+ only to show)
-    public var hiv: String
-    public var lastTested: String
     public var instagram: String
     public var x: String
     public var astro: String             // western zodiac
@@ -55,8 +53,6 @@ public struct Profile: Identifiable, Hashable, Sendable {
         hobbies: [String] = [],
         position: String,
         into: [String] = [],
-        hiv: String,
-        lastTested: String,
         instagram: String = "",
         x: String = "",
         astro: String,
@@ -78,8 +74,6 @@ public struct Profile: Identifiable, Hashable, Sendable {
         self.hobbies = hobbies
         self.position = position
         self.into = into
-        self.hiv = hiv
-        self.lastTested = lastTested
         self.instagram = instagram
         self.x = x
         self.astro = astro
@@ -106,8 +100,6 @@ public struct Profile: Identifiable, Hashable, Sendable {
         hobbies: ["Sailing", "Mixology", "Vintage cars", "House music"],
         position: "Vers",
         into: ["Feet", "Roleplay"],
-        hiv: "Negative · on PrEP",
-        lastTested: "May 2026",
         instagram: "julianv",
         x: "julian_v",
         astro: "Scorpio",
@@ -132,7 +124,6 @@ public struct Visibility: Hashable, Sendable {
     public var hobbies: Bool
     public var position: Bool
     public var into: Bool       // fetishes — hidden by default, M+ required
-    public var hiv: Bool
     public var anthem: Bool
     public var photos: Bool
     public var socials: Bool
@@ -144,7 +135,6 @@ public struct Visibility: Hashable, Sendable {
         hobbies: Bool = true,
         position: Bool = true,
         into: Bool = false,
-        hiv: Bool = false,
         anthem: Bool = true,
         photos: Bool = true,
         socials: Bool = true,
@@ -155,7 +145,6 @@ public struct Visibility: Hashable, Sendable {
         self.hobbies = hobbies
         self.position = position
         self.into = into
-        self.hiv = hiv
         self.anthem = anthem
         self.photos = photos
         self.socials = socials
@@ -163,7 +152,7 @@ public struct Visibility: Hashable, Sendable {
         self.x = x
     }
 
-    /// Sensitive health data (HIV) and fetishes default to HIDDEN; users opt in explicitly.
+    /// Fetishes ("into") default to HIDDEN; users opt in explicitly.
     public static let sample = Visibility()
 }
 

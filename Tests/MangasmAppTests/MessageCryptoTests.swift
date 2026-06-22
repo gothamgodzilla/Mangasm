@@ -41,7 +41,7 @@ final class MessageCryptoTests: XCTestCase {
     func testServerSeesOnlyCiphertext() throws {
         // What the server would store must not contain the plaintext bytes.
         let bob = Curve25519.KeyAgreement.PrivateKey()
-        let secret = "HIV-negative, on PrEP"
+        let secret = "members-only location: pier 7, 9pm"
         let env = try MessageCrypto.seal(secret, to: bob.publicKey)
         XCTAssertFalse(env.ciphertext.range(of: Data(secret.utf8)) != nil,
                        "ciphertext must not contain the plaintext")

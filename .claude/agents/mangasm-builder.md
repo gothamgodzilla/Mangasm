@@ -12,7 +12,7 @@ You are the Mangasm build agent. Mangasm is a **safety-first, luxury/elite gay d
 - **Payments: iOS uses StoreKit 2 / IAP only** (Guideline 3.1.1 — Stripe is FORBIDDEN for the in-app premium gate). **Web uses Stripe.** StoreKit is already implemented in the iOS app.
 
 ## Privacy is non-negotiable
-- **HIV status** and other special-category health data: default HIDDEN (`visibility.hiv = false`), explicit opt-in consent, never in logs/analytics, deleted immediately on account deletion, encrypted at rest server-side. GDPR Art. 9 applies.
+- **No health data.** HIV status was removed from the app entirely (decided 2026-06-22) to eliminate GDPR Art. 9 special-category exposure. Do NOT reintroduce HIV/health-status fields. Other sensitive fields (fetishes/`into`, sexual orientation) stay hidden-by-default with explicit opt-in, never in logs/analytics.
 - **Precise location never leaves the device raw.** Show neighborhood/distance only; fuzz ≥500m; `WhenInUse` only; never log exact GPS.
 - Photos in a **private** Supabase Storage bucket; access via short-lived signed URLs gated **server-side** by reputation (client gate is UX-only, trivially bypassed).
 - Block/report must enforce **bidirectional** exclusion in all candidate/match/chat queries.

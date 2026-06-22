@@ -144,7 +144,7 @@ private struct HeadlineView: View {
 
 // MARK: - ProfileCard
 /// Holo-bordered card: avatar + name/age/Seal, location, chips, bio, hobbies, INTO,
-/// HIV status, socials, anthem, E2E footer, photos section.
+/// Socials, anthem, E2E footer, photos section.
 private struct ProfileCard: View {
     let profile: Profile
     let visibility: Visibility
@@ -195,11 +195,6 @@ private struct ProfileCard: View {
                         FlowChips(items: profile.into, tone: .gold)
                     }
                     .padding(.top, 11)
-                }
-
-                // HIV status
-                if visibility.hiv {
-                    HIVRow(hiv: profile.hiv, lastTested: profile.lastTested)
                 }
 
                 // Socials — require at least one platform to be visible AND have a non-empty handle
@@ -341,43 +336,6 @@ private struct FlowChips: View {
                 Chip(item, tone: tone)
             }
         }
-    }
-}
-
-// MARK: - HIVRow
-/// Green-tinted status row. Prototype: 10% green bg + Spotify border.
-private struct HIVRow: View {
-    let hiv: String
-    let lastTested: String
-
-    var body: some View {
-        HStack(spacing: 9) {
-            // Shield + check icon — approximated with SF Symbol
-            Image(systemName: "checkmark.shield.fill")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 15, height: 15)
-                .foregroundStyle(MGColor.spotify)
-
-            VStack(alignment: .leading, spacing: 1) {
-                Text("HIV \(hiv)")
-                    .font(MGFont.sans(11, .bold))
-                    .foregroundStyle(MGColor.ink)
-                Text("Last tested · \(lastTested)")
-                    .font(MGFont.mono(7.5))
-                    .foregroundStyle(MGColor.inkFaint)
-            }
-            Spacer()
-        }
-        .padding(.horizontal, 11)
-        .padding(.vertical, 9)
-        .background(Color(red: 19/255, green: 138/255, blue: 62/255, opacity: 0.10),
-                    in: RoundedRectangle(cornerRadius: 12))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(MGColor.spotify.opacity(0.33), lineWidth: 1)
-        )
-        .padding(.top, 12)
     }
 }
 

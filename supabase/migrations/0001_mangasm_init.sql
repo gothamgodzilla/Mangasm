@@ -27,8 +27,6 @@ create table profiles (
     hobbies       text[] not null default '{}',
     position      text default '',
     "into"        text[] not null default '{}',   -- quoted: INTO is a reserved word
-    hiv           text default '',
-    last_tested   text default '',
     instagram     text default '',
     x_handle      text default '',
     astro         text default '',
@@ -42,7 +40,7 @@ create table profiles (
     premium       boolean not null default false,
     visibility    jsonb not null default '{
         "headline": true, "hobbies": true, "position": true, "into": false,
-        "hiv": true, "socials": true, "instagram": true, "x": true,
+        "socials": true, "instagram": true, "x": true,
         "anthem": true, "photos": true
     }'::jsonb,
     created_at    timestamptz not null default now(),

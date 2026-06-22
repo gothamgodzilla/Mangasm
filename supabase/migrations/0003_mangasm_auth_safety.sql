@@ -4,14 +4,14 @@
 --   * vouch -> reputation_scores + profiles.rep_score sync (was a comment in 0002)
 --   * profiles DELETE policy (App Store account deletion, Guideline 5.1.1(v))
 --   * consent_log + deletion_requests (EULA / 18+ / sensitive-data consent)
---   * sensitive profile fields (hiv, into, socials) masked from non-owners
+--   * sensitive profile fields (into, socials) masked from non-owners
 
 -- ── consent_log (EULA, 18+ affirmation, sensitive-data disclosure) ──────────
 create table if not exists consent_log (
     id         uuid primary key default gen_random_uuid(),
     user_id    uuid not null references profiles (id) on delete cascade,
     kind       text not null check (kind in
-                 ('eula', 'age_18plus', 'hiv_disclosure', 'orientation_disclosure')),
+                 ('eula', 'age_18plus', 'orientation_disclosure')),
     version    text not null default '',
     value      text not null default '',
     created_at timestamptz not null default now()
@@ -90,7 +90,7 @@ create trigger trg_vouch_rep after insert on vouches
 
 -- ── RLS hardening: mask sensitive profile fields from non-owners ───────────
 -- profiles_read stays (base fields needed app-wide), but clients should read
--- OTHER users through this view, which reveals hiv / into / socials only to the
+-- OTHER users through this view, which reveals into / socials only to the
 -- owner. security_invoker => the querying user's RLS still applies.
 create or replace view profile_cards
 with (security_invoker = true) as
@@ -100,8 +100,6 @@ select
     p.vouches, p.rep_score, p.ai_match, p.premium, p.visibility,
     p.created_at, p.updated_at,
     case when p.id = auth.uid() then p."into"      else '{}'::text[] end as "into",
-    case when p.id = auth.uid() then p.hiv         else '' end          as hiv,
-    case when p.id = auth.uid() then p.last_tested else '' end          as last_tested,
     case when p.id = auth.uid() then p.instagram   else '' end          as instagram,
     case when p.id = auth.uid() then p.x_handle    else '' end          as x_handle
 from profiles p;

@@ -7,17 +7,10 @@ final class ComplianceTests: XCTestCase {
 
     // MARK: - Sensitive-data visibility defaults
 
-    /// HIV status is special-category health data: it must default to HIDDEN
-    /// until the user explicitly opts in. (Roadmap Phase 0; GDPR Art. 9.)
-    func testHIVHiddenByDefault() {
-        XCTAssertFalse(Visibility().hiv, "HIV visibility must default to false")
-        XCTAssertFalse(Visibility.sample.hiv, "Sample visibility must not expose HIV")
-    }
-
-    /// Fetishes ("into") are sensitive and must also default to hidden.
+    /// Fetishes ("into") are sensitive and must default to hidden until opt-in.
+    /// (HIV status was removed from the app entirely — no health data is stored.)
     func testSensitiveFieldsHiddenByDefault() {
         let v = Visibility()
-        XCTAssertFalse(v.hiv, "hiv must default hidden")
         XCTAssertFalse(v.into, "into (fetishes) must default hidden")
     }
 

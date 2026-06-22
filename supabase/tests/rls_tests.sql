@@ -10,10 +10,10 @@ insert into auth.users (id) values
   ('22222222-2222-2222-2222-222222222222'),
   ('33333333-3333-3333-3333-333333333333');
 
-insert into profiles (id, name, hiv, "into") values
-  ('11111111-1111-1111-1111-111111111111', 'Alice', '',                  '{}'),
-  ('22222222-2222-2222-2222-222222222222', 'Bob',   'Negative · on PrEP', '{leather}'),
-  ('33333333-3333-3333-3333-333333333333', 'Cy',    '',                  '{}');
+insert into profiles (id, name, "into") values
+  ('11111111-1111-1111-1111-111111111111', 'Alice', '{}'),
+  ('22222222-2222-2222-2222-222222222222', 'Bob',   '{leather}'),
+  ('33333333-3333-3333-3333-333333333333', 'Cy',    '{}');
 
 -- ── T1: mutual like -> match trigger ───────────────────────────────────────
 do $$
@@ -45,23 +45,23 @@ begin
   raise notice 'T2 vouch -> rep sync: OK';
 end $$;
 
--- ── T3: profile_cards masks sensitive fields from non-owners ────────────────
+-- ── T3: profile_cards masks sensitive fields (fetishes) from non-owners ─────
 do $$
-declare hiv_seen text;
+declare into_seen text[];
 begin
   perform set_config('request.jwt.claims',
     json_build_object('sub', '11111111-1111-1111-1111-111111111111')::text, true);
   set local role authenticated;
 
-  select hiv into hiv_seen from profile_cards
+  select "into" into into_seen from profile_cards
     where id = '22222222-2222-2222-2222-222222222222';
-  assert hiv_seen = '', 'HIV must be masked from a non-owner (got: '||coalesce(hiv_seen,'<null>')||')';
+  assert into_seen = '{}'::text[], 'fetishes must be masked from a non-owner';
 
   perform set_config('request.jwt.claims',
     json_build_object('sub', '22222222-2222-2222-2222-222222222222')::text, true);
-  select hiv into hiv_seen from profile_cards
+  select "into" into into_seen from profile_cards
     where id = '22222222-2222-2222-2222-222222222222';
-  assert hiv_seen = 'Negative · on PrEP', 'the owner must see their own HIV field';
+  assert into_seen = '{leather}'::text[], 'the owner must see their own fetishes';
 
   reset role;
   raise notice 'T3 sensitive-field masking: OK';

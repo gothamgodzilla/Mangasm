@@ -164,8 +164,6 @@ public struct SettingsScreen: View {
                                 lockedHint: "M+ required"
                             )
                             Divider().opacity(0.2).padding(.horizontal, 13)
-                            VisibilityToggleRow(label: "HIV Status", isOn: $state.visibility.hiv)
-                            Divider().opacity(0.2).padding(.horizontal, 13)
                             VisibilityToggleRow(label: "Socials",   isOn: $state.visibility.socials)
                             Divider().opacity(0.2).padding(.horizontal, 13)
                             VisibilityToggleRow(label: "Instagram", isOn: $state.visibility.instagram)

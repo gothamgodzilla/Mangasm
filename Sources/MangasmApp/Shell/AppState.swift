@@ -25,7 +25,7 @@ public final class AppState: ObservableObject {
 
     /// Clears the local session after account deletion or sign-out: drops the
     /// in-memory profile/visibility, revokes premium, closes any open sheets, and
-    /// returns to the launch flow. Sensitive in-memory data (HIV, fetishes) must
+    /// returns to the launch flow. Sensitive in-memory data (fetishes, etc.) must
     /// not survive a deletion — server-side erasure is handled by the AuthService.
     public func resetForSignOut() {
         phase = .launch

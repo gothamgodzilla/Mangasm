@@ -16,8 +16,6 @@ final class ModelTests: XCTestCase {
         let p = Profile.sample
         XCTAssertEqual(p.location, "Dubai → London")
         XCTAssertEqual(p.headline, "Slow mornings, fast cars")
-        XCTAssertEqual(p.hiv, "Negative · on PrEP")
-        XCTAssertEqual(p.lastTested, "May 2026")
         XCTAssertEqual(p.instagram, "julianv")
         XCTAssertEqual(p.x, "julian_v")
         XCTAssertEqual(p.astro, "Scorpio")
