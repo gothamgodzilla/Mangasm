@@ -10,6 +10,7 @@ public final class AppEnvironment: ObservableObject {
     public let chat: any ChatService
     public let events: any EventService
     public let reputation: any ReputationService
+    public let safety: any SafetyService
 
     public init(
         auth: any AuthService,
@@ -17,7 +18,8 @@ public final class AppEnvironment: ObservableObject {
         matches: any MatchService,
         chat: any ChatService,
         events: any EventService,
-        reputation: any ReputationService
+        reputation: any ReputationService,
+        safety: any SafetyService
     ) {
         self.auth = auth
         self.profile = profile
@@ -25,6 +27,7 @@ public final class AppEnvironment: ObservableObject {
         self.chat = chat
         self.events = events
         self.reputation = reputation
+        self.safety = safety
     }
 
     /// Pre-built mock environment for previews, tests, and Simulator runs.
@@ -34,6 +37,7 @@ public final class AppEnvironment: ObservableObject {
         matches: MockMatchService(),
         chat: MockChatService(),
         events: MockEventService(),
-        reputation: MockReputationService()
+        reputation: MockReputationService(),
+        safety: MockSafetyService()
     )
 }

@@ -6,6 +6,10 @@ public final class MockAuthService: AuthService {
     public func enter() {
         // No-op: mock auth entry always succeeds
     }
+    public func deleteAccount() {
+        // No-op: mock deletion — clears no real session; real impl would call Supabase auth delete
+        print("[MockAuthService] deleteAccount() called")
+    }
 }
 
 // MARK: - MockProfileService
@@ -123,5 +127,32 @@ public final class MockReputationService: ReputationService {
 
     public func canViewPhotos(viewerScore: Int, targetGate: Int) -> Bool {
         viewerScore >= targetGate
+    }
+}
+
+// MARK: - MockSafetyService
+public final class MockSafetyService: SafetyService {
+    private var blockedIDs: Set<String> = []
+    private var reportLog: [(userID: String, reason: String)] = []
+
+    public init() {}
+
+    public func block(_ userID: String) {
+        blockedIDs.insert(userID)
+        print("[MockSafetyService] blocked \(userID)")
+    }
+
+    public func unblock(_ userID: String) {
+        blockedIDs.remove(userID)
+        print("[MockSafetyService] unblocked \(userID)")
+    }
+
+    public func isBlocked(_ userID: String) -> Bool {
+        blockedIDs.contains(userID)
+    }
+
+    public func report(_ userID: String, reason: String) {
+        reportLog.append((userID: userID, reason: reason))
+        print("[MockSafetyService] reported \(userID) for: \(reason)")
     }
 }

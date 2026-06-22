@@ -16,8 +16,12 @@ public struct MatchDetailScreen: View {
     let onMessage: () -> Void
 
     @EnvironmentObject var state: AppState
+    @EnvironmentObject var env: AppEnvironment
     @Environment(\.dismiss) private var dismiss
     @State private var liked = false
+    @State private var showReportReasons: Bool = false
+    @State private var reportConfirmMessage: String = ""
+    @State private var showReportConfirm: Bool = false
 
     public init(candidate: Candidate, onMessage: @escaping () -> Void) {
         self.candidate = candidate
@@ -33,29 +37,79 @@ public struct MatchDetailScreen: View {
             // ── Scroll content ───────────────────────────────────────────────
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 14) {
-                    // Back button
-                    Button {
-                        dismiss()
-                    } label: {
-                        HStack(spacing: 6) {
-                            Image(systemName: "chevron.left")
-                                .font(.system(size: 13, weight: .semibold))
-                                .foregroundStyle(MGColor.gold)
-                            Text("Matches")
-                                .font(MGFont.serif(14, .bold))
-                                .tracking(14 * 0.06)
-                                .foregroundStyle(MGColor.gold)
+                    // Navigation row: back button (leading) + overflow menu (trailing)
+                    HStack {
+                        Button {
+                            dismiss()
+                        } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: "chevron.left")
+                                    .font(.system(size: 13, weight: .semibold))
+                                    .foregroundStyle(MGColor.gold)
+                                Text("Matches")
+                                    .font(MGFont.serif(14, .bold))
+                                    .tracking(14 * 0.06)
+                                    .foregroundStyle(MGColor.gold)
+                            }
+                            .padding(.vertical, 7)
+                            .padding(.leading, 9)
+                            .padding(.trailing, 13)
+                            .glassBackground(12, glow: false)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(MGColor.gold.opacity(0.33), lineWidth: 1)
+                            )
                         }
-                        .padding(.vertical, 7)
-                        .padding(.leading, 9)
-                        .padding(.trailing, 13)
-                        .glassBackground(12, glow: false)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(MGColor.gold.opacity(0.33), lineWidth: 1)
-                        )
+                        .buttonStyle(.plain)
+
+                        Spacer()
+
+                        // Block / Report overflow menu
+                        Menu {
+                            Button(role: .destructive) {
+                                env.safety.block(candidate.id)
+                                dismiss()
+                            } label: {
+                                Label("Block \(candidate.name)", systemImage: "hand.raised")
+                            }
+                            Button {
+                                showReportReasons = true
+                            } label: {
+                                Label("Report…", systemImage: "flag")
+                            }
+                        } label: {
+                            Image(systemName: "ellipsis")
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundStyle(MGColor.gold)
+                                .frame(width: 36, height: 36)
+                                .glassBackground(12, glow: false)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(MGColor.gold.opacity(0.33), lineWidth: 1)
+                                )
+                        }
+                        .confirmationDialog(
+                            "Report \(candidate.name)",
+                            isPresented: $showReportReasons,
+                            titleVisibility: .visible
+                        ) {
+                            ForEach(ReportReason.allCases, id: \.self) { reason in
+                                Button(reason.label) {
+                                    env.safety.report(candidate.id, reason: reason.label)
+                                    reportConfirmMessage = "Thank you. Your report has been submitted."
+                                    showReportConfirm = true
+                                }
+                            }
+                            Button("Cancel", role: .cancel) {}
+                        } message: {
+                            Text("Select a reason for your report.")
+                        }
+                        .alert("Report Submitted", isPresented: $showReportConfirm) {
+                            Button("OK") {}
+                        } message: {
+                            Text(reportConfirmMessage)
+                        }
                     }
-                    .buttonStyle(.plain)
 
                     // ── Hero photo card ───────────────────────────────────────
                     heroCard

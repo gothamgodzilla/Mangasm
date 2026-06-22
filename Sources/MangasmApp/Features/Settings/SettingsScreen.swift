@@ -9,10 +9,12 @@ public struct SettingsScreen: View {
     let onClose: () -> Void
 
     @EnvironmentObject private var state: AppState
+    @EnvironmentObject private var env: AppEnvironment
 
     // Local string bindings for non-String profile fields
     @State private var ageText: String = ""
     @State private var hobbiesText: String = ""
+    @State private var showDeleteConfirm: Bool = false
 
     public init(onClose: @escaping () -> Void) {
         self.onClose = onClose
@@ -203,6 +205,69 @@ public struct SettingsScreen: View {
                             }
                             .padding(.vertical, 13)
                             .padding(.horizontal, 13)
+                        }
+                    }
+                    .padding(.horizontal, 14)
+
+                    // ── Account Actions ──
+                    SectionLabel("Account")
+                        .padding(.horizontal, 16)
+                        .padding(.top, 20)
+
+                    MGCard {
+                        VStack(spacing: 0) {
+                            // Sign Out
+                            Button {
+                                onClose()
+                                state.phase = .launch
+                            } label: {
+                                HStack {
+                                    Text("Sign Out")
+                                        .font(MGFont.sans(14, .semibold))
+                                        .foregroundStyle(MGColor.inkSoft)
+                                    Spacer()
+                                    Image(systemName: "rectangle.portrait.and.arrow.right")
+                                        .font(.system(size: 15, weight: .regular))
+                                        .foregroundStyle(MGColor.inkSoft)
+                                }
+                                .padding(.vertical, 13)
+                                .padding(.horizontal, 13)
+                            }
+                            .buttonStyle(.plain)
+
+                            Divider().opacity(0.2).padding(.horizontal, 13)
+
+                            // Delete Account — destructive
+                            Button {
+                                showDeleteConfirm = true
+                            } label: {
+                                HStack {
+                                    Text("Delete Account")
+                                        .font(MGFont.sans(14, .semibold))
+                                        .foregroundStyle(Color(red: 192/255, green: 57/255, blue: 43/255))
+                                    Spacer()
+                                    Image(systemName: "trash")
+                                        .font(.system(size: 15, weight: .regular))
+                                        .foregroundStyle(Color(red: 192/255, green: 57/255, blue: 43/255))
+                                }
+                                .padding(.vertical, 13)
+                                .padding(.horizontal, 13)
+                            }
+                            .buttonStyle(.plain)
+                            .confirmationDialog(
+                                "Delete Account",
+                                isPresented: $showDeleteConfirm,
+                                titleVisibility: .visible
+                            ) {
+                                Button("Delete Account", role: .destructive) {
+                                    env.auth.deleteAccount()
+                                    onClose()
+                                    state.phase = .launch
+                                }
+                                Button("Cancel", role: .cancel) {}
+                            } message: {
+                                Text("This permanently deletes your account and data. This cannot be undone.")
+                            }
                         }
                     }
                     .padding(.horizontal, 14)

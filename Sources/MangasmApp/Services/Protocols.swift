@@ -4,6 +4,9 @@ import Foundation
 /// Handles authentication entry (login/onboarding gate).
 public protocol AuthService {
     func enter()
+    /// Permanently deletes the current account and all associated data.
+    /// Required by App Store Guideline 5.1.1(v) for account-based apps.
+    func deleteAccount()
 }
 
 // MARK: - ProfileService
@@ -44,4 +47,33 @@ public protocol EventService {
 public protocol ReputationService {
     func score(for profileID: UUID) -> Int
     func canViewPhotos(viewerScore: Int, targetGate: Int) -> Bool
+}
+
+// MARK: - SafetyService
+/// Block/report actions required by App Store Guideline 1.2 (UGC safety).
+public protocol SafetyService {
+    func block(_ userID: String)
+    func unblock(_ userID: String)
+    func isBlocked(_ userID: String) -> Bool
+    func report(_ userID: String, reason: String)
+}
+
+// MARK: - ReportReason
+/// Enumerated report categories. "underage" is especially critical for an 18+ app.
+public enum ReportReason: String, CaseIterable, Sendable {
+    case harassment
+    case spam
+    case fakeProfile
+    case underage
+    case other
+
+    public var label: String {
+        switch self {
+        case .harassment:  return "Harassment"
+        case .spam:        return "Spam"
+        case .fakeProfile: return "Fake Profile"
+        case .underage:    return "Underage (under 18)"
+        case .other:       return "Other"
+        }
+    }
 }

@@ -24,6 +24,9 @@ public struct ChatThreadScreen: View {
     @State private var messages: [Message] = []
     @State private var draft: String = ""
     @State private var showTyping: Bool = false
+    @State private var showReportReasons: Bool = false
+    @State private var showReportConfirm: Bool = false
+    @State private var reportConfirmMessage: String = ""
 
     // Resolve candidate from seed data for header metadata
     private var candidate: Candidate? {
@@ -200,6 +203,52 @@ public struct ChatThreadScreen: View {
                     RoundedRectangle(cornerRadius: 11)
                         .stroke(MGColor.gold.opacity(0.44), lineWidth: 1)
                 )
+
+                // Block / Report overflow menu
+                Menu {
+                    Button(role: .destructive) {
+                        env.safety.block(conversation.candidateID)
+                        onBack()
+                    } label: {
+                        Label("Block \(conversation.candidateName)", systemImage: "hand.raised")
+                    }
+                    Button {
+                        showReportReasons = true
+                    } label: {
+                        Label("Report…", systemImage: "flag")
+                    }
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(MGColor.goldDeep)
+                        .frame(width: 32, height: 32)
+                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(MGColor.gold.opacity(0.44), lineWidth: 1)
+                        )
+                }
+                .confirmationDialog(
+                    "Report \(conversation.candidateName)",
+                    isPresented: $showReportReasons,
+                    titleVisibility: .visible
+                ) {
+                    ForEach(ReportReason.allCases, id: \.self) { reason in
+                        Button(reason.label) {
+                            env.safety.report(conversation.candidateID, reason: reason.label)
+                            reportConfirmMessage = "Thank you. Your report has been submitted."
+                            showReportConfirm = true
+                        }
+                    }
+                    Button("Cancel", role: .cancel) {}
+                } message: {
+                    Text("Select a reason for your report.")
+                }
+                .alert("Report Submitted", isPresented: $showReportConfirm) {
+                    Button("OK") {}
+                } message: {
+                    Text(reportConfirmMessage)
+                }
             }
             .padding(.horizontal, 14)
             .padding(.top, 52)
