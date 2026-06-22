@@ -36,7 +36,7 @@ public enum MGFont {
     // `scale` trims the DEFAULT baseline (the UI read too large); Dynamic Type
     // still scales relative to this baseline via `relativeTo:`, so the app also
     // adapts to the user's text-size preference.
-    static let scale: CGFloat = 0.9
+    static let scale: CGFloat = 0.97
 
     public static func serif(_ size: CGFloat, _ w: Font.Weight = .bold) -> Font {
         .custom("CormorantGaramond-Bold", size: size * scale, relativeTo: .title2).weight(w)
