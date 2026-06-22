@@ -47,6 +47,7 @@ public struct SettingsScreen: View {
                             Image(systemName: "xmark")
                                 .resizable()
                                 .scaledToFit()
+                                .accessibilityLabel("Close")
                                 .frame(width: 13, height: 13)
                                 .foregroundStyle(MGColor.goldDeep)
                                 .frame(width: 32, height: 32)

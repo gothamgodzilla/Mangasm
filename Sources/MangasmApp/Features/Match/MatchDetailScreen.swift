@@ -374,6 +374,7 @@ public struct MatchDetailScreen: View {
                 dismiss()
             } label: {
                 Image(systemName: "xmark")
+                    .accessibilityLabel("Pass")
                     .font(.system(size: 17, weight: .regular))
                     .foregroundStyle(MGColor.inkSoft)
                     .frame(width: 52, height: 52)
