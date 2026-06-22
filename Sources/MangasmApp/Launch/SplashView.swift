@@ -7,22 +7,53 @@ import AVKit
 private final class RunwayPlayer: ObservableObject {
     let queuePlayer: AVQueuePlayer?
     private var looper: AVPlayerLooper?
+    // Entrance soundtrack — a looped deep-house beat that scores the runway walk.
+    // The video itself stays MUTED; this is the only audio. Drop a licensed loop
+    // at Resources/entrance.m4a (or .mp3); absent → silent, no crash.
+    private var entranceAudio: AVAudioPlayer?
 
     init() {
-        guard let url = Bundle.module.url(forResource: "runway", withExtension: "mp4") else {
+        // ── Video (muted, looped) ──
+        if let url = Bundle.module.url(forResource: "runway", withExtension: "mp4") {
+            let item = AVPlayerItem(url: url)
+            let player = AVQueuePlayer(playerItem: item)
+            player.isMuted = true
+            player.allowsExternalPlayback = false
+            looper = AVPlayerLooper(player: player, templateItem: item)
+            queuePlayer = player
+        } else {
             queuePlayer = nil
-            return
         }
-        let item = AVPlayerItem(url: url)
-        let player = AVQueuePlayer(playerItem: item)
-        player.isMuted = true
-        player.allowsExternalPlayback = false
-        looper = AVPlayerLooper(player: player, templateItem: item)
-        queuePlayer = player
+
+        // ── Entrance beat (looped) ──
+        let url = Bundle.module.url(forResource: "entrance", withExtension: "m4a")
+            ?? Bundle.module.url(forResource: "entrance", withExtension: "mp3")
+        if let url {
+            #if os(iOS)
+            try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.mixWithOthers])
+            try? AVAudioSession.sharedInstance().setActive(true)
+            #endif
+            entranceAudio = try? AVAudioPlayer(contentsOf: url)
+            entranceAudio?.numberOfLoops = -1   // loop forever under the entrance
+            entranceAudio?.volume = 0.85
+            entranceAudio?.prepareToPlay()
+        }
     }
 
-    func play() { queuePlayer?.play() }
-    func pause() { queuePlayer?.pause() }
+    func play() {
+        queuePlayer?.play()
+        entranceAudio?.play()
+    }
+
+    func pause() {
+        queuePlayer?.pause()
+        entranceAudio?.pause()
+    }
+
+    /// Fade the beat out over the splash hand-off, then stop.
+    func fadeOutAudio(_ duration: TimeInterval) {
+        entranceAudio?.setVolume(0, fadeDuration: duration)
+    }
 }
 
 // MARK: - Runway video view (AVPlayerLayer-backed for true .resizeAspectFill cover)
@@ -378,6 +409,7 @@ public struct SplashView: View {
     private func go() {
         guard !didContinue else { return }
         didContinue = true
+        runway.fadeOutAudio(0.48)
         withAnimation(.easeOut(duration: 0.48)) { opacity = 0 }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.48) {
             onContinue()
