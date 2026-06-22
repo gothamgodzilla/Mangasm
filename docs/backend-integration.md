@@ -23,7 +23,9 @@ Going live = providing real implementations of those protocols and injecting a
 | `ChatService.conversations()/messages(for:)/send(_:to:)/conversation(for:)` | `conversations` + `messages` (RLS: participants only). Realtime subscribe for live messages + unread. |
 | `EventService.events()/communities()/rsvp(_:)` | `events`, `event_rsvps`, `communities`, `community_members`. Approval flow honored via `event_privacy` + `rsvp_status`. |
 | `ReputationService.score(for:)/canViewPhotos(viewerScore:targetGate:)` | `profiles.rep_score` + `vouches`. Photo gate enforced both client-side and via an RLS policy / signed-URL RPC for the photos bucket. |
-| Premium (M+) | **Stripe** (not RevenueCat) — checkout via a Supabase Edge Function; webhook sets `profiles.premium`. Gates extended bio (600), fetishes visibility, event hosting. |
+| Premium (M+) | **StoreKit 2 / In-App Purchase** for the in-app subscription — Apple Guideline 3.1.1 **prohibits Stripe for digital subscriptions sold in the iOS app**. Verify the StoreKit transaction in a Supabase Edge Function (App Store Server Notifications v2 → set `profiles.premium`). Stripe is only valid for out-of-app/web purchases. Gates extended bio (600), fetishes visibility, event hosting. |
+| Account deletion | `AuthService.deleteAccount()` (implemented; mandatory per Guideline 5.1.1(v)) → Edge Function deletes the auth user + cascades all rows (FKs are `on delete cascade`). |
+| Block / report | `SafetyService.block/report` (implemented) → `blocks(blocker_id, blocked_id)` + `reports(reporter_id, target_id, reason, created_at)` tables (add in migration 0002); blocked users filtered from match/nearby/chat via RLS + query predicates. |
 
 ## Steps to go live (when authorized)
 
@@ -37,8 +39,38 @@ Going live = providing real implementations of those protocols and injecting a
 6. Stripe: Edge Function for checkout + webhook → `profiles.premium`.
 7. Realtime: subscribe to `messages` for the active conversation; recompute unread.
 
+## Authentication (privacy-first)
+
+- **Sign in with Apple is mandatory** if Google/phone are offered (Guideline 4.8) — and it's the most private (Hide My Email). Wire all three via Supabase Auth: Apple (ASAuthorization → Supabase `signInWithIdToken`), Google, and phone-OTP.
+- Minimise PII: no real name required; email can be Apple's private relay. Age assurance (18+) at signup, stored as a verified boolean — never a birthdate in plaintext beyond what's needed.
+- Sessions: Supabase JWT in the Keychain; refresh silently; `deleteAccount()` revokes + cascades.
+
+## Privacy — number one
+
+- **Precise location never leaves the device raw.** Show "privacy zones" (neighbourhood-level), compute distance server-side via a coarse geohash RPC; never store exact lat/long for display.
+- Sexual orientation, HIV status, fetishes = **sensitive data**: per-field `visibility` flags (already in `profiles.visibility`), RLS-enforced, never in logs/analytics, declared in the Privacy Nutrition Label + `PrivacyInfo.xcprivacy`.
+- Photos in a **private** Storage bucket; access via short-lived signed URLs gated by reputation. No public CDN URLs.
+- Reputation-gated visibility everywhere; block/report fully removes a user from your surface.
+
+## Encrypted communication (E2E)
+
+- **Transport + at-rest**: TLS everywhere; Postgres at-rest encryption (Supabase default).
+- **True end-to-end** for DMs (the "END-TO-END ENCRYPTED" banner must be real, not cosmetic): per-device X25519 keypair (private key in the Secure Enclave/Keychain, never uploaded); publish public keys to a `device_keys` table; encrypt each message body client-side (libsodium `crypto_box`/sealed-box) so the server stores only ciphertext in `messages.body`. Add a key-verification (safety-number) UI later. Until E2E ships, label the banner honestly ("encrypted in transit").
+- Push notifications carry no message content (only "New message").
+
+## Global connectivity — "Starlink"
+
+- The Starlink/"where the signal shouldn't reach" theme = **works anywhere**: offline-first cache (the app already runs fully on mock/local data), optimistic sends with a queue that flushes on reconnect, and Supabase Realtime for live delivery when online.
+- Surface a global-availability/"Starlink" status indicator in the TopBar (the design already reserves a Starlink pill); drive it from real reachability later.
+- No region lock: cities (Dubai/London/Mykonos/Tokyo) are content, not gates — members travel.
+
 ## Safety (non-negotiable, already reflected in schema)
 
 - Event hosting records `consent_ack`; approval-required events gate location reveal.
 - Messages/conversations are participant-only (RLS). Photos are reputation-gated.
+- Account deletion + block/report implemented in-app (mock now, Supabase-backed at go-live).
 - All writes scoped to `auth.uid()`.
+
+## App Store gate (see docs/production-readiness.md)
+
+- Use **StoreKit** (not Stripe) for M+; rename the event taxonomy to avoid Guideline 1.1.4; ship moderation + block/report (done) + account deletion (done) before submission.

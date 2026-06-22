@@ -14,4 +14,30 @@ final class ServiceTests: XCTestCase {
         m.refresh()
         XCTAssertNotEqual(first, m.featured().id)
     }
+
+    // MARK: - Safety service tests (App Store Guideline 1.2)
+    func testSafetyBlockAndIsBlocked() {
+        let safety = MockSafetyService()
+        XCTAssertFalse(safety.isBlocked("user-42"))
+        safety.block("user-42")
+        XCTAssertTrue(safety.isBlocked("user-42"))
+        safety.unblock("user-42")
+        XCTAssertFalse(safety.isBlocked("user-42"))
+    }
+
+    func testSafetyBlockMultipleUsers() {
+        let safety = MockSafetyService()
+        safety.block("user-1")
+        safety.block("user-2")
+        XCTAssertTrue(safety.isBlocked("user-1"))
+        XCTAssertTrue(safety.isBlocked("user-2"))
+        XCTAssertFalse(safety.isBlocked("user-3"))
+    }
+
+    // MARK: - Auth deletion test (App Store Guideline 5.1.1(v))
+    func testDeleteAccountIsNoop() {
+        // Verify deleteAccount() doesn't throw or crash in mock
+        let auth = MockAuthService()
+        auth.deleteAccount() // must complete without error
+    }
 }
