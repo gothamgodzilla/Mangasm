@@ -4,3 +4,8 @@
 
 # xcodegen output
 *.xcodeproj
+
+# local secrets
+*.env.local
+supabase/.env.local
+.env.local
