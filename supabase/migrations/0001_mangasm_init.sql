@@ -7,7 +7,9 @@
 -- ─────────────────────────────────────────────────────────────────────────
 -- Enums
 -- ─────────────────────────────────────────────────────────────────────────
-create type event_type as enum ('glory', 'cumgo', 'circle', 'cosplay');
+-- Event taxonomy uses App-Store-safe labels (Guideline 1.1.4): the concept is
+-- preserved, the strings are clean. Mirrors the Swift EventType enum raw values.
+create type event_type as enum ('open_door', 'social_mixer', 'circle', 'cosplay');
 create type event_privacy as enum ('approval', 'open');
 create type rsvp_status as enum ('none', 'requested', 'confirmed', 'declined');
 

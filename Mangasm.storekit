@@ -1,0 +1,78 @@
+{
+  "identifier" : "2E83E966",
+  "nonConsumableProducts" : [
+
+  ],
+  "consumableProducts" : [
+
+  ],
+  "subscriptionGroups" : [
+    {
+      "id" : "2E83E967",
+      "localizations" : [
+        {
+          "description" : "Unlock M+ premium features: event hosting, extended bio, fetishes visibility.",
+          "displayName" : "M+",
+          "locale" : "en_US"
+        }
+      ],
+      "name" : "M+",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "9.99",
+          "familySharable" : false,
+          "groupNumber" : 1,
+          "internalID" : "2E83E968",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Unlock event hosting, extended bio (600 chars), and fetishes visibility.",
+              "displayName" : "M+ Monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.mangasm.app.premium.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "M+ Monthly",
+          "subscriptionGroupID" : "2E83E967",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "19.99",
+          "familySharable" : false,
+          "groupNumber" : 2,
+          "internalID" : "2E83E969",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "M+ Plus — everything in M+, plus priority matching and extended filters.",
+              "displayName" : "M+ Plus Monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.mangasm.app.premium_plus.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "M+ Plus Monthly",
+          "subscriptionGroupID" : "2E83E967",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

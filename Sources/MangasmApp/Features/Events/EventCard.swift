@@ -256,7 +256,7 @@ struct EventTypeIcon: View {
             let scale = sz.width / 24
             var path: Path
             switch type {
-            case .glory:
+            case .openDoor:
                 // Rect M3 6h18v12H3z + circle cx12 cy12 r3
                 path = Path { p in
                     p.move(to: CGPoint(x: 3 * scale, y: 6 * scale))
@@ -274,7 +274,7 @@ struct EventTypeIcon: View {
                 ctx.stroke(Path(ellipseIn: circleRect), with: .color(color),
                            style: StrokeStyle(lineWidth: 1.7 * scale))
 
-            case .cumgo:
+            case .socialMixer:
                 // M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z
                 path = Path { p in
                     p.move(to: CGPoint(x: 12 * scale, y: 3 * scale))

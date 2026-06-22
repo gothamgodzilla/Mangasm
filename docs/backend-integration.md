@@ -27,6 +27,26 @@ Going live = providing real implementations of those protocols and injecting a
 | Account deletion | `AuthService.deleteAccount()` (implemented; mandatory per Guideline 5.1.1(v)) → Edge Function deletes the auth user + cascades all rows (FKs are `on delete cascade`). |
 | Block / report | `SafetyService.block/report` (implemented) → `blocks(blocker_id, blocked_id)` + `reports(reporter_id, target_id, reason, created_at)` tables (add in migration 0002); blocked users filtered from match/nearby/chat via RLS + query predicates. |
 
+## Dev project & how to apply the schema
+
+- **Dev project:** `pwmddvigardiyhqtihdw` — `https://pwmddvigardiyhqtihdw.supabase.co`
+- Client config (URL + publishable key) is in **`supabase/.env.local`** (git-ignored). The app reads it via `SupabaseConfig` (Info.plist injection); the publishable key is never committed.
+- Migrations `0001` + `0002` are NOT applied yet. Applying needs an **access token** (interactive `supabase login`) + the **DB password** — secrets I can't enter. Run it yourself in a terminal:
+
+```bash
+cd /Users/swagger/Mangasm
+supabase login                                   # paste your access token (interactive)
+supabase link --project-ref pwmddvigardiyhqtihdw # enter the DB password when prompted
+supabase db push                                 # applies 0001 then 0002 in order
+# 0002 already ends with: notify pgrst, 'reload schema';
+```
+Then confirm the 14 tables exist (dashboard → Table editor, or `supabase db dump --schema public`).
+Alternatively: paste `supabase/migrations/0001_*.sql` then `0002_*.sql` into the dashboard SQL editor and run in order.
+
+> If you'd rather I apply it: set `SUPABASE_ACCESS_TOKEN` in the env AND repoint the
+> Supabase MCP at `pwmddvigardiyhqtihdw` (or provide a connection that doesn't require
+> me to type the DB password), and I'll run `db push` + verify every table.
+
 ## Steps to go live (when authorized)
 
 1. Pick/confirm the target Supabase project (prefer a fresh dev project first).

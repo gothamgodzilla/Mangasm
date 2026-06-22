@@ -469,22 +469,23 @@ public struct Venue: Identifiable, Hashable, Sendable {
 }
 
 // MARK: - EventType
-// Typed enum replacing raw String "glory"|"cumgo"|"circle"|"cosplay".
+// Typed enum; App-Store-safe raw values (open_door/social_mixer/circle/cosplay).
 // rawValue matches prototype ids for Codable round-trip and filter comparisons.
 public enum EventType: String, CaseIterable, Sendable, Codable, Identifiable {
-    case glory   = "glory"
-    case cumgo   = "cumgo"
-    case circle  = "circle"
-    case cosplay = "cosplay"
+    case openDoor    = "open_door"
+    case socialMixer = "social_mixer"
+    case circle      = "circle"
+    case cosplay     = "cosplay"
 
     public var id: String { rawValue }
 
+    // App-Store-safe labels (Guideline 1.1.4) — concept preserved, strings clean.
     public var label: String {
         switch self {
-        case .glory:   return "Glory Hole"
-        case .cumgo:   return "Cum & Go"
-        case .circle:  return "Circle Jerk"
-        case .cosplay: return "Cosplay / Roleplay"
+        case .openDoor:    return "Open Door"
+        case .socialMixer: return "Social Mixer"
+        case .circle:      return "Circle"
+        case .cosplay:     return "Cosplay / Roleplay"
         }
     }
 }
@@ -572,7 +573,7 @@ public struct EventItem: Identifiable, Hashable, Sendable {
         ),
         EventItem(
             id: "e3",
-            type: .glory,
+            type: .openDoor,
             title: "Anon Booth",
             hostName: "Rafa",
             hostRep: 81,
@@ -587,7 +588,7 @@ public struct EventItem: Identifiable, Hashable, Sendable {
         ),
         EventItem(
             id: "e4",
-            type: .cumgo,
+            type: .socialMixer,
             title: "Lunch Express",
             hostName: "Theo",
             hostRep: 69,

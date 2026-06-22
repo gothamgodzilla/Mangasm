@@ -1,4 +1,5 @@
 import SwiftUI
+import StoreKit
 
 // MARK: - EventsView
 // Spec §5.7 — Events sub-tab: section label + count, host CTA (locked/premium),
@@ -12,6 +13,7 @@ struct EventsView: View {
 
     @EnvironmentObject var env: AppEnvironment
     @EnvironmentObject var state: AppState
+    @EnvironmentObject var store: StoreKitStore
 
     @State private var hosting: Bool = false
     @State private var filter: EventType? = nil  // nil = "All"
@@ -69,11 +71,9 @@ struct EventsView: View {
                     .buttonStyle(.plain)
                     .padding(.bottom, 16)
                 } else {
-                    // Locked: upsell card
-                    HostUpsellCard {
-                        state.premium = true
-                    }
-                    .padding(.bottom, 16)
+                    // Locked: upsell card — triggers real StoreKit purchase
+                    HostUpsellCard(store: store)
+                        .padding(.bottom, 16)
                 }
             }
 
@@ -168,9 +168,28 @@ private struct FilterChip: View {
 }
 
 // MARK: - HostUpsellCard
-// Shown to free users; tap "Unlock M+ · $9.99/mo" calls onUnlock.
+// Shown to free users. Tapping "Unlock M+" triggers a real StoreKit 2 purchase
+// for com.mangasm.app.premium.monthly ($9.99/mo). Price is read from the live
+// Product when available; falls back to "$9.99/mo".
 private struct HostUpsellCard: View {
-    let onUnlock: () -> Void
+    @ObservedObject var store: StoreKitStore
+    @State private var isPurchasing: Bool = false
+    @State private var purchaseError: String? = nil
+
+    /// The M+ monthly product, if loaded.
+    private var premiumProduct: Product? {
+        store.products.first { $0.id == MangasmProduct.premiumMonthly.rawValue }
+    }
+
+    /// The M+ Plus monthly product, if loaded.
+    private var premiumPlusProduct: Product? {
+        store.products.first { $0.id == MangasmProduct.premiumPlusMonthly.rawValue }
+    }
+
+    /// Display price for M+: live from App Store or static fallback.
+    private var premiumPrice: String {
+        premiumProduct.map { "\($0.displayPrice)/mo" } ?? "$9.99/mo"
+    }
 
     var body: some View {
         ZStack {
@@ -201,7 +220,7 @@ private struct HostUpsellCard: View {
                     .foregroundStyle(MGColor.ink)
                     .padding(.top, 9)
 
-                Text("Create glory hole, cum & go, circle jerk or cosplay events with private RSVPs, capacity & approval controls.")
+                Text("Create Open Door, Social Mixer, Circle or Cosplay events with private RSVPs, capacity & approval controls.")
                     .font(MGFont.sans(10.5, .light))
                     .foregroundStyle(MGColor.inkSoft)
                     .multilineTextAlignment(.center)
@@ -209,21 +228,78 @@ private struct HostUpsellCard: View {
                     .padding(.top, 6)
                     .frame(maxWidth: 260)
 
-                Button(action: onUnlock) {
-                    Text("Unlock M+ \u{00B7} $9.99/mo")
-                        .font(MGFont.serif(14.5, .bold))
-                        .tracking(14.5 * 0.04)
-                        .foregroundStyle(MGColor.goldText)
-                        .padding(.vertical, 11)
-                        .padding(.horizontal, 22)
-                        .background(
-                            RoundedRectangle(cornerRadius: 13)
-                                .fill(MGGradient.goldButton)
-                                .shadow(color: MGColor.gold.opacity(0.8), radius: 8, x: 0, y: 6)
-                        )
+                // M+ purchase button
+                Button {
+                    guard !isPurchasing else { return }
+                    guard let product = premiumProduct else {
+                        purchaseError = "Store unavailable. Try again."
+                        return
+                    }
+                    isPurchasing = true
+                    purchaseError = nil
+                    Task {
+                        do {
+                            _ = try await store.purchase(product)
+                        } catch {
+                            purchaseError = "Purchase failed. Please try again."
+                            print("[HostUpsellCard] purchase error: \(error)")
+                        }
+                        isPurchasing = false
+                    }
+                } label: {
+                    Group {
+                        if isPurchasing {
+                            Text("Processing…")
+                        } else {
+                            Text("Unlock M+ \u{00B7} \(premiumPrice)")
+                        }
+                    }
+                    .font(MGFont.serif(14.5, .bold))
+                    .tracking(14.5 * 0.04)
+                    .foregroundStyle(MGColor.goldText)
+                    .padding(.vertical, 11)
+                    .padding(.horizontal, 22)
+                    .background(
+                        RoundedRectangle(cornerRadius: 13)
+                            .fill(MGGradient.goldButton)
+                            .shadow(color: MGColor.gold.opacity(0.8), radius: 8, x: 0, y: 6)
+                    )
                 }
                 .buttonStyle(.plain)
+                .disabled(isPurchasing)
                 .padding(.top, 13)
+
+                // M+ Plus secondary affordance (shown when product is available)
+                if let plusProduct = premiumPlusProduct {
+                    Button {
+                        guard !isPurchasing else { return }
+                        isPurchasing = true
+                        purchaseError = nil
+                        Task {
+                            do {
+                                _ = try await store.purchase(plusProduct)
+                            } catch {
+                                purchaseError = "Purchase failed. Please try again."
+                                print("[HostUpsellCard] purchase error: \(error)")
+                            }
+                            isPurchasing = false
+                        }
+                    } label: {
+                        Text("Or get M+ Plus \u{00B7} \(plusProduct.displayPrice)/mo")
+                            .font(MGFont.mono(8.5))
+                            .foregroundStyle(MGColor.goldDeep)
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(isPurchasing)
+                    .padding(.top, 6)
+                }
+
+                if let err = purchaseError {
+                    Text(err)
+                        .font(MGFont.mono(7.5))
+                        .foregroundStyle(Color(red: 192/255, green: 57/255, blue: 43/255))
+                        .padding(.top, 6)
+                }
 
                 Text("Cancel anytime \u{00B7} also unlocks extended bio & fetishes")
                     .font(MGFont.mono(7.5))
