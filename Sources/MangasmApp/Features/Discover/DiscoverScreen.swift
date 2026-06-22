@@ -125,8 +125,8 @@ private struct NearbyContent: View {
 
             // 4-column grid — denser face grid
             LazyVGrid(
-                columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 4),
-                spacing: 8
+                columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 4),
+                spacing: 6
             ) {
                 ForEach(candidates) { candidate in
                     UserGridCard(candidate: candidate)
@@ -156,8 +156,8 @@ private struct UserGridCard: View {
                 RoundedRectangle(cornerRadius: 18)
                     .fill(MGGradient.holo)
                     .shadow(
-                        color: Color(red: 40/255, green: 30/255, blue: 15/255).opacity(0.5),
-                        radius: 17, x: 0, y: 14
+                        color: Color(red: 40/255, green: 30/255, blue: 15/255).opacity(0.4),
+                        radius: 6, x: 0, y: 4   // smaller shadow so cards don't bleed past the edge
                     )
 
                 // Inner glass surface

@@ -59,7 +59,7 @@ public struct LamborghiniBackground: View {
                 // ── 2. Carbon-fibre weave texture ───────────────────────────────
                 CarbonWeaveOverlay()
                     .blendMode(.overlay)
-                    .opacity(0.5)
+                    .opacity(0.22)   // lighter weave so the luxury hero shows through
 
                 // ── 3. Day/Night vignette gradient ──────────────────────────────
                 if night {
