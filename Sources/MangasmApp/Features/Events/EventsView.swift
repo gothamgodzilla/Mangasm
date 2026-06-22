@@ -201,7 +201,7 @@ private struct HostUpsellCard: View {
                     .foregroundStyle(MGColor.ink)
                     .padding(.top, 9)
 
-                Text("Create glory hole, cum & go, circle jerk or cosplay events with private RSVPs, capacity & approval controls.")
+                Text("Create Open Door, Social Mixer, Circle or Cosplay events with private RSVPs, capacity & approval controls.")
                     .font(MGFont.sans(10.5, .light))
                     .foregroundStyle(MGColor.inkSoft)
                     .multilineTextAlignment(.center)
