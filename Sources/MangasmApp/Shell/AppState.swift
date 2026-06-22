@@ -13,7 +13,7 @@ public final class AppState: ObservableObject {
     @Published public var tab: AppTab = .profile
     @Published public var night = false
     @Published public var premium = false
-    @Published public var weather: Weather = .rain
+    @Published public var weather: Weather = .clear   // sunny daylight by default (no rain)
     @Published public var selectedMatch: Candidate? = nil
     @Published public var activeChat: Conversation? = nil
     @Published public var showChatList: Bool = false
