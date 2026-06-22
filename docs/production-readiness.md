@@ -1,5 +1,7 @@
 # Mangasm — Production Readiness Audit
 
+> **SUPERSEDED IN PART (2026-06-22):** HIV status / health data was **removed from the app entirely** (Swift, schema, tests). All HIV-related items below (§1.x age/health, §2.3, §3.4, and checklist lines) no longer apply — no health data is collected or stored. Sexual orientation + fetishes remain the sensitive fields, hidden-by-default with opt-in.
+
 **Date:** 2026-06-21  
 **Auditor:** Claude Code  
 **App State:** SwiftUI front-end complete (mock backend only). Supabase schema authored, not applied. No Xcode project — SPM only. No IAP, no push, no real auth.

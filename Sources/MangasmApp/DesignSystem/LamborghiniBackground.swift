@@ -75,10 +75,11 @@ public struct LamborghiniBackground: View {
                 } else {
                     LinearGradient(
                         stops: [
-                            .init(color: Color(red: 8/255, green: 10/255, blue: 14/255, opacity: 0.46), location: 0),
-                            .init(color: Color(red: 14/255, green: 18/255, blue: 24/255, opacity: 0.04), location: 0.40),
-                            .init(color: Color(red: 8/255, green: 11/255, blue: 16/255, opacity: 0.12), location: 0.76),
-                            .init(color: Color(red: 4/255, green: 6/255, blue: 10/255, opacity: 0.40), location: 1),
+                            // Brighter luxury: lighter scrims so the hero shows through.
+                            .init(color: Color(red: 8/255, green: 10/255, blue: 14/255, opacity: 0.26), location: 0),
+                            .init(color: Color(red: 14/255, green: 18/255, blue: 24/255, opacity: 0.02), location: 0.40),
+                            .init(color: Color(red: 8/255, green: 11/255, blue: 16/255, opacity: 0.06), location: 0.76),
+                            .init(color: Color(red: 4/255, green: 6/255, blue: 10/255, opacity: 0.24), location: 1),
                         ],
                         startPoint: .top, endPoint: .bottom
                     )
@@ -96,13 +97,25 @@ public struct LamborghiniBackground: View {
                         endRadius: geo.size.width * 0.9
                     )
                     .blendMode(.screen)
+                } else {
+                    // Day: warm gold luxury glow (top-right) for a brighter feel.
+                    RadialGradient(
+                        colors: [
+                            Color(red: 228/255, green: 201/255, blue: 126/255, opacity: 0.16),
+                            Color.clear,
+                        ],
+                        center: .init(x: 0.72, y: 0.16),
+                        startRadius: 0,
+                        endRadius: geo.size.width * 0.95
+                    )
+                    .blendMode(.screen)
                 }
 
                 // ── 5. Inset edge shadow (approximated via radial dark ring) ─────
                 RadialGradient(
                     colors: [
                         Color.clear,
-                        Color(red: 0, green: 0, blue: 0, opacity: night ? 0.62 : 0.50),
+                        Color(red: 0, green: 0, blue: 0, opacity: night ? 0.62 : 0.32),
                     ],
                     center: .center,
                     startRadius: geo.size.width * 0.28,

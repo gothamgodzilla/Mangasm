@@ -68,7 +68,7 @@ Alternatively: paste `supabase/migrations/0001_*.sql` then `0002_*.sql` into the
 ## Privacy — number one
 
 - **Precise location never leaves the device raw.** Show "privacy zones" (neighbourhood-level), compute distance server-side via a coarse geohash RPC; never store exact lat/long for display.
-- Sexual orientation, HIV status, fetishes = **sensitive data**: per-field `visibility` flags (already in `profiles.visibility`), RLS-enforced, never in logs/analytics, declared in the Privacy Nutrition Label + `PrivacyInfo.xcprivacy`.
+- Sexual orientation and fetishes = **sensitive data**: per-field `visibility` flags (already in `profiles.visibility`), RLS-enforced, never in logs/analytics, declared in the Privacy Nutrition Label + `PrivacyInfo.xcprivacy`. (HIV status was **removed from the app entirely** on 2026-06-22 — no health data is collected or stored.)
 - Photos in a **private** Storage bucket; access via short-lived signed URLs gated by reputation. No public CDN URLs.
 - Reputation-gated visibility everywhere; block/report fully removes a user from your surface.
 
