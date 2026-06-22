@@ -45,9 +45,11 @@ public struct ChatThreadScreen: View {
 
     public var body: some View {
         ZStack {
-            // Translucent backdrop
-            LamborghiniBackground(night: state.night)
-            WeatherFX(kind: state.weather, night: state.night)
+            // Opaque base — presented as a fullScreenCover; without this the
+            // screen underneath shows through the scroll area.
+            Color.black.ignoresSafeArea()
+            LamborghiniBackground(night: state.night).ignoresSafeArea()
+            WeatherFX(kind: state.weather, night: state.night).ignoresSafeArea()
 
             VStack(spacing: 0) {
                 // ── Glass header ────────────────────────────────────────────────
