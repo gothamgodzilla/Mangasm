@@ -26,3 +26,19 @@ targets:
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         SWIFT_VERSION: "6.0"
+schemes:
+  Mangasm:
+    build:
+      targets:
+        Mangasm: all
+    run:
+      config: Debug
+      storeKitConfiguration: Mangasm.storekit
+    test:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

@@ -1,4 +1,7 @@
 import SwiftUI
+#if canImport(UIKit)
+import UIKit
+#endif
 
 // MARK: - SettingsScreen
 // Prototype ref: mangasm-screens.jsx Field + Switch components, §5.8 Settings spec.
@@ -10,6 +13,7 @@ public struct SettingsScreen: View {
 
     @EnvironmentObject private var state: AppState
     @EnvironmentObject private var env: AppEnvironment
+    @EnvironmentObject private var store: StoreKitStore
 
     // Local string bindings for non-String profile fields
     @State private var ageText: String = ""
@@ -175,6 +179,58 @@ public struct SettingsScreen: View {
                     }
                     .padding(.horizontal, 14)
 
+                    // ── Subscription Section ──
+                    SectionLabel("Subscription")
+                        .padding(.horizontal, 16)
+                        .padding(.top, 20)
+
+                    MGCard {
+                        VStack(spacing: 0) {
+                            // Restore Purchases / Manage Subscription
+                            Button {
+                                Task { await store.restore() }
+                            } label: {
+                                HStack {
+                                    Text("Restore Purchases")
+                                        .font(MGFont.sans(14, .semibold))
+                                        .foregroundStyle(MGColor.inkSoft)
+                                    Spacer()
+                                    Image(systemName: "arrow.clockwise")
+                                        .font(.system(size: 15, weight: .regular))
+                                        .foregroundStyle(MGColor.goldDeep)
+                                }
+                                .padding(.vertical, 13)
+                                .padding(.horizontal, 13)
+                            }
+                            .buttonStyle(.plain)
+
+                            Divider().opacity(0.2).padding(.horizontal, 13)
+
+                            // Manage subscription in System Settings
+                            Button {
+                                #if os(iOS)
+                                if let url = URL(string: "itms-apps://apps.apple.com/account/subscriptions") {
+                                    UIApplication.shared.open(url)
+                                }
+                                #endif
+                            } label: {
+                                HStack {
+                                    Text("Manage Subscription")
+                                        .font(MGFont.sans(14, .semibold))
+                                        .foregroundStyle(MGColor.inkSoft)
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .font(.system(size: 13, weight: .regular))
+                                        .foregroundStyle(MGColor.inkFaint)
+                                }
+                                .padding(.vertical, 13)
+                                .padding(.horizontal, 13)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.horizontal, 14)
+
                     // ── Demo / Preview Section ──
                     SectionLabel("Preview")
                         .padding(.horizontal, 16)
@@ -184,7 +240,8 @@ public struct SettingsScreen: View {
                         VStack(spacing: 0) {
                             VisibilityToggleRow(label: "Night mode", isOn: $state.night)
                             Divider().opacity(0.2).padding(.horizontal, 13)
-                            VisibilityToggleRow(label: "M+ Premium", isOn: $state.premium)
+                            // (debug) toggle — bypasses StoreKit for simulator/preview testing
+                            VisibilityToggleRow(label: "(debug) M+ Premium", isOn: $state.premium)
                             Divider().opacity(0.2).padding(.horizontal, 13)
 
                             // Weather picker
