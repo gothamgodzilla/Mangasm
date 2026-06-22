@@ -25,6 +25,52 @@ private final class RunwayPlayer: ObservableObject {
     func pause() { queuePlayer?.pause() }
 }
 
+// MARK: - Runway video view (AVPlayerLayer-backed for true .resizeAspectFill cover)
+// SwiftUI's `VideoPlayer` only does aspect-fit (letterboxes a portrait video).
+// AVPlayerLayer must be hosted in a UIView/NSView, so this is the one justified
+// platform-specific shim — `#if` gates a genuinely platform-only hosting API.
+
+#if os(iOS)
+import UIKit
+private final class PlayerHostView: UIView {
+    override class var layerClass: AnyClass { AVPlayerLayer.self }
+    var playerLayer: AVPlayerLayer { layer as! AVPlayerLayer }
+}
+private struct RunwayVideoView: UIViewRepresentable {
+    let player: AVPlayer
+    func makeUIView(context: Context) -> PlayerHostView {
+        let v = PlayerHostView()
+        v.playerLayer.player = player
+        v.playerLayer.videoGravity = .resizeAspectFill
+        v.isUserInteractionEnabled = false
+        return v
+    }
+    func updateUIView(_ uiView: PlayerHostView, context: Context) {
+        uiView.playerLayer.player = player
+    }
+}
+#elseif os(macOS)
+import AppKit
+private final class PlayerHostNSView: NSView {
+    let playerLayer = AVPlayerLayer()
+    init(player: AVPlayer) {
+        super.init(frame: .zero)
+        wantsLayer = true
+        playerLayer.player = player
+        playerLayer.videoGravity = .resizeAspectFill
+        layer = playerLayer            // backing layer auto-resizes with the view
+    }
+    required init?(coder: NSCoder) { fatalError("init(coder:) unavailable") }
+}
+private struct RunwayVideoView: NSViewRepresentable {
+    let player: AVPlayer
+    func makeNSView(context: Context) -> PlayerHostNSView { PlayerHostNSView(player: player) }
+    func updateNSView(_ nsView: PlayerHostNSView, context: Context) {
+        nsView.playerLayer.player = player
+    }
+}
+#endif
+
 // MARK: - SplashView
 
 /// Cinematic launch splash. Calls `onContinue` after user tap, SKIP, CTA, or 8.6s auto-advance.
@@ -62,15 +108,12 @@ public struct SplashView: View {
 
                 // ── Layer 1: runway video (or gradient fallback) ─────────
                 if let player = runway.queuePlayer {
-                    VideoPlayer(player: player)
-                        .disabled(true)                     // no playback controls
+                    // AVPlayerLayer .resizeAspectFill = CSS object-fit: cover (no letterbox).
+                    RunwayVideoView(player: player)
                         .allowsHitTesting(false)
                         .frame(width: geo.size.width, height: geo.size.height)
-                        .scaleEffect(1.04)                  // slight overscan to hide letterbox edges
                         .clipped()
                         .ignoresSafeArea()
-                        // Approximation: VideoPlayer uses .aspectFit gravity internally;
-                        // scaleEffect(1.04) + .clipped() approximates CSS objectFit:cover.
                 } else {
                     // Fallback gradient when runway.mp4 is absent from bundle
                     LinearGradient(

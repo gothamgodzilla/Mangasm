@@ -361,6 +361,7 @@ public struct Conversation: Identifiable, Hashable, Sendable {
     public var candidateName: String
     public var candidateAvatarURL: String?
     public var messages: [Message]
+    public var unreadCount: Int
     public var lastMessagePreview: String { messages.last?.text ?? "" }
 
     public init(
@@ -368,13 +369,15 @@ public struct Conversation: Identifiable, Hashable, Sendable {
         candidateID: String,
         candidateName: String,
         candidateAvatarURL: String? = nil,
-        messages: [Message] = []
+        messages: [Message] = [],
+        unreadCount: Int = 0
     ) {
         self.id = id
         self.candidateID = candidateID
         self.candidateName = candidateName
         self.candidateAvatarURL = candidateAvatarURL
         self.messages = messages
+        self.unreadCount = unreadCount
     }
 
     public static let sample = samples[0]
@@ -391,7 +394,8 @@ public struct Conversation: Identifiable, Hashable, Sendable {
                 Message(id: "msg-1", senderIsMe: false, text: "Hey — the stars said 94%. Bold of them 😏"),
                 Message(id: "msg-2", senderIsMe: true,  text: "They don't lie. Dubai this weekend?"),
                 Message(id: "msg-3", senderIsMe: false, text: "That hot-air balloon date looked unreal 🎈"),
-            ]
+            ],
+            unreadCount: 2
         ),
         Conversation(
             id: "conv-m2",
@@ -420,7 +424,8 @@ public struct Conversation: Identifiable, Hashable, Sendable {
             candidateAvatarURL: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=120&h=120&q=80&auto=format&fit=crop&crop=faces",
             messages: [
                 Message(id: "msg-8", senderIsMe: false, text: "Cigars and vintage cars — sounds like a plan?"),
-            ]
+            ],
+            unreadCount: 1
         ),
     ]
 }

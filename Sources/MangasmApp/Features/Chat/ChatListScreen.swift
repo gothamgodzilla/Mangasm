@@ -117,10 +117,7 @@ private struct ConversationRow: View {
     let conversation: Conversation
     let onTap: () -> Void
 
-    // Approximate unread count — new conversations (≤1 message) get 1 badge
-    private var unreadCount: Int {
-        conversation.messages.count <= 1 ? 1 : 0
-    }
+    private var unreadCount: Int { conversation.unreadCount }
 
     // Relative time approximation from last message timestamp
     private var timeLabel: String {

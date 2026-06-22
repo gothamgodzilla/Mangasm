@@ -17,6 +17,7 @@ public struct MatchDetailScreen: View {
 
     @EnvironmentObject var state: AppState
     @Environment(\.dismiss) private var dismiss
+    @State private var liked = false
 
     public init(candidate: Candidate, onMessage: @escaping () -> Void) {
         self.candidate = candidate
@@ -289,21 +290,30 @@ public struct MatchDetailScreen: View {
             }
             .buttonStyle(.plain)
 
-            // Thumbs-up (like)
+            // Thumbs-up (like) — local visual state until a real "like" service lands.
             Button {
-                // TODO(Task 15): like action
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) { liked.toggle() }
             } label: {
-                Image(systemName: "hand.thumbsup")
+                Image(systemName: liked ? "hand.thumbsup.fill" : "hand.thumbsup")
                     .font(.system(size: 19, weight: .regular))
-                    .foregroundStyle(MGColor.gold)
+                    .foregroundStyle(liked ? MGColor.goldText : MGColor.gold)
                     .frame(width: 52, height: 52)
-                    .glassBackground(14, glow: false)
+                    .background {
+                        if liked {
+                            RoundedRectangle(cornerRadius: 14).fill(MGGradient.goldButton)
+                        } else {
+                            Color.clear.glassBackground(14, glow: false)
+                        }
+                    }
                     .overlay(
                         RoundedRectangle(cornerRadius: 14)
-                            .stroke(MGColor.gold.opacity(0.44), lineWidth: 1)
+                            .stroke(MGColor.gold.opacity(liked ? 0 : 0.44), lineWidth: 1)
                     )
+                    .shadow(color: MGColor.gold.opacity(liked ? 0.6 : 0), radius: 12)
+                    .scaleEffect(liked ? 1.06 : 1)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel(liked ? "Liked" : "Like")
 
             // Pass (X)
             Button {
