@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Privacy manifest for the Mangasm iOS app target.
+
+  BASELINE — honest for the CURRENT binary, which uses no required-reason APIs
+  directly and ships no analytics/tracking SDKs. This MUST be extended in Phase 2
+  when SDKs are added:
+    - supabase-swift persists the session via UserDefaults -> add CA92.1 under
+      NSPrivacyAccessedAPITypes (NSPrivacyAccessedAPICategoryUserDefaults).
+    - StoreKit purchases -> declare "Purchases" under NSPrivacyCollectedDataTypes.
+    - Precise location (Discover) -> add NSPrivacyCollectedDataTypePreciseLocation
+      + the WhenInUse usage string in Info.plist settings.
+    - Photos/camera (avatar upload) -> declare "Photos or Videos".
+  Sensitive categories (health/HIV, sexual orientation) are collected only with
+  explicit opt-in consent and must be declared accurately in the App Store Connect
+  nutrition label as well as here.
+-->
+<plist version="1.0">
+<dict>
+    <key>NSPrivacyTracking</key>
+    <false/>
+    <key>NSPrivacyTrackingDomains</key>
+    <array/>
+    <key>NSPrivacyCollectedDataTypes</key>
+    <array/>
+    <key>NSPrivacyAccessedAPITypes</key>
+    <array/>
+</dict>
+</plist>
