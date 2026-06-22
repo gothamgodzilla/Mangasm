@@ -382,7 +382,9 @@ private struct HIVRow: View {
 }
 
 // MARK: - E2EFooter
-/// End-to-end encrypted + privacy zone footer row. Prototype: lock icon + mono labels.
+/// Transport-encryption + privacy zone footer row. Lock icon + mono labels.
+/// Label is "Encrypted in transit" — NOT end-to-end yet. Switch to "End-to-End
+/// Encrypted" only once real E2E (X25519/CryptoKit) ships, per roadmap Decision B.
 private struct E2EFooter: View {
     var body: some View {
         HStack(spacing: 7) {
@@ -392,7 +394,7 @@ private struct E2EFooter: View {
                 .frame(width: 12, height: 12)
                 .foregroundStyle(MGColor.goldDeep)
 
-            Text("End-to-End Encrypted")
+            Text("Encrypted in Transit")
                 .font(MGFont.mono(8))
                 .foregroundStyle(MGColor.inkSoft)
 
