@@ -23,10 +23,10 @@ final class AccountDeletionLogicTests: XCTestCase {
         XCTAssertNil(s.activeChat)
     }
 
-    func testDeleteAccountReachesAuthService() {
+    func testDeleteAccountReachesAuthService() async throws {
         let auth = MockAuthService()
         XCTAssertEqual(auth.deleteAccountCallCount, 0)
-        auth.deleteAccount()
+        try await auth.deleteAccount()
         XCTAssertEqual(auth.deleteAccountCallCount, 1, "delete must invoke the auth service")
     }
 }

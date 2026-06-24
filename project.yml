@@ -6,6 +6,9 @@ options:
 packages:
   MangasmApp:
     path: .
+configFiles:
+  Debug: App/iOS/Secrets.xcconfig
+  Release: App/iOS/Secrets.xcconfig
 targets:
   Mangasm:
     type: application
@@ -15,18 +18,24 @@ targets:
     dependencies:
       - package: MangasmApp
         product: MangasmApp
+    entitlements:
+      path: App/iOS/Mangasm.entitlements
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES
         PRODUCT_BUNDLE_IDENTIFIER: com.mangasm.app
         DEVELOPMENT_TEAM: 854XZ2543V
         CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ENTITLEMENTS: App/iOS/Mangasm.entitlements
         PRODUCT_NAME: Mangasm
-        MARKETING_VERSION: "1.0.0"
-        CURRENT_PROJECT_VERSION: "4"
+        MARKETING_VERSION: "1.0.1"
+        CURRENT_PROJECT_VERSION: "5"
         TARGETED_DEVICE_FAMILY: "1"
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
+        INFOPLIST_KEY_SUPABASE_URL: $(SUPABASE_URL)
+        INFOPLIST_KEY_SUPABASE_PUBLISHABLE_KEY: $(SUPABASE_PUBLISHABLE_KEY)
         SWIFT_VERSION: "6.0"
   MangasmTests:
     type: bundle.unit-test

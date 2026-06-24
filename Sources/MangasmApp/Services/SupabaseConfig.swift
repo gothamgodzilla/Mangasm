@@ -12,7 +12,7 @@ public struct SupabaseConfig: Sendable {
     public let publishableKey: String
 
     /// Dev project URL (public). Override via Info.plist `SUPABASE_URL`.
-    public static let defaultURL = URL(string: "https://pwmddvigardiyhqtihdw.supabase.co")!
+    public static let defaultURL = URL(string: "https://zfwzrloxqqkkikedpruf.supabase.co")!
 
     /// Loads config from the app's Info.plist, falling back to the dev URL.
     /// Returns nil if no publishable key is configured (so callers can stay on mocks).

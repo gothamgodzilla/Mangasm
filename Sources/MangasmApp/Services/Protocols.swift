@@ -1,12 +1,16 @@
 import Foundation
 
 // MARK: - AuthService
-/// Handles authentication entry (login/onboarding gate).
+/// Handles authentication and account lifecycle (Phase 1 — Supabase Auth).
+@MainActor
 public protocol AuthService {
-    func enter()
-    /// Permanently deletes the current account and all associated data.
-    /// Required by App Store Guideline 5.1.1(v) for account-based apps.
-    func deleteAccount()
+    func signInWithApple(consent: OnboardingConsent) async throws
+    func signInWithGoogle(consent: OnboardingConsent) async throws
+    func signInWithPhone(consent: OnboardingConsent) async throws
+    /// Previews/tests when no Supabase config is present.
+    func enterMock(consent: OnboardingConsent) async throws
+    /// Permanently deletes the current account and all associated data (Guideline 5.1.1(v)).
+    func deleteAccount() async throws
 }
 
 // MARK: - ProfileService

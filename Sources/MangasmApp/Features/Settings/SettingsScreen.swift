@@ -322,11 +322,11 @@ public struct SettingsScreen: View {
                                 titleVisibility: .visible
                             ) {
                                 Button("Delete Account", role: .destructive) {
-                                    // Server-side erasure (cascades all data); local
-                                    // session is wiped so sensitive data doesn't linger.
-                                    env.auth.deleteAccount()
-                                    onClose()
-                                    state.resetForSignOut()
+                                    Task { @MainActor in
+                                        try? await env.auth.deleteAccount()
+                                        onClose()
+                                        state.resetForSignOut()
+                                    }
                                 }
                                 Button("Cancel", role: .cancel) {}
                             } message: {

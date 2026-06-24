@@ -25,7 +25,7 @@ public struct LaunchFlow: View {
                 .opacity(crossFadeOpacity)
                 .transition(.opacity)
             case .signIn:
-                SignInView(onEnter: onEnter)
+                SignInView(onAuthenticated: onEnter)
                     .opacity(crossFadeOpacity)
                     .transition(.opacity)
             }

@@ -2,23 +2,20 @@ import SwiftUI
 
 // MARK: - SignInView
 
-/// Landmark slideshow background + bottom glass auth sheet.
-/// All auth controls call `onEnter()` — auth is stubbed this pass.
+/// Landmark slideshow + glass auth sheet. Apple uses Sign in with Apple when live auth is configured.
 public struct SignInView: View {
-    public let onEnter: () -> Void
+    public let onAuthenticated: () -> Void
 
-    public init(onEnter: @escaping () -> Void) {
-        self.onEnter = onEnter
+    public init(onAuthenticated: @escaping () -> Void) {
+        self.onAuthenticated = onAuthenticated
     }
 
     public var body: some View {
         ZStack(alignment: .bottom) {
-            // Full-screen landmark slides background
             LandmarkSlides()
                 .ignoresSafeArea()
 
-            // Bottom glass sheet
-            AuthSheet(onEnter: onEnter)
+            AuthSheet(onAuthenticated: onAuthenticated)
         }
         .ignoresSafeArea(edges: .bottom)
     }
@@ -27,34 +24,68 @@ public struct SignInView: View {
 // MARK: - AuthSheet
 
 private struct AuthSheet: View {
-    let onEnter: () -> Void
+    @EnvironmentObject private var env: AppEnvironment
 
-    // Onboarding gate (Guideline 1.2 + 18+ assurance): entry is blocked until the
-    // user affirms they are 18+ and accepts the Community Guidelines / Privacy.
+    let onAuthenticated: () -> Void
+
     @State private var accepted = false
     @State private var nudge = false
+    @State private var isLoading = false
+    @State private var errorMessage: String?
 
     private let cream = Color(red: 245/255, green: 235/255, blue: 214/255)
 
-    /// Provider / Enter taps route through here — only proceed when consent is given.
-    private func attemptEnter() {
-        if OnboardingConsent(ageAffirmed: accepted, termsAccepted: accepted).mayEnter {
-            onEnter()
-        } else {
+    private var consent: OnboardingConsent {
+        OnboardingConsent(ageAffirmed: accepted, termsAccepted: accepted)
+    }
+
+    private var usesLiveAuth: Bool {
+        env.auth is SupabaseAuthService
+    }
+
+    private func attemptMockEnter() {
+        guard consent.mayEnter else {
             withAnimation(.easeInOut(duration: 0.2)) { nudge = true }
+            return
+        }
+        Task { @MainActor in
+            isLoading = true
+            defer { isLoading = false }
+            do {
+                try await env.auth.enterMock(consent: consent)
+                onAuthenticated()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
+    }
+
+    private func signIn(_ action: @escaping () async throws -> Void) {
+        guard consent.mayEnter else {
+            withAnimation(.easeInOut(duration: 0.2)) { nudge = true }
+            return
+        }
+        Task { @MainActor in
+            isLoading = true
+            errorMessage = nil
+            defer { isLoading = false }
+            do {
+                try await action()
+                onAuthenticated()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
         }
     }
 
     var body: some View {
         VStack(spacing: 0) {
-            // Grab handle
             Capsule()
                 .fill(Color.white.opacity(0.4))
                 .frame(width: 38, height: 4)
                 .padding(.top, 10)
                 .padding(.bottom, 18)
 
-            // Gold wordmark
             VStack(spacing: 0) {
                 Text("Mangasm")
                     .font(MGFont.serif(38, .bold))
@@ -65,43 +96,51 @@ private struct AuthSheet: View {
                 Text("BY INVITATION · MEMBERS ONLY")
                     .font(MGFont.mono(8.5))
                     .tracking(8.5 * 0.28)
-                    .foregroundStyle(Color(red: 245/255, green: 235/255, blue: 214/255).opacity(0.66))
+                    .foregroundStyle(cream.opacity(0.66))
                     .padding(.top, 7)
             }
             .padding(.bottom, 18)
 
-            // Provider buttons
             VStack(spacing: 9) {
-                ProviderButton(kind: .apple,  action: attemptEnter)
-                ProviderButton(kind: .google, action: attemptEnter)
-                ProviderButton(kind: .phone,  action: attemptEnter)
+                ProviderButton(kind: .apple) {
+                    if usesLiveAuth {
+                        signIn { try await env.auth.signInWithApple(consent: consent) }
+                    } else {
+                        attemptMockEnter()
+                    }
+                }
+                ProviderButton(kind: .google) {
+                    if usesLiveAuth {
+                        signIn { try await env.auth.signInWithGoogle(consent: consent) }
+                    } else {
+                        attemptMockEnter()
+                    }
+                }
+                ProviderButton(kind: .phone) {
+                    if usesLiveAuth {
+                        signIn { try await env.auth.signInWithPhone(consent: consent) }
+                    } else {
+                        attemptMockEnter()
+                    }
+                }
             }
+            .disabled(isLoading)
 
-            // OR divider
             HStack(spacing: 10) {
-                LinearGradient(
-                    colors: [.clear, MGColor.gold.opacity(0.4)],
-                    startPoint: .leading, endPoint: .trailing
-                )
-                .frame(height: 1)
-
+                LinearGradient(colors: [.clear, MGColor.gold.opacity(0.4)], startPoint: .leading, endPoint: .trailing)
+                    .frame(height: 1)
                 Text("OR")
                     .font(MGFont.mono(8))
                     .tracking(8 * 0.2)
-                    .foregroundStyle(Color(red: 245/255, green: 235/255, blue: 214/255).opacity(0.5))
-
-                LinearGradient(
-                    colors: [MGColor.gold.opacity(0.4), .clear],
-                    startPoint: .leading, endPoint: .trailing
-                )
-                .frame(height: 1)
+                    .foregroundStyle(cream.opacity(0.5))
+                LinearGradient(colors: [MGColor.gold.opacity(0.4), .clear], startPoint: .leading, endPoint: .trailing)
+                    .frame(height: 1)
             }
             .padding(.vertical, 15)
             .padding(.horizontal, 4)
 
-            // "Enter the community" gold CTA button
-            Button(action: attemptEnter) {
-                Text("Enter the community →")
+            Button(action: attemptMockEnter) {
+                Text(isLoading ? "Signing in…" : "Enter the community →")
                     .font(MGFont.serif(16, .bold))
                     .tracking(16 * 0.04)
                     .foregroundStyle(MGColor.goldText)
@@ -123,8 +162,8 @@ private struct AuthSheet: View {
                     )
             }
             .buttonStyle(.plain)
+            .disabled(isLoading)
 
-            // Consent gate — must be checked before entry (Guideline 1.2 + 18+).
             VStack(spacing: 7) {
                 Button {
                     accepted.toggle()
@@ -146,15 +185,19 @@ private struct AuthSheet: View {
                 }
                 .buttonStyle(.plain)
                 .accessibilityIdentifier("accept_toggle")
-                .accessibilityLabel("I am 18 or older and accept the Community Guidelines and Privacy Policy")
-                .accessibilityAddTraits(accepted ? [.isSelected] : [])
 
                 if nudge {
                     Text("Please confirm to continue.")
                         .font(MGFont.mono(7.5))
-                        .tracking(7.5 * 0.04)
                         .foregroundStyle(Color(red: 0.9, green: 0.4, blue: 0.4))
                         .accessibilityIdentifier("accept_nudge")
+                }
+
+                if let errorMessage {
+                    Text(errorMessage)
+                        .font(MGFont.mono(7.5))
+                        .foregroundStyle(Color(red: 0.9, green: 0.4, blue: 0.4))
+                        .multilineTextAlignment(.center)
                 }
             }
             .padding(.top, 14)

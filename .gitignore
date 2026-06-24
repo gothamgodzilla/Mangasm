@@ -9,7 +9,9 @@
 *.env.local
 supabase/.env.local
 .env.local
+App/iOS/Secrets.xcconfig
 fastlane/.env
 fastlane/report.xml
 fastlane/README.md
 supabase/.temp/
+mcp/outreach/node_modules/

@@ -35,9 +35,9 @@ final class ServiceTests: XCTestCase {
     }
 
     // MARK: - Auth deletion test (App Store Guideline 5.1.1(v))
-    func testDeleteAccountIsNoop() {
+    func testDeleteAccountIsNoop() async throws {
         // Verify deleteAccount() doesn't throw or crash in mock
         let auth = MockAuthService()
-        auth.deleteAccount() // must complete without error
+        try await auth.deleteAccount() // must complete without error
     }
 }

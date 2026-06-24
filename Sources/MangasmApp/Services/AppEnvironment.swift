@@ -1,4 +1,5 @@
 import Foundation
+import Supabase
 
 /// Dependency injection container. Screens receive this as an EnvironmentObject.
 /// Real implementations replace each mock when Supabase/Stripe are wired in.
@@ -40,4 +41,19 @@ public final class AppEnvironment: ObservableObject {
         reputation: MockReputationService(),
         safety: MockSafetyService()
     )
+
+    /// Live auth when Supabase keys are configured; other services stay mock until Phase 2.
+    public static func makeDefault() -> AppEnvironment {
+        guard let config = SupabaseConfig.fromInfoPlist() else { return .mock }
+        let client = SupabaseClient(supabaseURL: config.url, supabaseKey: config.publishableKey)
+        return AppEnvironment(
+            auth: SupabaseAuthService(client: client, projectURL: config.url),
+            profile: MockProfileService(),
+            matches: MockMatchService(),
+            chat: MockChatService(),
+            events: MockEventService(),
+            reputation: MockReputationService(),
+            safety: MockSafetyService()
+        )
+    }
 }

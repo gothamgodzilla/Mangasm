@@ -7,14 +7,25 @@ public final class MockAuthService: AuthService {
     public private(set) var deleteAccountCallCount = 0
 
     public init() {}
-    public func enter() {
-        // No-op: mock auth entry always succeeds
+
+    public func signInWithApple(consent: OnboardingConsent) async throws {
+        try await enterMock(consent: consent)
     }
-    public func deleteAccount() {
-        // Mock deletion: records the call. The live impl calls the delete-account
-        // Edge Function (revoke sessions + cascade-delete the auth.users row).
+
+    public func signInWithGoogle(consent: OnboardingConsent) async throws {
+        try await enterMock(consent: consent)
+    }
+
+    public func signInWithPhone(consent: OnboardingConsent) async throws {
+        try await enterMock(consent: consent)
+    }
+
+    public func enterMock(consent: OnboardingConsent) async throws {
+        guard consent.mayEnter else { throw AuthError.consentRequired }
+    }
+
+    public func deleteAccount() async throws {
         deleteAccountCallCount += 1
-        print("[MockAuthService] deleteAccount() called")
     }
 }
 

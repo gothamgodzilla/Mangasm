@@ -32,8 +32,9 @@ if ! "$SUPABASE_GO" db push -p "$SUPABASE_DB_PASSWORD" --linked; then
   exit 1
 fi
 
-echo "── deploy verify-purchase edge function ──"
+echo "── deploy edge functions ──"
 "$SUPABASE_GO" functions deploy verify-purchase --no-verify-jwt --project-ref "$SUPABASE_PROJECT_REF"
+"$SUPABASE_GO" functions deploy delete-account --no-verify-jwt --project-ref "$SUPABASE_PROJECT_REF"
 
 echo ""
 echo "Done."
