@@ -1,0 +1,59 @@
+default_platform(:ios)
+
+BUNDLE_ID = ENV["MANGASM_BUNDLE_ID"] || "guru.ganesh.mangasm"
+
+def load_api_key!
+  key_id = ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"] || ENV["APP_STORE_CONNECT_KEY_ID"]
+  issuer_id = ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"] || ENV["APP_STORE_CONNECT_ISSUER_ID"]
+  key_path = ENV["APP_STORE_CONNECT_API_KEY_KEY_FILEPATH"] || ENV["APP_STORE_CONNECT_KEY_PATH"]
+
+  unless key_id && !key_id.empty?
+    UI.user_error!("Set APP_STORE_CONNECT_API_KEY_KEY_ID (Key ID from App Store Connect → Keys)")
+  end
+
+  unless issuer_id && !issuer_id.empty?
+    UI.user_error!(
+      "Set APP_STORE_CONNECT_API_KEY_ISSUER_ID\n" \
+      "App Store Connect → Users and Access → Integrations → App Store Connect API → Issuer ID"
+    )
+  end
+
+  unless key_path && File.exist?(File.expand_path(key_path))
+    UI.user_error!("Set APP_STORE_CONNECT_API_KEY_KEY_FILEPATH to your AuthKey_XXXX.p8 file")
+  end
+
+  app_store_connect_api_key(
+    key_id: key_id,
+    issuer_id: issuer_id,
+    key_filepath: File.expand_path(key_path),
+    duration: 1200,
+    in_house: false
+  )
+end
+
+platform :ios do
+  desc "Enable App ID capabilities on developer.apple.com (no Xcode, API key only)"
+  lane :enable_capabilities do
+    load_api_key!
+
+    require "spaceship"
+    types = Spaceship::ConnectAPI::BundleIdCapability::Type
+
+    bundle_id = Spaceship::ConnectAPI::BundleId.find(BUNDLE_ID)
+    UI.user_error!("Bundle ID #{BUNDLE_ID} not found on this API key's team") unless bundle_id
+
+    UI.success("Found: #{bundle_id.name} (#{bundle_id.identifier})")
+
+    {
+      "Sign in with Apple" => types::APPLE_ID_AUTH,
+      "In-App Purchase" => types::IN_APP_PURCHASE,
+      "Push Notifications" => types::PUSH_NOTIFICATIONS,
+      "Associated Domains" => types::ASSOCIATED_DOMAINS
+    }.each do |label, capability|
+      UI.message("Enabling #{label}...")
+      bundle_id.update_capability(capability, enabled: true)
+    end
+
+    UI.success("Done — refresh Identifiers on developer.apple.com")
+  end
+end

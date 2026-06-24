@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT"
+
+: "${APP_STORE_CONNECT_API_KEY_KEY_ID:?Set APP_STORE_CONNECT_API_KEY_KEY_ID}"
+: "${APP_STORE_CONNECT_API_KEY_ISSUER_ID:?Set APP_STORE_CONNECT_API_KEY_ISSUER_ID}"
+: "${APP_STORE_CONNECT_API_KEY_KEY_FILEPATH:?Set APP_STORE_CONNECT_API_KEY_KEY_FILEPATH}"
+
+export MANGASM_BUNDLE_ID="${MANGASM_BUNDLE_ID:-guru.ganesh.mangasm}"
+unset FASTLANE_SESSION FASTLANE_USER FASTLANE_PASSWORD 2>/dev/null || true
+
+echo "Bundle: $MANGASM_BUNDLE_ID"
+echo "Key:    $APP_STORE_CONNECT_API_KEY_KEY_ID"
+fastlane enable_capabilities

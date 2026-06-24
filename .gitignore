@@ -9,3 +9,7 @@
 *.env.local
 supabase/.env.local
 .env.local
+fastlane/.env
+fastlane/report.xml
+fastlane/README.md
+supabase/.temp/
