@@ -23,7 +23,7 @@ targets:
         CODE_SIGN_STYLE: Automatic
         PRODUCT_NAME: Mangasm
         MARKETING_VERSION: "1.0.0"
-        CURRENT_PROJECT_VERSION: "3"
+        CURRENT_PROJECT_VERSION: "4"
         TARGETED_DEVICE_FAMILY: "1"
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
