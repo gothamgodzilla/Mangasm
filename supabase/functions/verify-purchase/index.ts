@@ -8,7 +8,7 @@
  * REQUIRED ENVIRONMENT VARIABLES (set in Supabase Dashboard → Settings → Edge Functions):
  *   SUPABASE_URL            — automatically injected by Supabase Edge runtime
  *   SUPABASE_SERVICE_ROLE_KEY — injected automatically; used for privileged DB writes
- *   APPLE_BUNDLE_ID         — e.g. "guru.ganesh.mangasm"
+ *   APPLE_BUNDLE_ID         — e.g. "com.mangasm.app"
  *   APPLE_ISSUER_ID         — from App Store Connect → Keys → App Store Connect API
  *   APPLE_KEY_ID            — from App Store Connect → Keys → App Store Connect API
  *   APPLE_PRIVATE_KEY       — PEM-encoded private key (.p8 content, newlines as \n)

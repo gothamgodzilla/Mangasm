@@ -1,6 +1,6 @@
 default_platform(:ios)
 
-BUNDLE_ID = ENV["MANGASM_BUNDLE_ID"] || "guru.ganesh.mangasm"
+BUNDLE_ID = ENV["MANGASM_BUNDLE_ID"] || "com.mangasm.app"
 
 def load_api_key!
   key_id = ENV["APP_STORE_CONNECT_API_KEY_KEY_ID"] || ENV["APP_STORE_CONNECT_KEY_ID"]
