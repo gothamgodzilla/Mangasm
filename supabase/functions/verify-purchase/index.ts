@@ -10,9 +10,10 @@
  *   SUPABASE_SERVICE_ROLE_KEY — injected automatically; used for privileged DB writes
  *   APPLE_BUNDLE_ID         — e.g. "com.mangasm.app"
  *   APPLE_ISSUER_ID         — from App Store Connect → Keys → App Store Connect API
- *   APPLE_KEY_ID            — from App Store Connect → Keys → App Store Connect API
- *   APPLE_PRIVATE_KEY       — PEM-encoded private key (.p8 content, newlines as \n)
+ *   APPLE_KEY_ID            — In-App Purchase key ID (e.g. 5WWBWC52Q5)
+ *   APPLE_PRIVATE_KEY       — SubscriptionKey_XXXX.p8 PEM (newlines as \n)
  *   APPLE_ENVIRONMENT       — "Sandbox" or "Production"
+ *   APPLE_SHARED_SECRET     — optional; app-specific shared secret (legacy receipts / notifications)
  *
  * DEPLOY:
  *   supabase functions deploy verify-purchase --no-verify-jwt
