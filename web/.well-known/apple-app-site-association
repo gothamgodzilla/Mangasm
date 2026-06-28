@@ -1,0 +1,16 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "854XZ2543V.com.mangasm.app",
+        "paths": [
+          "/promo",
+          "/promo/*",
+          "/join",
+          "/join/*"
+        ]
+      }
+    ]
+  }
+}

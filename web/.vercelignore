@@ -1,0 +1,5 @@
+../**
+!*.html
+!vercel.json
+!middleware.js
+!.well-known/**
