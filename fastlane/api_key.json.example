@@ -1,0 +1,7 @@
+{
+  "key_id": "HAKJH9GG0VFI",
+  "issuer_id": "PASTE_ISSUER_UUID_FROM_APP_STORE_CONNECT",
+  "key_filepath": "/Users/swagger/.appstoreconnect/private_keys/AuthKey_HAKJH9GG0VFI.p8",
+  "duration": 1200,
+  "in_house": false
+}

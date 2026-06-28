@@ -32,6 +32,34 @@ def load_api_key!
 end
 
 platform :ios do
+  desc "Upload exported IPA (build/export/Mangasm.ipa) to App Store Connect"
+  lane :upload_build do
+    api_key_path = File.expand_path("api_key.json", __dir__)
+    if File.exist?(api_key_path)
+      api_key = Fastlane::Actions::AppStoreConnectApiKeyAction.run(
+        path: api_key_path,
+        duration: 1200,
+        in_house: false
+      )
+      Actions.lane_context[SharedValues::APP_STORE_CONNECT_API_KEY] = api_key
+    else
+      load_api_key!
+    end
+
+    ipa = ENV["MANGASM_IPA"] || File.expand_path("../build/export/Mangasm.ipa", __dir__)
+    UI.user_error!("IPA not found at #{ipa}. Run scripts/archive-build.sh first.") unless File.exist?(ipa)
+
+    # TestFlight-only upload avoids deliver version checks (ASC has invalid version "2cute4uVer1.0").
+    upload_to_testflight(
+      ipa: ipa,
+      skip_waiting_for_build_processing: true,
+      distribute_external: false,
+      notify_external_testers: false
+    )
+
+    UI.success("Uploaded #{ipa} — wait for 1.0.0 (8) Processing in TestFlight → Builds")
+  end
+
   desc "Enable App ID capabilities on developer.apple.com (no Xcode, API key only)"
   lane :enable_capabilities do
     load_api_key!
