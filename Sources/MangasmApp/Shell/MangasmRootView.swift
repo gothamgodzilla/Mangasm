@@ -17,13 +17,48 @@ public struct MangasmRootView: View {
         .environmentObject(state)
         .environmentObject(env)
         .environmentObject(store)
-        // Propagate StoreKit entitlement into AppState.premium
+        // Server premium wins once known; StoreKit is optimistic until then.
         .onChange(of: store.isPremium) { _, isPremium in
-            state.premium = isPremium
+            state.premium = PremiumResolver.isPremium(
+                serverVerified: env.profile.current().premium,
+                localEntitlement: isPremium
+            )
+        }
+        .onChange(of: state.phase) { _, phase in
+            guard phase == .app else { return }
+            Task { await Self.syncProfileFromServer(state: state, env: env, store: store) }
         }
         .task {
+            if let config = SupabaseConfig.fromInfoPlist() {
+                store.verifyBaseURL = config.url.absoluteString.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+            }
             await store.loadProducts()
             await store.updatePurchasedProducts()
+        }
+        .onOpenURL { url in
+            if let code = ReferralCode.parse(from: url) {
+                state.captureReferralCode(code)
+            }
+        }
+    }
+
+    @MainActor
+    private static func syncProfileFromServer(
+        state: AppState,
+        env: AppEnvironment,
+        store: StoreKitStore
+    ) async {
+        do {
+            try await env.profile.loadFromServer()
+            state.profile = env.profile.current()
+            state.visibility = env.profile.currentVisibility()
+            try? await env.matches.loadFromServer(viewerHobbies: state.profile.hobbies)
+            state.premium = PremiumResolver.isPremium(
+                serverVerified: state.profile.premium,
+                localEntitlement: store.isPremium
+            )
+        } catch {
+            // Stay on mock/seed data when offline or pre-auth; live auth still gates real entry.
         }
     }
 }

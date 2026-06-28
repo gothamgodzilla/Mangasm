@@ -229,6 +229,48 @@ public struct SettingsScreen: View {
                     }
                     .padding(.horizontal, 14)
 
+                    // ── Referral Team ──
+                    if !state.profile.referralCode.isEmpty {
+                        SectionLabel("Referral Team")
+                            .padding(.horizontal, 16)
+                            .padding(.top, 20)
+
+                        MGCard {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text("YOUR CODE")
+                                    .font(MGFont.mono(8.5))
+                                    .tracking(8.5 * 0.1)
+                                    .foregroundStyle(MGColor.inkFaint)
+
+                                Text(state.profile.referralCode)
+                                    .font(MGFont.serif(28, .bold))
+                                    .foregroundStyle(MGGradient.goldHeading)
+
+                                Text("\(state.profile.referralCount) successful invites · 5 = 1 free M+ month")
+                                    .font(MGFont.mono(8))
+                                    .foregroundStyle(MGColor.inkFaint)
+
+                                if let shareURL = ReferralCode.promoURL(for: state.profile.referralCode) {
+                                    ShareLink(item: shareURL, subject: Text("Join Mangasm Referral Team")) {
+                                        HStack {
+                                            Text("Share invite link")
+                                                .font(MGFont.sans(14, .semibold))
+                                                .foregroundStyle(MGColor.inkSoft)
+                                            Spacer()
+                                            Image(systemName: "square.and.arrow.up")
+                                                .foregroundStyle(MGColor.goldDeep)
+                                        }
+                                        .padding(.vertical, 10)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(13)
+                        }
+                        .padding(.horizontal, 14)
+                    }
+
                     // ── Demo / Preview Section ──
                     SectionLabel("Preview")
                         .padding(.horizontal, 16)
@@ -263,6 +305,26 @@ public struct SettingsScreen: View {
                             }
                             .padding(.vertical, 13)
                             .padding(.horizontal, 13)
+                        }
+                    }
+                    .padding(.horizontal, 14)
+
+                    // ── Legal & Support ──
+                    SectionLabel("Legal")
+                        .padding(.horizontal, 16)
+                        .padding(.top, 20)
+
+                    MGCard {
+                        VStack(spacing: 0) {
+                            SettingsLinkRow(title: "Privacy Policy", url: LegalURLs.privacy)
+                            Divider().opacity(0.2).padding(.horizontal, 13)
+                            SettingsLinkRow(title: "Community Guidelines", url: LegalURLs.terms)
+                            Divider().opacity(0.2).padding(.horizontal, 13)
+                            SettingsLinkRow(title: "Moderation Policy", url: LegalURLs.moderation)
+                            Divider().opacity(0.2).padding(.horizontal, 13)
+                            SettingsLinkRow(title: "Support", url: LegalURLs.support)
+                            Divider().opacity(0.2).padding(.horizontal, 13)
+                            SettingsLinkRow(title: LegalURLs.aiLabel, url: LegalURLs.ai)
                         }
                     }
                     .padding(.horizontal, 14)
@@ -446,6 +508,31 @@ private struct VisibilityToggleRow: View {
         }
         .padding(.vertical, 13)
         .padding(.horizontal, 13)
+    }
+}
+
+// MARK: - SettingsLinkRow
+
+private struct SettingsLinkRow: View {
+    let title: String
+    let url: String
+
+    var body: some View {
+        if let destination = URL(string: url) {
+            Link(destination: destination) {
+                HStack {
+                    Text(title)
+                        .font(MGFont.sans(14, .semibold))
+                        .foregroundStyle(MGColor.inkSoft)
+                    Spacer()
+                    Image(systemName: "arrow.up.right")
+                        .font(.system(size: 13, weight: .regular))
+                        .foregroundStyle(MGColor.inkFaint)
+                }
+                .padding(.vertical, 13)
+                .padding(.horizontal, 13)
+            }
+        }
     }
 }
 

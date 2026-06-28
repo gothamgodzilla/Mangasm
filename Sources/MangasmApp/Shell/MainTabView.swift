@@ -86,7 +86,11 @@ struct MainTabView: View {
         }
         // Settings sheet — Task 16
         .sheet(isPresented: $state.showSettings) {
-            SettingsScreen(onClose: { state.showSettings = false })
+            SettingsScreen(onClose: {
+                env.profile.apply(profile: state.profile, visibility: state.visibility)
+                state.showSettings = false
+                Task { try? await env.profile.saveToServer() }
+            })
                 .environmentObject(state)
                 .environmentObject(env)
         }

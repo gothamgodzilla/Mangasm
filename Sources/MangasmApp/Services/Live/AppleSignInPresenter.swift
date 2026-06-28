@@ -26,7 +26,7 @@ public final class AppleSignInPresenter: NSObject {
         }
     }
 
-    private func finish(_ result: Result<(String, String), Error>) {
+    private func finish(_ result: Result<(idToken: String, nonce: String), Error>) {
         guard let continuation else { return }
         self.continuation = nil
         continuation.resume(with: result)
@@ -45,7 +45,7 @@ extension AppleSignInPresenter: ASAuthorizationControllerDelegate {
             finish(.failure(AuthError.missingIdentityToken))
             return
         }
-        finish(.success((idToken, rawNonce)))
+        finish(.success((idToken: idToken, nonce: rawNonce)))
     }
 
     public func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {

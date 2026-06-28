@@ -42,6 +42,8 @@ public struct Profile: Identifiable, Hashable, Sendable {
     public var vouches: Int = 0
     public var aiMatch: Double = 0.0
     public var premium: Bool = false
+    public var referralCode: String = ""
+    public var referralCount: Int = 0
 
     public init(
         id: UUID = UUID(),
@@ -63,7 +65,9 @@ public struct Profile: Identifiable, Hashable, Sendable {
         photos: [String] = [],
         vouches: Int = 0,
         aiMatch: Double = 0.0,
-        premium: Bool = false
+        premium: Bool = false,
+        referralCode: String = "",
+        referralCount: Int = 0
     ) {
         self.id = id
         self.name = name
@@ -85,6 +89,8 @@ public struct Profile: Identifiable, Hashable, Sendable {
         self.vouches = vouches
         self.aiMatch = aiMatch
         self.premium = premium
+        self.referralCode = referralCode
+        self.referralCount = referralCount
     }
 
     /// Bio character limit — 300 free, 600 M+ (matches prototype Settings bio field max)
@@ -119,7 +125,7 @@ public struct Profile: Identifiable, Hashable, Sendable {
 
 // MARK: - Visibility
 // Mirrors VIS_DEFAULT from mangasm-shell.jsx
-public struct Visibility: Hashable, Sendable {
+public struct Visibility: Hashable, Sendable, Codable {
     public var headline: Bool
     public var hobbies: Bool
     public var position: Bool

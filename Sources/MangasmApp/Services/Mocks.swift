@@ -29,20 +29,43 @@ public final class MockAuthService: AuthService {
     }
 }
 
+// MARK: - MockReferralService
+@MainActor
+public final class MockReferralService: ReferralService {
+    public private(set) var lastRedeemedCode: String?
+
+    public init() {}
+
+    public func redeem(code: String) async throws -> ReferralRedeemResult {
+        lastRedeemedCode = code
+        return ReferralRedeemResult(ok: true, code: code.uppercased(), reward: nil)
+    }
+}
+
 // MARK: - MockProfileService
+@MainActor
 public final class MockProfileService: ProfileService {
     private var profile: Profile = .sample
+    private var visibility: Visibility = .sample
 
     public init() {}
 
     public func current() -> Profile { profile }
 
-    public func update(_ profile: Profile) {
+    public func currentVisibility() -> Visibility { visibility }
+
+    public func apply(profile: Profile, visibility: Visibility) {
         self.profile = profile
+        self.visibility = visibility
     }
+
+    public func loadFromServer() async throws {}
+
+    public func saveToServer() async throws {}
 }
 
 // MARK: - MockMatchService
+@MainActor
 public final class MockMatchService: MatchService {
     private let candidates: [Candidate] = Candidate.samples
     private var featuredIndex: Int = 0
@@ -60,6 +83,10 @@ public final class MockMatchService: MatchService {
 
     public func refresh() {
         featuredIndex = (featuredIndex + 1) % candidates.count
+    }
+
+    public func loadFromServer(viewerHobbies: [String]) async throws {
+        _ = viewerHobbies
     }
 }
 

@@ -13,19 +13,36 @@ public protocol AuthService {
     func deleteAccount() async throws
 }
 
+// MARK: - ReferralService
+/// Records a cartoon referral code after sign-up (validate-referral edge function).
+@MainActor
+public protocol ReferralService {
+    func redeem(code: String) async throws -> ReferralRedeemResult
+}
+
 // MARK: - ProfileService
-/// Reads and writes the current user's profile.
+/// Reads and writes the current user's profile (in-memory cache; live impl syncs to `profiles`).
+@MainActor
 public protocol ProfileService {
     func current() -> Profile
-    func update(_ profile: Profile)
+    func currentVisibility() -> Visibility
+    /// Replaces the in-memory cache (used by Settings bindings before save).
+    func apply(profile: Profile, visibility: Visibility)
+    /// Pulls the signed-in user's row from Supabase. No-op for mocks.
+    func loadFromServer() async throws
+    /// Persists editable fields to Supabase. No-op for mocks.
+    func saveToServer() async throws
 }
 
 // MARK: - MatchService
 /// Provides featured candidate and nearby candidates; refresh cycles the featured slot.
+@MainActor
 public protocol MatchService {
     func featured() -> Candidate
     func nearby() -> [Candidate]
     func refresh()
+    /// Loads discover candidates from `profiles` / `match_results`. No-op for mocks.
+    func loadFromServer(viewerHobbies: [String]) async throws
 }
 
 // MARK: - ChatService

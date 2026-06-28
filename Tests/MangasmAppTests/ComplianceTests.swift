@@ -9,6 +9,21 @@ final class ComplianceTests: XCTestCase {
 
     /// Fetishes ("into") are sensitive and must default to hidden until opt-in.
     /// (HIV status was removed from the app entirely — no health data is stored.)
+    func testBrandingDoesNotReferenceMangaReader() {
+        let forbidden = ["manga reader", "read more", "feel more", "premium manga"]
+        let corpus = [
+            Profile.sample.bio,
+            Profile.sample.headline,
+            EventItem.samples.map(\.title).joined(separator: " "),
+            EventItem.samples.map(\.description).joined(separator: " "),
+        ].joined(separator: " ").lowercased()
+
+        for phrase in forbidden {
+            XCTAssertFalse(corpus.contains(phrase),
+                           "seed data must not contain off-brand phrase: \(phrase)")
+        }
+    }
+
     func testSensitiveFieldsHiddenByDefault() {
         let v = Visibility()
         XCTAssertFalse(v.into, "into (fetishes) must default hidden")

@@ -12,6 +12,7 @@ public final class AppEnvironment: ObservableObject {
     public let events: any EventService
     public let reputation: any ReputationService
     public let safety: any SafetyService
+    public let referrals: any ReferralService
 
     public init(
         auth: any AuthService,
@@ -20,7 +21,8 @@ public final class AppEnvironment: ObservableObject {
         chat: any ChatService,
         events: any EventService,
         reputation: any ReputationService,
-        safety: any SafetyService
+        safety: any SafetyService,
+        referrals: any ReferralService
     ) {
         self.auth = auth
         self.profile = profile
@@ -29,6 +31,7 @@ public final class AppEnvironment: ObservableObject {
         self.events = events
         self.reputation = reputation
         self.safety = safety
+        self.referrals = referrals
     }
 
     /// Pre-built mock environment for previews, tests, and Simulator runs.
@@ -39,21 +42,27 @@ public final class AppEnvironment: ObservableObject {
         chat: MockChatService(),
         events: MockEventService(),
         reputation: MockReputationService(),
-        safety: MockSafetyService()
+        safety: MockSafetyService(),
+        referrals: MockReferralService()
     )
 
-    /// Live auth when Supabase keys are configured; other services stay mock until Phase 2.
+    /// Live auth + profile when Supabase keys are configured; other services stay mock until Phase 2.
     public static func makeDefault() -> AppEnvironment {
         guard let config = SupabaseConfig.fromInfoPlist() else { return .mock }
         let client = SupabaseClient(supabaseURL: config.url, supabaseKey: config.publishableKey)
         return AppEnvironment(
             auth: SupabaseAuthService(client: client, projectURL: config.url),
-            profile: MockProfileService(),
-            matches: MockMatchService(),
+            profile: SupabaseProfileService(client: client),
+            matches: SupabaseMatchService(client: client),
             chat: MockChatService(),
             events: MockEventService(),
             reputation: MockReputationService(),
-            safety: MockSafetyService()
+            safety: MockSafetyService(),
+            referrals: SupabaseReferralService(
+                client: client,
+                projectURL: config.url,
+                publishableKey: config.publishableKey
+            )
         )
     }
 }

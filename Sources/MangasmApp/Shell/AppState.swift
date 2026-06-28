@@ -20,7 +20,26 @@ public final class AppState: ObservableObject {
     @Published public var showSettings: Bool = false
     @Published public var profile: Profile = .sample
     @Published public var visibility: Visibility = .sample
-    public init() {}
+    /// Set when the full-screen 18+ gate is confirmed (pre-fills sign-in consent).
+    @Published public var ageGateAffirmed = false
+    /// Deep link / promo invite code, persisted until sign-in redeems it.
+    @Published public var pendingReferralCode: String {
+        didSet { UserDefaults.standard.set(pendingReferralCode, forKey: Self.pendingReferralKey) }
+    }
+
+    private static let pendingReferralKey = "pendingReferralCode"
+
+    public init() {
+        pendingReferralCode = UserDefaults.standard.string(forKey: Self.pendingReferralKey) ?? ""
+    }
+
+    public func captureReferralCode(_ raw: String) {
+        pendingReferralCode = ReferralCode.normalize(raw) ?? raw.uppercased()
+    }
+
+    public func clearPendingReferralCode() {
+        pendingReferralCode = ""
+    }
     public func enterApp() { phase = .app }
 
     /// Clears the local session after account deletion or sign-out: drops the
@@ -37,5 +56,7 @@ public final class AppState: ObservableObject {
         showSettings = false
         profile = .sample
         visibility = .sample
+        ageGateAffirmed = false
+        clearPendingReferralCode()
     }
 }

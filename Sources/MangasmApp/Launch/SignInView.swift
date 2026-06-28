@@ -25,6 +25,7 @@ public struct SignInView: View {
 
 private struct AuthSheet: View {
     @EnvironmentObject private var env: AppEnvironment
+    @EnvironmentObject private var state: AppState
 
     let onAuthenticated: () -> Void
 
@@ -32,6 +33,8 @@ private struct AuthSheet: View {
     @State private var nudge = false
     @State private var isLoading = false
     @State private var errorMessage: String?
+    @State private var inviteCode = ""
+    @State private var referralNotice: String?
 
     private let cream = Color(red: 245/255, green: 235/255, blue: 214/255)
 
@@ -68,14 +71,58 @@ private struct AuthSheet: View {
         Task { @MainActor in
             isLoading = true
             errorMessage = nil
+            referralNotice = nil
             defer { isLoading = false }
             do {
                 try await action()
+                await redeemInviteIfNeeded()
                 onAuthenticated()
             } catch {
                 errorMessage = error.localizedDescription
             }
         }
+    }
+
+    private func redeemInviteIfNeeded() async {
+        let raw = inviteCode.isEmpty ? state.pendingReferralCode : inviteCode
+        guard let code = ReferralCode.normalize(raw) else { return }
+        guard env.referrals is SupabaseReferralService else { return }
+
+        do {
+            _ = try await env.referrals.redeem(code: code)
+            referralNotice = "Welcome — you're on \(code)'s team."
+            state.clearPendingReferralCode()
+            inviteCode = ""
+        } catch let error as ReferralError {
+            referralNotice = error.localizedDescription
+        } catch {
+            referralNotice = error.localizedDescription
+        }
+    }
+
+    @ViewBuilder
+    private var inviteCodeField: some View {
+        let field = TextField("TWEETY, TAZ, ELMERFUDD…", text: $inviteCode)
+            .font(MGFont.mono(13))
+            .foregroundStyle(Color.white)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.white.opacity(0.08))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.white.opacity(0.18), lineWidth: 0.8)
+                    )
+            )
+            .accessibilityIdentifier("referral_code_field")
+        #if os(iOS)
+        field
+            .textInputAutocapitalization(.characters)
+            .autocorrectionDisabled()
+        #else
+        field
+        #endif
     }
 
     var body: some View {
@@ -100,6 +147,18 @@ private struct AuthSheet: View {
                     .padding(.top, 7)
             }
             .padding(.bottom, 18)
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text("INVITE CODE")
+                    .font(MGFont.mono(8))
+                    .tracking(8 * 0.2)
+                    .foregroundStyle(cream.opacity(0.55))
+                inviteCodeField
+                Text("Optional — enter a friend's cartoon code from the Referral Team.")
+                    .font(MGFont.mono(7.5))
+                    .foregroundStyle(cream.opacity(0.45))
+            }
+            .padding(.bottom, 14)
 
             VStack(spacing: 9) {
                 ProviderButton(kind: .apple) {
@@ -174,12 +233,8 @@ private struct AuthSheet: View {
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(accepted ? MGColor.goldDeep
                                              : (nudge ? Color(red: 0.85, green: 0.3, blue: 0.3) : cream.opacity(0.6)))
-                        Text("I confirm I'm 18+ and accept the Community Guidelines & Privacy Policy.")
-                            .font(MGFont.mono(7.5))
-                            .tracking(7.5 * 0.04)
-                            .foregroundStyle(cream.opacity(0.72))
+                        LegalConsentText(cream: cream)
                             .multilineTextAlignment(.leading)
-                            .lineSpacing(7.5 * 0.7)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                 }
@@ -193,6 +248,13 @@ private struct AuthSheet: View {
                         .accessibilityIdentifier("accept_nudge")
                 }
 
+                if let referralNotice {
+                    Text(referralNotice)
+                        .font(MGFont.mono(7.5))
+                        .foregroundStyle(cream.opacity(0.75))
+                        .multilineTextAlignment(.center)
+                }
+
                 if let errorMessage {
                     Text(errorMessage)
                         .font(MGFont.mono(7.5))
@@ -202,6 +264,12 @@ private struct AuthSheet: View {
             }
             .padding(.top, 14)
             .padding(.bottom, 30)
+        }
+        .onAppear {
+            if state.ageGateAffirmed { accepted = true }
+            if inviteCode.isEmpty, !state.pendingReferralCode.isEmpty {
+                inviteCode = state.pendingReferralCode
+            }
         }
         .padding(.horizontal, 22)
         .background(
