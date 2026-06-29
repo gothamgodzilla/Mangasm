@@ -4,8 +4,10 @@ import Foundation
 // MARK: - Product IDs
 
 public enum MangasmProduct: String, CaseIterable, Sendable {
-    case premiumMonthly     = "com.mangasm.app.premium.monthly"
-    case premiumPlusMonthly = "com.mangasm.app.premium_plus.monthly"
+    // Product IDs must match App Store Connect exactly. One M+ tier, two billing
+    // lengths: monthly ($9.99) and 3-month ($24.99).
+    case monthly   = "Mangasm2cute4u001"
+    case quarterly = "Mangasm0001"
 }
 
 // MARK: - StoreKitStore

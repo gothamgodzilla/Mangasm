@@ -168,17 +168,11 @@ private struct AuthSheet: View {
                         attemptMockEnter()
                     }
                 }
-                ProviderButton(kind: .google) {
-                    if usesLiveAuth {
-                        signIn { try await env.auth.signInWithGoogle(consent: consent) }
-                    } else {
+                if !usesLiveAuth {
+                    ProviderButton(kind: .google) {
                         attemptMockEnter()
                     }
-                }
-                ProviderButton(kind: .phone) {
-                    if usesLiveAuth {
-                        signIn { try await env.auth.signInWithPhone(consent: consent) }
-                    } else {
+                    ProviderButton(kind: .phone) {
                         attemptMockEnter()
                     }
                 }

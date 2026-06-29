@@ -22,6 +22,12 @@
     { "source": "/promo/", "destination": "/promo.html" },
     { "source": "/waitlist", "destination": "/promo.html" },
     { "source": "/waitlist/", "destination": "/promo.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/privacy/", "destination": "/privacy.html" },
+    { "source": "/terms", "destination": "/terms.html" },
+    { "source": "/terms/", "destination": "/terms.html" },
+    { "source": "/moderation", "destination": "/moderation.html" },
+    { "source": "/moderation/", "destination": "/moderation.html" },
     { "source": "/", "destination": "/index.html" }
   ]
 }

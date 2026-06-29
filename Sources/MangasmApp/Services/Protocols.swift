@@ -72,6 +72,7 @@ public protocol ReputationService {
 
 // MARK: - SafetyService
 /// Block/report actions required by App Store Guideline 1.2 (UGC safety).
+@MainActor
 public protocol SafetyService {
     func block(_ userID: String)
     func unblock(_ userID: String)

@@ -6,7 +6,8 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
-cp "$ROOT/web/"*.html "$ROOT/web/vercel.json" "$TMP/"
+cp "$ROOT/web/"*.html "$ROOT/web/vercel.json" "$ROOT/web/middleware.js" "$TMP/"
+cp -R "$ROOT/web/.well-known" "$TMP/"
 cd "$TMP"
 vercel link --project web --yes
 vercel deploy --prod --yes

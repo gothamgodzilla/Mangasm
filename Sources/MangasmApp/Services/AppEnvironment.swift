@@ -57,7 +57,7 @@ public final class AppEnvironment: ObservableObject {
             chat: MockChatService(),
             events: MockEventService(),
             reputation: MockReputationService(),
-            safety: MockSafetyService(),
+            safety: SupabaseSafetyService(client: client),
             referrals: SupabaseReferralService(
                 client: client,
                 projectURL: config.url,

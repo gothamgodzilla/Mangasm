@@ -169,8 +169,9 @@ private struct FilterChip: View {
 
 // MARK: - HostUpsellCard
 // Shown to free users. Tapping "Unlock M+" triggers a real StoreKit 2 purchase
-// for com.mangasm.app.premium.monthly ($9.99/mo). Price is read from the live
-// Product when available; falls back to "$9.99/mo".
+// for the monthly M+ subscription ($9.99/mo). Price is read from the live
+// Product when available; falls back to "$9.99/mo". A secondary affordance offers
+// the 3-month billing length ($24.99).
 private struct HostUpsellCard: View {
     @ObservedObject var store: StoreKitStore
     @State private var isPurchasing: Bool = false
@@ -178,12 +179,12 @@ private struct HostUpsellCard: View {
 
     /// The M+ monthly product, if loaded.
     private var premiumProduct: Product? {
-        store.products.first { $0.id == MangasmProduct.premiumMonthly.rawValue }
+        store.products.first { $0.id == MangasmProduct.monthly.rawValue }
     }
 
-    /// The M+ Plus monthly product, if loaded.
+    /// The M+ 3-month product, if loaded.
     private var premiumPlusProduct: Product? {
-        store.products.first { $0.id == MangasmProduct.premiumPlusMonthly.rawValue }
+        store.products.first { $0.id == MangasmProduct.quarterly.rawValue }
     }
 
     /// Display price for M+: live from App Store or static fallback.
@@ -285,7 +286,7 @@ private struct HostUpsellCard: View {
                             isPurchasing = false
                         }
                     } label: {
-                        Text("Or get M+ Plus \u{00B7} \(plusProduct.displayPrice)/mo")
+                        Text("Or get 3 months \u{00B7} \(plusProduct.displayPrice)")
                             .font(MGFont.mono(8.5))
                             .foregroundStyle(MGColor.goldDeep)
                     }

@@ -68,7 +68,13 @@ public final class SupabaseAuthService: AuthService {
         let given = meta["given_name"]?.stringValue ?? ""
         let family = meta["family_name"]?.stringValue ?? ""
         let combined = [given, family].filter { !$0.isEmpty }.joined(separator: " ")
-        let name = full.isEmpty ? (combined.isEmpty ? "Member" : combined) : full
+        let name = full.isEmpty ? combined : full
+
+        // Apple only sends the name on the FIRST authorization; on later logins
+        // these fields come back empty. Skip the write when we have no real name
+        // so we never overwrite a returning user's name (the profile row already
+        // exists — created by the handle_new_user trigger on signup).
+        guard !name.isEmpty else { return }
 
         struct ProfileRow: Encodable {
             let id: UUID

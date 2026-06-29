@@ -53,6 +53,9 @@ public struct MangasmRootView: View {
             state.profile = env.profile.current()
             state.visibility = env.profile.currentVisibility()
             try? await env.matches.loadFromServer(viewerHobbies: state.profile.hobbies)
+            if let safety = env.safety as? SupabaseSafetyService {
+                await safety.loadFromServer()
+            }
             state.premium = PremiumResolver.isPremium(
                 serverVerified: state.profile.premium,
                 localEntitlement: store.isPremium
