@@ -12,7 +12,7 @@
       "localizations" : [
         {
           "description" : "Unlock M+ premium features: event hosting, extended bio, fetishes visibility.",
-          "displayName" : "M+",
+          "displayName" : "Mangasm+",
           "locale" : "en_US"
         }
       ],
@@ -33,13 +33,13 @@
           "localizations" : [
             {
               "description" : "Unlock event hosting, extended bio (600 chars), and fetishes visibility.",
-              "displayName" : "M+ Monthly",
+              "displayName" : "Mangasm+ (Monthly)",
               "locale" : "en_US"
             }
           ],
-          "productID" : "com.mangasm.app.premium.monthly",
+          "productID" : "Mangasm2cute4u001",
           "recurringSubscriptionPeriod" : "P1M",
-          "referenceName" : "M+ Monthly",
+          "referenceName" : "Mangasm+ Monthly",
           "subscriptionGroupID" : "2E83E967",
           "type" : "RecurringSubscription"
         },
@@ -50,21 +50,21 @@
           "codeOffers" : [
 
           ],
-          "displayPrice" : "19.99",
+          "displayPrice" : "24.99",
           "familySharable" : false,
           "groupNumber" : 2,
           "internalID" : "2E83E969",
           "introductoryOffer" : null,
           "localizations" : [
             {
-              "description" : "M+ Plus — everything in M+, plus priority matching and extended filters.",
-              "displayName" : "M+ Plus Monthly",
+              "description" : "Same M+ features — billed every 3 months.",
+              "displayName" : "Mangasm+ (3-Month)",
               "locale" : "en_US"
             }
           ],
-          "productID" : "com.mangasm.app.premium_plus.monthly",
-          "recurringSubscriptionPeriod" : "P1M",
-          "referenceName" : "M+ Plus Monthly",
+          "productID" : "Mangasm0001",
+          "recurringSubscriptionPeriod" : "P3M",
+          "referenceName" : "Mangasm+ 3-Month",
           "subscriptionGroupID" : "2E83E967",
           "type" : "RecurringSubscription"
         }

@@ -183,7 +183,7 @@ private struct HostUpsellCard: View {
     }
 
     /// The M+ 3-month product, if loaded.
-    private var premiumPlusProduct: Product? {
+    private var quarterlyProduct: Product? {
         store.products.first { $0.id == MangasmProduct.quarterly.rawValue }
     }
 
@@ -270,8 +270,8 @@ private struct HostUpsellCard: View {
                 .disabled(isPurchasing)
                 .padding(.top, 13)
 
-                // M+ Plus secondary affordance (shown when product is available)
-                if let plusProduct = premiumPlusProduct {
+                // 3-month billing option (same M+ tier, longer commitment)
+                if let plusProduct = quarterlyProduct {
                     Button {
                         guard !isPurchasing else { return }
                         isPurchasing = true

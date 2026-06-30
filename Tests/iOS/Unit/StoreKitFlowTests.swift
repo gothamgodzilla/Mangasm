@@ -39,12 +39,12 @@ final class StoreKitFlowTests: XCTestCase {
         return store
     }
 
-    func testBothTiersLoadFromConfig() async throws {
+    func testBothBillingLengthsLoadFromConfig() async throws {
         let store = try await loadedStoreOrSkip()
         XCTAssertEqual(
             Set(store.products.map(\.id)),
             Set(MangasmProduct.allCases.map(\.rawValue)),
-            "Both M+ tiers must load from the StoreKit config"
+            "Monthly and 3-month M+ products must load from the StoreKit config"
         )
     }
 
@@ -58,7 +58,7 @@ final class StoreKitFlowTests: XCTestCase {
     func testPurchaseGrantsPremium() async throws {
         let store = try await loadedStoreOrSkip()
         let monthly = try XCTUnwrap(
-            store.products.first { $0.id == MangasmProduct.premiumMonthly.rawValue }
+            store.products.first { $0.id == MangasmProduct.monthly.rawValue }
         )
         let completed = try await store.purchase(monthly)
         XCTAssertTrue(completed, "purchase() should report success for a test purchase")

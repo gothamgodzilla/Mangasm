@@ -20,6 +20,9 @@ targets:
         product: MangasmApp
     entitlements:
       path: App/iOS/Mangasm.entitlements
+      properties:
+        com.apple.developer.applesignin:
+          - Default
     info:
       path: App/iOS/Info.plist
     settings:
