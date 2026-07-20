@@ -25,7 +25,7 @@ public final class StoreKitStore: ObservableObject {
 
     // MARK: Edge Function config
 
-    /// Base URL of the Supabase project, e.g. "https://hcpzbxplnkyythzwkovy.supabase.co"
+    /// Base URL of the Supabase project, e.g. "https://dvomzrvslwdabwcwtvrg.supabase.co"
     /// Set to a real value when the Edge Function is deployed. An empty string disables the POST.
     public var verifyBaseURL: String = ""
 
