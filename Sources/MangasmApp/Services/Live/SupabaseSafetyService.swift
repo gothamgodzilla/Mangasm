@@ -91,22 +91,44 @@ public final class SupabaseSafetyService: SafetyService {
         guard let reporterID = try? await currentUserID(),
               let targetID = UUID(uuidString: userID) else { return }
 
-        struct ReportInsert: Encodable {
+        let reasonDB = SafetyReasonMapper.dbValue(from: reason)
+
+        // Backend SoT uses `reported_id`; older iOS migrations used `target_id`.
+        // Try backend shape first, then fall back so live project schema either way.
+        struct ReportBackend: Encodable {
+            let reporter_id: UUID
+            let reported_id: UUID
+            let reason: String
+            let details: String
+        }
+        struct ReportLegacy: Encodable {
             let reporter_id: UUID
             let target_id: UUID
             let reason: String
             let details: String
         }
 
-        _ = try? await client
-            .from("reports")
-            .insert(ReportInsert(
-                reporter_id: reporterID,
-                target_id: targetID,
-                reason: SafetyReasonMapper.dbValue(from: reason),
-                details: reason
-            ))
-            .execute()
+        do {
+            try await client
+                .from("reports")
+                .insert(ReportBackend(
+                    reporter_id: reporterID,
+                    reported_id: targetID,
+                    reason: reasonDB,
+                    details: reason
+                ))
+                .execute()
+        } catch {
+            _ = try? await client
+                .from("reports")
+                .insert(ReportLegacy(
+                    reporter_id: reporterID,
+                    target_id: targetID,
+                    reason: reasonDB,
+                    details: reason
+                ))
+                .execute()
+        }
     }
 
     private func currentUserID() async throws -> UUID {
