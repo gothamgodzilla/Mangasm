@@ -185,12 +185,20 @@ public final class SupabaseChatService: ChatService {
             return
         }
 
+        // Fallback when RPC is not deployed: delete both directions (RLS may only
+        // allow the caller's sent rows; received rows need purge_conversation_with).
         guard let me = try? await currentUserID() else { return }
         _ = try? await client
             .from("messages")
             .delete()
             .eq("sender_id", value: me.uuidString)
             .eq("recipient_id", value: peer.uuidString)
+            .execute()
+        _ = try? await client
+            .from("messages")
+            .delete()
+            .eq("sender_id", value: peer.uuidString)
+            .eq("recipient_id", value: me.uuidString)
             .execute()
     }
 

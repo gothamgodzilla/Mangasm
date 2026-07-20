@@ -30,11 +30,14 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         PRODUCT_BUNDLE_IDENTIFIER: com.mangasm.app
         DEVELOPMENT_TEAM: 854XZ2543V
-        CODE_SIGN_STYLE: Automatic
+        # Manual App Store signing for swagger (Distribution cert + profile via ASC API).
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: "iPhone Distribution: Mark Webster (854XZ2543V)"
+        PROVISIONING_PROFILE_SPECIFIER: "Mangasm App Store 18"
         CODE_SIGN_ENTITLEMENTS: App/iOS/Mangasm.entitlements
         PRODUCT_NAME: Mangasm
         MARKETING_VERSION: "1.1.0"
-        CURRENT_PROJECT_VERSION: "14"
+        CURRENT_PROJECT_VERSION: "18"
         TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         INFOPLIST_KEY_CFBundleDisplayName: Mangasm

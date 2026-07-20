@@ -6,7 +6,7 @@
     },
     "mangasm-outreach": {
       "command": "node",
-      "args": ["/Users/swagger/Mangasm/mcp/outreach/index.mjs"]
+      "args": ["mcp/outreach/index.mjs"]
     }
   }
 }
