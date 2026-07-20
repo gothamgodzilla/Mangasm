@@ -107,6 +107,12 @@ public final class MockChatService: ChatService {
         messagesByConversation[conversationID] ?? []
     }
 
+    public func removeConversation(for candidateID: String) {
+        let removedIDs = Set(convos.filter { $0.candidateID == candidateID }.map(\.id))
+        convos.removeAll { $0.candidateID == candidateID }
+        removedIDs.forEach { messagesByConversation.removeValue(forKey: $0) }
+    }
+
     public func send(_ text: String, to conversationID: String) {
         let msg = Message(
             id: UUID().uuidString,

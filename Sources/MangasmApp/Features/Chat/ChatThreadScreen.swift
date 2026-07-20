@@ -209,7 +209,11 @@ public struct ChatThreadScreen: View {
                 // Block / Report overflow menu
                 Menu {
                     Button(role: .destructive) {
+                        // Remove the thread immediately so a blocked member can no longer
+                        // be viewed or messaged in the current session. SafetyService also
+                        // persists the block for subsequent sessions.
                         env.safety.block(conversation.candidateID)
+                        env.chat.removeConversation(for: conversation.candidateID)
                         onBack()
                     } label: {
                         Label("Block \(conversation.candidateName)", systemImage: "hand.raised")

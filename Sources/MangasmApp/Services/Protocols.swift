@@ -51,6 +51,9 @@ public protocol ChatService {
     func conversations() -> [Conversation]
     func messages(for conversationID: String) -> [Message]
     func send(_ text: String, to conversationID: String)
+    /// Immediately removes local conversation history for a blocked member.
+    /// The live backend must also exclude this member from future messaging.
+    func removeConversation(for candidateID: String)
     /// Find an existing conversation for a candidate, or create a new empty one.
     func conversation(for candidateID: String, name: String, avatarURL: String?) -> Conversation
 }
