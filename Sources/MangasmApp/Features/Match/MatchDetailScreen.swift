@@ -68,6 +68,8 @@ public struct MatchDetailScreen: View {
                         Menu {
                             Button(role: .destructive) {
                                 env.safety.block(candidate.id)
+                                // Keep chat list in balance: blocked member's thread is purged.
+                                env.chat.removeConversation(for: candidate.id)
                                 dismiss()
                             } label: {
                                 Label("Block \(candidate.name)", systemImage: "hand.raised")

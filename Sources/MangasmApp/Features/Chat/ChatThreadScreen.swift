@@ -28,6 +28,8 @@ public struct ChatThreadScreen: View {
     @State private var showReportReasons: Bool = false
     @State private var showReportConfirm: Bool = false
     @State private var reportConfirmMessage: String = ""
+    /// True while blocked-member thread plays dissolve-out (then remove + pop).
+    @State private var isDissolving: Bool = false
 
     // Resolve candidate from seed data for header metadata
     private var candidate: Candidate? {
@@ -67,10 +69,10 @@ public struct ChatThreadScreen: View {
                     ScrollView(.vertical, showsIndicators: false) {
                         LazyVStack(spacing: 13) {
                             ForEach(messages) { message in
-                                ChatBubble(message: message)
+                                ChatBubble(message: message, dissolving: isDissolving)
                                     .id(message.id)
                             }
-                            if showTyping {
+                            if showTyping && !isDissolving {
                                 TypingIndicator()
                                     .id("typing")
                             }
@@ -78,6 +80,8 @@ public struct ChatThreadScreen: View {
                         .padding(.horizontal, 14)
                         .padding(.top, 12)
                         .padding(.bottom, 10)
+                        .opacity(isDissolving ? 0 : 1)
+                        .scaleEffect(isDissolving ? 0.92 : 1, anchor: .center)
                     }
                     .onChange(of: messages.count) {
                         withAnimation {
@@ -209,12 +213,7 @@ public struct ChatThreadScreen: View {
                 // Block / Report overflow menu
                 Menu {
                     Button(role: .destructive) {
-                        // Remove the thread immediately so a blocked member can no longer
-                        // be viewed or messaged in the current session. SafetyService also
-                        // persists the block for subsequent sessions.
-                        env.safety.block(conversation.candidateID)
-                        env.chat.removeConversation(for: conversation.candidateID)
-                        onBack()
+                        blockAndDissolveThread()
                     } label: {
                         Label("Block \(conversation.candidateName)", systemImage: "hand.raised")
                     }
@@ -344,6 +343,23 @@ public struct ChatThreadScreen: View {
 
     // MARK: - Actions
 
+    /// Block member, play dissolve on all bubbles (sent + received), then purge thread.
+    /// Dissolve completing is the UX proof the conversation is gone.
+    private func blockAndDissolveThread() {
+        guard !isDissolving else { return }
+        env.safety.block(conversation.candidateID)
+        showTyping = false
+        withAnimation(.easeIn(duration: 0.45)) {
+            isDissolving = true
+        }
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 480_000_000)
+            env.chat.removeConversation(for: conversation.candidateID)
+            messages = []
+            onBack()
+        }
+    }
+
     private func send() {
         let text = draft.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
@@ -374,6 +390,8 @@ public struct ChatThreadScreen: View {
 
 private struct ChatBubble: View {
     let message: Message
+    /// When true, bubble runs exit dissolve (block / delete). Received + sent both dissolve.
+    var dissolving: Bool = false
 
     // Pop-in entrance
     @State private var appeared = false
@@ -385,9 +403,10 @@ private struct ChatBubble: View {
             if message.senderIsMe { Spacer(minLength: 60) }
 
             bubbleContent
-                .scaleEffect(appeared ? 1 : 0.7)
-                .opacity(appeared ? 1 : 0)
+                .scaleEffect(dissolveScale)
+                .opacity(dissolveOpacity)
                 .offset(y: floatOffset)
+                .blur(radius: dissolving ? 6 : 0)
                 .onAppear {
                     withAnimation(.spring(response: 0.42, dampingFraction: 0.68)) {
                         appeared = true
@@ -400,9 +419,27 @@ private struct ChatBubble: View {
                         floatOffset = message.senderIsMe ? -2.5 : -3
                     }
                 }
+                .onChange(of: dissolving) { _, isOut in
+                    if isOut {
+                        withAnimation(.easeIn(duration: 0.4)) {
+                            floatOffset = message.senderIsMe ? 12 : -12
+                        }
+                    }
+                }
 
             if !message.senderIsMe { Spacer(minLength: 60) }
         }
+        .accessibilityLabel(dissolving ? "Message deleting" : message.text)
+    }
+
+    private var dissolveOpacity: Double {
+        if dissolving { return 0 }
+        return appeared ? 1 : 0
+    }
+
+    private var dissolveScale: CGFloat {
+        if dissolving { return 0.55 }
+        return appeared ? 1 : 0.7
     }
 
     private var bubbleContent: some View {
