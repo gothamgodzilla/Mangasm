@@ -47,9 +47,10 @@ public struct SettingsScreen: View {
                             Image(systemName: "xmark")
                                 .resizable()
                                 .scaledToFit()
+                                .accessibilityLabel("Close")
                                 .frame(width: 13, height: 13)
                                 .foregroundStyle(MGColor.goldDeep)
-                                .frame(width: 32, height: 32)
+                                .frame(width: 44, height: 44)   // ≥44pt min touch target (a11y)
                                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 10))
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 10)

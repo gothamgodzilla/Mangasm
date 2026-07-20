@@ -133,6 +133,7 @@ public struct ChatThreadScreen: View {
                 // Back button
                 Button(action: onBack) {
                     Image(systemName: "chevron.left")
+                        .accessibilityLabel("Back")
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(MGColor.goldDeep)
                         .frame(width: 32, height: 32)
