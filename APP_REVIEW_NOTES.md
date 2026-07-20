@@ -33,8 +33,11 @@ controls are present and reachable:
    profiles and messages.
 2. **Report** — open any chat thread or a match's detail screen → overflow menu →
    "Report." Reports are sent to the backend `file-report` function.
-3. **Block** — same chat thread / match detail menu → "Block." Blocked users are
-   filtered from discovery and messaging (BlockPolicy).
+3. **Block** — same chat thread / match detail menu → "Block." The chat thread
+   plays a short dissolve animation on all bubbles, then is **removed from the
+   inbox** so the blocked member cannot be messaged in that session. Blocked
+   users are also filtered from discovery and messaging (BlockPolicy) on later
+   sessions. (TestFlight video can show: open chat → ⋯ → Block → dissolve → thread gone.)
 4. **Contact / account deletion** — Settings → **Delete Account** permanently
    purges the user's record from the backend (Supabase `delete-account` edge
    function: deletes the auth user; all owned rows cascade via ON DELETE CASCADE),
