@@ -20,7 +20,7 @@ final class SupabaseConfigTests: XCTestCase {
     func testDefaultURLPointsAtLiveHost() {
         XCTAssertEqual(
             SupabaseConfig.defaultURL.host,
-            "hcpzbxplnkyythzwkovy.supabase.co"
+            "dvomzrvslwdabwcwtvrg.supabase.co"
         )
     }
 }

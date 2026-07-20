@@ -12,9 +12,9 @@ public struct SupabaseConfig: Sendable {
     public let publishableKey: String
 
     /// Live project URL (public). Override via Info.plist `SUPABASE_URL`.
-    /// Confirmed resolving 2026-07-20 (`auth/v1/health` → 401 without apikey).
-    /// Prior default `zfwzrloxqqkkikedpruf` no longer resolves in DNS.
-    public static let defaultURL = URL(string: "https://hcpzbxplnkyythzwkovy.supabase.co")!
+    /// Active 2026-07-20: `dvomzrvslwdabwcwtvrg` (NEXT_PUBLIC / Mangasm client).
+    /// Prior: `hcpzbxplnkyythzwkovy`; dead DNS: `zfwzrloxqqkkikedpruf`.
+    public static let defaultURL = URL(string: "https://dvomzrvslwdabwcwtvrg.supabase.co")!
 
     /// Loads config from the app's Info.plist, falling back to the default URL.
     /// Returns nil if no publishable key is configured (so callers can stay on mocks).
