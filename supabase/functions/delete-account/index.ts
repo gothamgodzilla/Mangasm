@@ -1,34 +1,42 @@
 /**
- * delete-account — removes auth.users row (cascades all profile data).
- * Caller must send Authorization: Bearer <user JWT>.
+ * delete-account — App Store Guideline 5.1.1(v) / GDPR.
+ * Bearer user JWT required. Purges DMs, then auth.users (profiles cascade).
+ *
+ * Env: SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY|SUPABASE_ANON_KEY,
+ *      SUPABASE_SECRET_KEY|SUPABASE_SERVICE_ROLE_KEY
  */
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+const cors = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
 Deno.serve(async (req: Request) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: cors });
+  }
   if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), {
-      status: 405,
-      headers: { "Content-Type": "application/json" },
-    });
+    return json({ error: "Method not allowed" }, 405);
   }
 
   const authHeader = req.headers.get("Authorization");
   if (!authHeader?.startsWith("Bearer ")) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-      headers: { "Content-Type": "application/json" },
-    });
+    return json({ error: "Unauthorized" }, 401);
   }
 
   const url = Deno.env.get("SUPABASE_URL") ?? "";
-  const publishable = Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ?? "";
-  const secret = Deno.env.get("SUPABASE_SECRET_KEY") ?? Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+  const publishable =
+    Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ??
+    Deno.env.get("SUPABASE_ANON_KEY") ??
+    "";
+  const secret =
+    Deno.env.get("SUPABASE_SECRET_KEY") ??
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ??
+    "";
 
   if (!url || !publishable || !secret) {
-    return new Response(JSON.stringify({ error: "Server misconfigured" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return json({ error: "Server misconfigured" }, 500);
   }
 
   const userClient = createClient(url, publishable, {
@@ -37,20 +45,31 @@ Deno.serve(async (req: Request) => {
 
   const { data: userData, error: userError } = await userClient.auth.getUser();
   if (userError || !userData.user) {
-    return new Response(JSON.stringify({ error: "Invalid session" }), {
-      status: 401,
-      headers: { "Content-Type": "application/json" },
-    });
+    return json({ error: "Invalid session" }, 401);
   }
 
+  const userId = userData.user.id;
   const admin = createClient(url, secret);
-  const { error: deleteError } = await admin.auth.admin.deleteUser(userData.user.id);
+
+  // Explicit purge before auth delete (block/report/DM leftovers).
+  await admin
+    .from("messages")
+    .delete()
+    .or(`sender_id.eq.${userId},recipient_id.eq.${userId}`);
+  await admin.from("blocks").delete().eq("blocker_id", userId);
+  await admin.from("reports").delete().eq("reporter_id", userId);
+
+  const { error: deleteError } = await admin.auth.admin.deleteUser(userId);
   if (deleteError) {
-    return new Response(JSON.stringify({ error: deleteError.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return json({ error: deleteError.message }, 500);
   }
 
-  return new Response(null, { status: 204 });
+  return json({ deleted: true, userId }, 200);
 });
+
+function json(body: unknown, status: number) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...cors, "Content-Type": "application/json" },
+  });
+}

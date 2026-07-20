@@ -46,15 +46,16 @@ public final class AppEnvironment: ObservableObject {
         referrals: MockReferralService()
     )
 
-    /// Live auth + profile when Supabase keys are configured; other services stay mock until Phase 2.
+    /// Live auth + profile + chat + safety when Supabase keys are configured.
+    /// Events / reputation remain mock until their live services ship.
     public static func makeDefault() -> AppEnvironment {
         guard let config = SupabaseConfig.fromInfoPlist() else { return .mock }
         let client = SupabaseClient(supabaseURL: config.url, supabaseKey: config.publishableKey)
         return AppEnvironment(
-            auth: SupabaseAuthService(client: client, projectURL: config.url),
+            auth: SupabaseAuthService(client: client, projectURL: config.url, publishableKey: config.publishableKey),
             profile: SupabaseProfileService(client: client),
             matches: SupabaseMatchService(client: client),
-            chat: MockChatService(),
+            chat: SupabaseChatService(client: client),
             events: MockEventService(),
             reputation: MockReputationService(),
             safety: SupabaseSafetyService(client: client),

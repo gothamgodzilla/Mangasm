@@ -5,13 +5,15 @@ import Supabase
 public final class SupabaseAuthService: AuthService {
     private let client: SupabaseClient
     private let projectURL: URL
+    private let publishableKey: String
     #if canImport(AuthenticationServices) && canImport(UIKit)
     private let apple = AppleSignInPresenter()
     #endif
 
-    public init(client: SupabaseClient, projectURL: URL) {
+    public init(client: SupabaseClient, projectURL: URL, publishableKey: String = "") {
         self.client = client
         self.projectURL = projectURL
+        self.publishableKey = publishableKey
     }
 
     public func signInWithApple(consent: OnboardingConsent) async throws {
@@ -52,13 +54,21 @@ public final class SupabaseAuthService: AuthService {
         request.httpMethod = "POST"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        // Edge runtime expects apikey + user JWT (same pattern as PostgREST).
+        if !publishableKey.isEmpty {
+            request.setValue(publishableKey, forHTTPHeaderField: "apikey")
+        }
+        request.httpBody = Data("{}".utf8)
 
-        let (_, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await URLSession.shared.data(for: request)
         guard let http = response as? HTTPURLResponse, (200...299).contains(http.statusCode) else {
-            throw AuthError.server("Account deletion failed")
+            let detail = String(data: data, encoding: .utf8) ?? ""
+            throw AuthError.server(
+                detail.isEmpty ? "Account deletion failed" : "Account deletion failed: \(detail)"
+            )
         }
 
-        try await client.auth.signOut()
+        try? await client.auth.signOut()
     }
 
     private func upsertProfileFromAppleSession() async throws {

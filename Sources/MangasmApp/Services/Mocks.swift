@@ -91,58 +91,37 @@ public final class MockMatchService: MatchService {
 }
 
 // MARK: - MockChatService
+@MainActor
 public final class MockChatService: ChatService {
-    private var convos: [Conversation] = Conversation.samples
-    private var messagesByConversation: [String: [Message]]
+    private let inbox: ChatInboxCache
 
     public init() {
-        messagesByConversation = Dictionary(
-            uniqueKeysWithValues: Conversation.samples.map { ($0.id, $0.messages) }
-        )
+        self.inbox = ChatInboxCache(conversations: Conversation.samples)
     }
 
-    public func conversations() -> [Conversation] { convos }
+    public func conversations() -> [Conversation] { inbox.conversations() }
 
     public func messages(for conversationID: String) -> [Message] {
-        messagesByConversation[conversationID] ?? []
+        inbox.messages(for: conversationID)
     }
 
     public func removeConversation(for candidateID: String) {
-        let removedIDs = Set(convos.filter { $0.candidateID == candidateID }.map(\.id))
-        convos.removeAll { $0.candidateID == candidateID }
-        removedIDs.forEach { messagesByConversation.removeValue(forKey: $0) }
+        inbox.removeConversation(for: candidateID)
     }
 
     public func send(_ text: String, to conversationID: String) {
-        let msg = Message(
-            id: UUID().uuidString,
-            senderIsMe: true,
-            text: text,
-            timestamp: Date()
-        )
-        messagesByConversation[conversationID, default: []].append(msg)
-        // Update the conversation's message list for preview
-        if let idx = convos.firstIndex(where: { $0.id == conversationID }) {
-            convos[idx].messages.append(msg)
-        }
+        _ = inbox.send(text, to: conversationID)
     }
 
     /// Returns the existing conversation matching the candidateID, or creates and stores a new one.
     @discardableResult
     public func conversation(for candidateID: String, name: String, avatarURL: String?) -> Conversation {
-        if let existing = convos.first(where: { $0.candidateID == candidateID }) {
-            return existing
+        // Keep sample-style ids (`conv-m1`) for seeded candidates; stable UUID form for new peers.
+        inbox.conversation(for: candidateID, name: name, avatarURL: avatarURL) { id in
+            Conversation.samples.contains(where: { $0.candidateID == id })
+                ? (Conversation.samples.first { $0.candidateID == id }!.id)
+                : "conv-\(id)"
         }
-        let newConvo = Conversation(
-            id: "conv-\(candidateID)",
-            candidateID: candidateID,
-            candidateName: name,
-            candidateAvatarURL: avatarURL,
-            messages: []
-        )
-        convos.append(newConvo)
-        messagesByConversation[newConvo.id] = []
-        return newConvo
     }
 }
 

@@ -1,0 +1,73 @@
+{
+  "project": "Mangasm",
+  "kind": "ios-swiftui-package",
+  "generated": "2026-07-19",
+  "path": "/Users/babe/dev/mangasm/Mangasm",
+  "remote": "gothamgodzilla/Mangasm",
+  "platforms": ["iOS 17+", "macOS 14+ (preview)"],
+  "package_manager": "spm",
+  "swift_tools": "6.0",
+  "entry_points": {
+    "ios": "App/iOS/MangasmiOSApp.swift",
+    "preview": "Sources/MangasmPreview/main.swift",
+    "root_view": "Sources/MangasmApp/Shell/MangasmRootView.swift",
+    "di": "Sources/MangasmApp/Services/AppEnvironment.swift"
+  },
+  "structure": {
+    "library": "Sources/MangasmApp",
+    "features": ["Chat", "Discover", "Events", "Match", "Profile", "Settings", "Launch"],
+    "services_live": [
+      "SupabaseAuthService",
+      "SupabaseProfileService",
+      "SupabaseMatchService",
+      "SupabaseSafetyService",
+      "SupabaseReferralService"
+    ],
+    "services_mock_only_in_live": ["Events", "Reputation"],
+    "services_live_chat": "SupabaseChatService",
+    "domain": [
+      "BlockPolicy",
+      "AgeGate",
+      "OnboardingConsent",
+      "MessageCrypto",
+      "PremiumResolver",
+      "ReferralCode",
+      "SignInNonce"
+    ]
+  },
+  "gaps": [
+    "Deploy purge_conversation_with + delete-account on live Supabase",
+    "Events and Reputation still mock in live env",
+    "supabase/migrations may diverge from mangasm-backend",
+    "Codesign identities external blocker",
+    "mangasm.vercel.app alias still on old project until dashboard free"
+  ],
+  "revenue": {
+    "storekit": "Sources/MangasmApp/Services/StoreKitStore.swift",
+    "config": "Mangasm.storekit",
+    "verify_edge": "supabase/functions/verify-purchase"
+  },
+  "safety": {
+    "block_policy": "Sources/MangasmApp/Services/Domain/BlockPolicy.swift",
+    "live_safety": "Sources/MangasmApp/Services/Live/SupabaseSafetyService.swift",
+    "chat_block_ui": "Sources/MangasmApp/Features/Chat/ChatThreadScreen.swift",
+    "last_commit_note": "c74de2a dissolve then removeConversation"
+  },
+  "tests": {
+    "spm": "Tests/MangasmAppTests",
+    "ios_ui": "Tests/iOS/UI",
+    "ios_unit": "Tests/iOS/Unit",
+    "count_approx": 20
+  },
+  "commands": {
+    "preview": "swift run MangasmPreview",
+    "test": "swift test",
+    "all_tests": "./scripts/run-all-tests.sh"
+  },
+  "related": {
+    "backend": "/Users/babe/mangasm-backend",
+    "goals": "/Users/babe/dev/mangasm/GOALS.md",
+    "superclaude_map": "/Users/babe/mastermind-ai/mangasm/SUPERCLAUDE-MAP.md"
+  },
+  "token_note": "Prefer this index over full tree reads (~94% savings)"
+}

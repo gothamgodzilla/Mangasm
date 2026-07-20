@@ -56,6 +56,9 @@ public struct MangasmRootView: View {
             if let safety = env.safety as? SupabaseSafetyService {
                 await safety.loadFromServer()
             }
+            if let chat = env.chat as? SupabaseChatService {
+                await chat.loadFromServer()
+            }
             state.premium = PremiumResolver.isPremium(
                 serverVerified: state.profile.premium,
                 localEntitlement: store.isPremium

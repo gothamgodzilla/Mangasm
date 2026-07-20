@@ -47,6 +47,8 @@ public protocol MatchService {
 
 // MARK: - ChatService
 /// Provides conversations and messages; supports sending new messages.
+/// Main-actor isolated so live SupabaseChatService can share UI-thread cache safely.
+@MainActor
 public protocol ChatService {
     func conversations() -> [Conversation]
     func messages(for conversationID: String) -> [Message]
