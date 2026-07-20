@@ -16,7 +16,7 @@ set -a
 source "$SECRETS"
 set +a
 
-URL="${MANGASM_SUPABASE_URL:-${SUPABASE_URL:-https://hcpzbxplnkyythzwkovy.supabase.co}}"
+URL="${MANGASM_SUPABASE_URL:-${SUPABASE_URL:-https://dvomzrvslwdabwcwtvrg.supabase.co}}"
 KEY="${MANGASM_SUPABASE_PUBLISHABLE_KEY:-${SUPABASE_PUBLISHABLE_KEY:-${SUPABASE_ANON_KEY:-}}}"
 
 if [[ -z "$KEY" || "$KEY" == PLACEHOLDER* ]]; then

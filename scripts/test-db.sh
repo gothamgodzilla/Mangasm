@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Phase 2 DB tests: apply migrations 0001-0003 + auth shim to a local Postgres
+# Phase 2 DB tests: apply the full migration chain + auth shim to a local Postgres
 # (Docker) and run RLS/trigger assertions. No Supabase CLI / remote project needed.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -27,7 +27,7 @@ docker exec "$CONTAINER" psql -U postgres -q \
   -c "drop schema if exists public cascade; create schema public; drop schema if exists auth cascade;" >/dev/null
 
 run < supabase/tests/auth_shim.sql >/dev/null
-for m in supabase/migrations/0001_*.sql supabase/migrations/0002_*.sql supabase/migrations/0003_*.sql; do
+for m in supabase/migrations/[0-9]*.sql; do
   run < "$m" >/dev/null
 done
 docker exec "$CONTAINER" psql -U postgres -q \

@@ -1,0 +1,80 @@
+name: CI
+
+# Deterministic, host-runnable checks for the two surfaces GitHub-hosted
+# runners can verify without Apple code-signing secrets:
+#   * Supabase — apply the full migration chain to a throwaway Postgres and
+#     run the RLS / trigger assertions.
+#   * Vercel/web — validate the static site config and edge middleware.
+# The iOS (Xcode) suite requires a signed simulator build and runs on Apple
+# hardware via `scripts/run-all-tests.sh`; it is intentionally not in CI.
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  supabase-db:
+    name: Supabase migrations + RLS tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install psql client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends postgresql-client
+      - name: Apply migrations and run RLS tests
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: 5432
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          PGDATABASE: postgres
+        run: bash scripts/ci-db-test.sh
+
+  web:
+    name: Vercel/web validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Validate JSON config
+        run: |
+          for f in web/vercel.json web/.well-known/apple-app-site-association; do
+            node -e "JSON.parse(require('fs').readFileSync('$f','utf8')); console.log('OK: $f')"
+          done
+      - name: Syntax-check edge middleware
+        run: node --check web/middleware.js
+      - name: Verify required static pages exist
+        run: |
+          missing=0
+          for f in index.html ios.html privacy.html terms.html moderation.html promo.html; do
+            if [ ! -f "web/$f" ]; then echo "MISSING: web/$f"; missing=1; fi
+          done
+          [ "$missing" -eq 0 ] && echo "All required static pages present"
+          exit "$missing"
