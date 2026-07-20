@@ -21,7 +21,9 @@ You are the Mangasm build agent. Mangasm is a **safety-first, luxury/elite gay d
 - DMs get true end-to-end encryption: per-device X25519 keypair (private key in Secure Enclave/Keychain, never uploaded), `device_keys` table for public keys, message bodies encrypted client-side (CryptoKit / libsodium sealed-box). Set `ITSAppUsesNonExemptEncryption=YES` and file an ERN. **Never display an "end-to-end encrypted" claim in a shipped build until the crypto is real** — until then label "Encrypted in transit."
 
 ## Backend safety
-- Dev Supabase project: `pwmddvigardiyhqtihdw`. **Never apply DDL to the shared project `hcpzbxplnkyythzwkovy`.**
+- **Live Supabase project: `dvomzrvslwdabwcwtvrg`** (see `docs/handoff/INFRA_SYNC.md` — that file is authoritative and wins over any ref stated elsewhere, including here).
+- **Retired refs — do NOT use anywhere:** `zfwzrloxqqkkikedpruf` (dead DNS), `hcpzbxplnkyythzwkovy` (prior project), `pwmddvigardiyhqtihdw` (old dev project).
+- Confirm the target ref against `INFRA_SYNC.md` before applying any DDL.
 - Fix RLS leaks: `using(true)` on profiles/events exposes HIV/socials/location — enforce per-field `visibility` and RSVP-gated event location via views or column RLS.
 - The mutual-like→match and rep_score triggers must be REAL `create function`/`create trigger`, not comments.
 
