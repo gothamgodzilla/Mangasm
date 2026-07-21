@@ -72,6 +72,7 @@ from this iOS build.)
         - `Mangasm0001`        → $24.99 / 3 months
       Just confirm both are **"Ready to Submit"** and attached to this version.
       (iOS uses StoreKit, NOT Stripe — confirmed in code.)
-- [ ] Privacy nutrition label, screenshots, 1024 icon, privacy policy URL, age
-      rating (ASC clicks).
+- [x] **Age rating** — questionnaire completed in App Store Connect.
+- [ ] Privacy nutrition label, screenshots, 1024 icon, privacy policy URL (ASC
+      clicks).
 - [ ] Demo email/password account created and login-tested on a clean install.
