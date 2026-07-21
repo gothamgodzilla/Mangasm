@@ -57,7 +57,7 @@ platform :ios do
       notify_external_testers: false
     )
 
-    UI.success("Uploaded #{ipa} — wait for 1.1.0 (18) Processing in TestFlight → Builds")
+    UI.success("Uploaded #{ipa} — wait for the new build to finish Processing in TestFlight → Builds")
   end
 
   desc "Enable App ID capabilities on developer.apple.com (no Xcode, API key only)"
