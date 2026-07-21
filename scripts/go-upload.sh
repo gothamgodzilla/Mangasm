@@ -24,5 +24,7 @@ fi
 cd "$ROOT"
 fastlane upload_build
 
+VER="$(grep -m1 'MARKETING_VERSION:' project.yml | sed -E 's/.*"([^"]+)".*/\1/')"
+BUILD="$(grep -m1 'CURRENT_PROJECT_VERSION:' project.yml | sed -E 's/.*"([^"]+)".*/\1/')"
 echo ""
-echo "✓ Upload started. Watch TestFlight → Builds for 1.1.0 (18)"
+echo "✓ Upload started. Watch TestFlight → Builds for ${VER} (${BUILD})"
