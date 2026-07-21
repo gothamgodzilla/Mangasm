@@ -5,7 +5,7 @@ Personalized **safety-first** pitches vs Grindr / Scruff / Sniffies / Adam4Adam 
 ## Install
 
 ```bash
-cd /Users/swagger/Mangasm/mcp/outreach
+cd mcp/outreach   # from the repo root
 npm install
 ```
 
@@ -16,7 +16,7 @@ npm install
   "mcpServers": {
     "mangasm-outreach": {
       "command": "node",
-      "args": ["/Users/swagger/Mangasm/mcp/outreach/index.mjs"]
+      "args": ["mcp/outreach/index.mjs"]
     }
   }
 }
