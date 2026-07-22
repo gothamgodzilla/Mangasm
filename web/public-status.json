@@ -1,0 +1,51 @@
+{
+  "updated": "2026-07-19T16:52:46.276Z",
+  "project": "Mangasm",
+  "public": true,
+  "headline": "Building in public",
+  "tagline": "Safety-first gay social — connection without extraction",
+  "completion_pct": 9,
+  "hours_to_complete_est": 95,
+  "current_milestone": "Getting the app ready for the App Store",
+  "current_milestone_plain": "Getting the app ready for the App Store",
+  "what_were_building": "A safety-first home: report & block in reach, privacy-zone location, honest Apple subscriptions, full account deletion — no data-sale ad model.",
+  "phases": [
+    {
+      "id": "1",
+      "label": "Foundation & story",
+      "done": true
+    },
+    {
+      "id": "2",
+      "label": "Store setup",
+      "done": false
+    },
+    {
+      "id": "3",
+      "label": "Screenshots & listing",
+      "done": false
+    },
+    {
+      "id": "4",
+      "label": "Subscriptions",
+      "done": false
+    },
+    {
+      "id": "5",
+      "label": "Beta testing",
+      "done": false
+    },
+    {
+      "id": "6",
+      "label": "App Store review → launch",
+      "done": false
+    }
+  ],
+  "promises": [
+    "No selling user data for ads",
+    "Report & block controls",
+    "You can delete your account",
+    "Building status stays visible on this page"
+  ],
+  "disclaimer": "Hours and percent are honest estimates of remaining work, not a ship date guarantee."
+}
