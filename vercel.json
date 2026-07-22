@@ -1,0 +1,96 @@
+{
+  "headers": [
+    {
+      "source": "/.well-known/apple-app-site-association",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "ios.mangasm.app"
+        }
+      ],
+      "destination": "/ios.html"
+    },
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "ios.mangasm.app"
+        }
+      ],
+      "destination": "/ios.html"
+    },
+    {
+      "source": "/promo",
+      "destination": "/promo.html"
+    },
+    {
+      "source": "/promo/",
+      "destination": "/promo.html"
+    },
+    {
+      "source": "/waitlist",
+      "destination": "/promo.html"
+    },
+    {
+      "source": "/waitlist/",
+      "destination": "/promo.html"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/privacy.html"
+    },
+    {
+      "source": "/privacy/",
+      "destination": "/privacy.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms.html"
+    },
+    {
+      "source": "/terms/",
+      "destination": "/terms.html"
+    },
+    {
+      "source": "/moderation",
+      "destination": "/moderation.html"
+    },
+    {
+      "source": "/moderation/",
+      "destination": "/moderation.html"
+    },
+    {
+      "source": "/storybook",
+      "destination": "/storybook.html"
+    },
+    {
+      "source": "/storybook/",
+      "destination": "/storybook.html"
+    },
+    {
+      "source": "/autopsy",
+      "destination": "/storybook.html"
+    },
+    {
+      "source": "/autopsy/",
+      "destination": "/storybook.html"
+    },
+    {
+      "source": "/",
+      "destination": "/index.html"
+    }
+  ],
+  "outputDirectory": "web"
+}
