@@ -13,6 +13,9 @@ public final class AppEnvironment: ObservableObject {
     public let reputation: any ReputationService
     public let safety: any SafetyService
     public let referrals: any ReferralService
+    /// Returns the current session's access token, or nil when signed out.
+    /// Edge Function calls use this as the Bearer credential (auth: 'user').
+    public let accessTokenProvider: (@Sendable () async -> String?)?
 
     public init(
         auth: any AuthService,
@@ -22,7 +25,8 @@ public final class AppEnvironment: ObservableObject {
         events: any EventService,
         reputation: any ReputationService,
         safety: any SafetyService,
-        referrals: any ReferralService
+        referrals: any ReferralService,
+        accessTokenProvider: (@Sendable () async -> String?)? = nil
     ) {
         self.auth = auth
         self.profile = profile
@@ -32,6 +36,7 @@ public final class AppEnvironment: ObservableObject {
         self.reputation = reputation
         self.safety = safety
         self.referrals = referrals
+        self.accessTokenProvider = accessTokenProvider
     }
 
     /// Pre-built mock environment for previews, tests, and Simulator runs.
@@ -63,7 +68,8 @@ public final class AppEnvironment: ObservableObject {
                 client: client,
                 projectURL: config.url,
                 publishableKey: config.publishableKey
-            )
+            ),
+            accessTokenProvider: { (try? await client.auth.session)?.accessToken }
         )
     }
 }
