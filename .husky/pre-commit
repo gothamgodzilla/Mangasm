@@ -1,0 +1,4 @@
+npx lint-staged
+if command -v swift >/dev/null 2>&1; then
+  swift test --parallel
+fi

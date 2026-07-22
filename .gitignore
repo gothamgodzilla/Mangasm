@@ -19,3 +19,6 @@ fastlane/README.md
 supabase/.temp/
 mcp/outreach/node_modules/
 .vercel
+
+# npm pre-commit tooling
+node_modules/
