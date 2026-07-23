@@ -7,6 +7,10 @@ public protocol AuthService {
     func signInWithApple(consent: OnboardingConsent) async throws
     func signInWithGoogle(consent: OnboardingConsent) async throws
     func signInWithPhone(consent: OnboardingConsent) async throws
+    /// Email/password sign-in — required so App Review can use a demo account
+    /// (reviewers cannot use Sign in with Apple). Sign-in only; accounts are
+    /// provisioned server-side (phase1-auth spec §4a, decision Q3).
+    func signInWithEmail(email: String, password: String, consent: OnboardingConsent) async throws
     /// Previews/tests when no Supabase config is present.
     func enterMock(consent: OnboardingConsent) async throws
     /// Permanently deletes the current account and all associated data (Guideline 5.1.1(v)).

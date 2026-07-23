@@ -49,7 +49,17 @@ public final class AppEnvironment: ObservableObject {
     /// Live auth + profile + chat + safety when Supabase keys are configured.
     /// Events / reputation remain mock until their live services ship.
     public static func makeDefault() -> AppEnvironment {
-        guard let config = SupabaseConfig.fromInfoPlist() else { return .mock }
+        guard let config = SupabaseConfig.fromInfoPlist() else {
+            #if DEBUG
+            // Previews, tests, and Simulator runs without secrets use mocks.
+            return .mock
+            #else
+            // A Release binary without Supabase config would silently ship
+            // all-mock services — every safety control would be fake in front
+            // of App Review (blocker B3, phase1-auth spec §Architecture.3).
+            fatalError("SupabaseConfig missing from Info.plist — Release builds must not fall back to mock services.")
+            #endif
+        }
         let client = SupabaseClient(supabaseURL: config.url, supabaseKey: config.publishableKey)
         return AppEnvironment(
             auth: SupabaseAuthService(client: client, projectURL: config.url, publishableKey: config.publishableKey),

@@ -43,8 +43,10 @@ controls are present and reachable:
    function: deletes the auth user; all owned rows cascade via ON DELETE CASCADE),
    then signs out. This satisfies the account-deletion requirement.
 
-**Location privacy:** the map never shows raw GPS. Coordinates are jittered to a
-neighborhood-level "privacy zone" — this is intentional, not a bug.
+**Location privacy:** the app collects **no location data at all** — there is no
+CoreLocation usage anywhere in the binary and the privacy manifest declares none.
+The "map" on Discover is a stylized illustration, and any location shown on a
+member card is self-reported profile text, never GPS.
 
 **Encryption:** transport is standard HTTPS. Direct messages are additionally
 end-to-end encrypted on device using Apple CryptoKit's standard algorithms

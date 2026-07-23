@@ -29,11 +29,12 @@ public final class ChatInboxCache {
         messagesByConversation[conversationID] ?? []
     }
 
-    /// Appends a local sent message. Returns the new message, or nil if text empty.
+    /// Appends a local sent message. Returns the new message, or nil if the text
+    /// is empty or rejected by the objectionable-content filter (Guideline 1.2).
     @discardableResult
     public func send(_ text: String, to conversationID: String) -> Message? {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return nil }
+        guard !trimmed.isEmpty, ContentFilter.isAcceptable(trimmed) else { return nil }
 
         let msg = Message(
             id: UUID().uuidString,

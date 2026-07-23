@@ -16,17 +16,38 @@ public enum MatchError: LocalizedError, Sendable {
 @MainActor
 public final class SupabaseMatchService: MatchService {
     private let client: SupabaseClient
-    private var candidates: [Candidate] = Candidate.samples
+    // Live mode never seeds fake members (blocker B4): empty until the server
+    // responds, and an explicitly-labeled placeholder fills the featured slot.
+    private var candidates: [Candidate] = []
     private var featuredIndex = 0
     private var blockPolicy = BlockPolicy()
     private var viewerHobbies: [String] = Profile.sample.hobbies
+
+    /// Clearly-marked onboarding placeholder for the featured slot when the
+    /// network has no real candidates yet. Not a person; no distance shown.
+    static let emptyStatePlaceholder = Candidate(
+        id: "demo-empty-state",
+        name: "Mangasm Preview",
+        age: 0,
+        distanceLabel: "Demo content",
+        matchPct: 0,
+        astro: "",
+        chinese: "",
+        lifePath: 0,
+        position: "",
+        sharedInterests: [],
+        hobbies: [],
+        bio: "Real members appear here as the community grows. Check back soon — or invite your circle.",
+        notes: CompatNotes(astro: "", numerology: "", chinese: ""),
+        avatarURL: nil
+    )
 
     public init(client: SupabaseClient) {
         self.client = client
     }
 
     public func featured() -> Candidate {
-        guard !candidates.isEmpty else { return .sample }
+        guard !candidates.isEmpty else { return Self.emptyStatePlaceholder }
         return candidates[featuredIndex % candidates.count]
     }
 
@@ -93,13 +114,9 @@ public final class SupabaseMatchService: MatchService {
 
         mapped = blockPolicy.visible(mapped, viewer: userID.uuidString, id: \.id)
 
-        if mapped.count < 3 {
-            let existing = Set(mapped.map(\.id))
-            let filler = Candidate.samples.filter { !existing.contains($0.id) }
-            mapped.append(contentsOf: filler.prefix(3 - mapped.count))
-        }
-
-        candidates = mapped.isEmpty ? Candidate.samples : mapped
+        // B4: never backfill with Candidate.samples in live mode — the reviewer
+        // (and every member on a sparse network) sees only real rows.
+        candidates = mapped
         featuredIndex = 0
     }
 

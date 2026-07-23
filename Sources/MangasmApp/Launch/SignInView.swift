@@ -35,6 +35,8 @@ private struct AuthSheet: View {
     @State private var errorMessage: String?
     @State private var inviteCode = ""
     @State private var referralNotice: String?
+    @State private var email = ""
+    @State private var password = ""
 
     private let cream = Color(red: 245/255, green: 235/255, blue: 214/255)
 
@@ -98,6 +100,82 @@ private struct AuthSheet: View {
         } catch {
             referralNotice = error.localizedDescription
         }
+    }
+
+    /// Email/password sign-in (phase1-auth spec §4a). Sign-in only — accounts
+    /// are provisioned server-side; App Review's demo account uses this path.
+    /// SIWA stays above this section so it remains the most prominent option
+    /// (Guideline 4.8).
+    @ViewBuilder
+    private var emailPasswordSection: some View {
+        VStack(spacing: 9) {
+            authTextField(
+                TextField("Email", text: $email),
+                identifier: "email_field",
+                keyboardIsEmail: true
+            )
+            authTextField(
+                SecureField("Password", text: $password),
+                identifier: "password_field",
+                keyboardIsEmail: false
+            )
+
+            Button {
+                signIn {
+                    try await env.auth.signInWithEmail(email: email, password: password, consent: consent)
+                }
+            } label: {
+                Text(isLoading ? "Signing in…" : "Sign in with Email")
+                    .font(MGFont.serif(15, .bold))
+                    .tracking(15 * 0.03)
+                    .foregroundStyle(MGColor.goldText)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 13)
+                    .background(
+                        RoundedRectangle(cornerRadius: 14)
+                            .fill(LinearGradient(
+                                colors: [MGColor.goldBright, MGColor.gold, MGColor.goldDeep],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ))
+                            .shadow(color: MGColor.gold.opacity(0.5), radius: 12, x: 0, y: 8)
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14)
+                            .stroke(Color.white.opacity(0.5), lineWidth: 0.7)
+                            .allowsHitTesting(false)
+                    )
+            }
+            .buttonStyle(.plain)
+            .disabled(isLoading || email.isEmpty || password.isEmpty)
+            .accessibilityIdentifier("email_sign_in_button")
+        }
+    }
+
+    @ViewBuilder
+    private func authTextField(_ field: some View, identifier: String, keyboardIsEmail: Bool) -> some View {
+        let styled = field
+            .font(MGFont.mono(13))
+            .foregroundStyle(Color.white)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.white.opacity(0.08))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.white.opacity(0.18), lineWidth: 0.8)
+                    )
+            )
+            .accessibilityIdentifier(identifier)
+        #if os(iOS)
+        styled
+            .textInputAutocapitalization(.never)
+            .autocorrectionDisabled()
+            .keyboardType(keyboardIsEmail ? .emailAddress : .default)
+        #else
+        styled
+        #endif
     }
 
     @ViewBuilder
@@ -192,30 +270,36 @@ private struct AuthSheet: View {
             .padding(.vertical, 15)
             .padding(.horizontal, 4)
 
-            Button(action: attemptMockEnter) {
-                Text(isLoading ? "Signing in…" : "Enter the community →")
-                    .font(MGFont.serif(16, .bold))
-                    .tracking(16 * 0.04)
-                    .foregroundStyle(MGColor.goldText)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 15)
-                    .background(
-                        RoundedRectangle(cornerRadius: 15)
-                            .fill(LinearGradient(
-                                colors: [MGColor.goldBright, MGColor.gold, MGColor.goldDeep],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ))
-                            .shadow(color: MGColor.gold.opacity(0.7), radius: 16, x: 0, y: 12)
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 15)
-                            .stroke(Color.white.opacity(0.5), lineWidth: 0.7)
-                            .allowsHitTesting(false)
-                    )
+            if usesLiveAuth {
+                emailPasswordSection
+            } else {
+                // Mock-only fast entry for previews/dev. Never rendered with live
+                // auth — the live app is login-gated (App Review notes claim).
+                Button(action: attemptMockEnter) {
+                    Text(isLoading ? "Signing in…" : "Enter the community →")
+                        .font(MGFont.serif(16, .bold))
+                        .tracking(16 * 0.04)
+                        .foregroundStyle(MGColor.goldText)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 15)
+                        .background(
+                            RoundedRectangle(cornerRadius: 15)
+                                .fill(LinearGradient(
+                                    colors: [MGColor.goldBright, MGColor.gold, MGColor.goldDeep],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ))
+                                .shadow(color: MGColor.gold.opacity(0.7), radius: 16, x: 0, y: 12)
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 15)
+                                .stroke(Color.white.opacity(0.5), lineWidth: 0.7)
+                                .allowsHitTesting(false)
+                        )
+                }
+                .buttonStyle(.plain)
+                .disabled(isLoading)
             }
-            .buttonStyle(.plain)
-            .disabled(isLoading)
 
             VStack(spacing: 7) {
                 Button {
