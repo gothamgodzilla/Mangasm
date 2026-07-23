@@ -16,8 +16,9 @@ Username:  review-demo@mangasm.app      (or any mailbox you control)
 Password:  __________________________   ← create this; do NOT leave blank
 ```
 
-Create it once via the app's Email sign-up, confirm the email, then verify you can
-log in with it on a clean install before submitting.
+The app is sign-in-only (no in-app sign-up): create the account in the Supabase
+dashboard (Auth → Users → Add user, with email confirmed), then verify you can
+log in with it in the app on a clean install before submitting.
 
 ---
 
