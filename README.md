@@ -138,8 +138,12 @@ Version numbers live in `project.yml` (`MARKETING_VERSION` / `CURRENT_PROJECT_VE
 
 ## Known limitations
 
-- **Mock backend only** — all data is seeded from `Profile.sample`, `Candidate.samples`, etc. No real auth, network calls, or persistence.
+_Updated 2026-07-23 — the earlier "mock-only prototype" description was stale. See `SPEC_INDEX.md` for the authoritative claim/blocker status._
+
+- **Live/mock split** — real Supabase services live in `Sources/MangasmApp/Services/Live/` (auth, profile, match, chat, safety, referral) and are selected when `SupabaseConfig` is present in Info.plist; otherwise the app falls back to the mock environment (`AppEnvironment.swift`). Previews and tests intentionally use mocks. ⚠️ The fallback is currently unconditional — a Release archive without config silently ships all-mock services (review-polish blocker B3).
+- **Live auth is Sign in with Apple only** — Google/phone buttons render in mock mode only; email/password sign-in is specified (phase-1 auth spec §4a) but not yet built (blocker B2).
+- **No content filter yet** — moderation/filtering on messages and profiles is not implemented (blocker B1).
+- **Map is stylized, not functional** — `FakeMap` renders gradient streets and pinned avatars; no MapKit, no GPS, no location collection of any kind. Live Discover currently backfills `Candidate.samples` when the DB returns few rows (blocker B4).
+- **DMs are E2E-encrypted** (`MessageCrypto.swift`, CryptoKit sealed boxes), but the client chat schema has drifted from the repo migrations and the live DB (blocker B5).
 - **Placeholder art / fonts** — `lambo_hero.jpg` and `runway.mp4` are the bundled prototype assets. Custom OFL fonts are not included; system fallbacks are active.
-- **Map is stylized, not functional** — `FakeMap` renders gradient streets and pinned avatars; it does not use MapKit or real GPS data.
-- **Auth controls are visual only** — every provider button and "Enter" control calls `onEnter()` and advances the phase. No real OAuth flow is wired.
 - **macOS preview is a dev tool** — `MangasmPreview` is excluded from the iOS product; it exists solely to let engineers run screens on a Mac.

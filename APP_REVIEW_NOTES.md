@@ -46,8 +46,11 @@ controls are present and reachable:
 **Location privacy:** the map never shows raw GPS. Coordinates are jittered to a
 neighborhood-level "privacy zone" — this is intentional, not a bug.
 
-**Encryption:** the app uses only standard HTTPS; ITSAppUsesNonExemptEncryption is
-set to NO (no export-compliance documentation required).
+**Encryption:** transport is standard HTTPS. Direct messages are additionally
+end-to-end encrypted on device using Apple CryptoKit's standard algorithms
+(Curve25519 sealed boxes) — the server stores ciphertext only. No proprietary
+cryptography is used; ITSAppUsesNonExemptEncryption is set to NO because the app
+uses only Apple-provided, standard/exempt algorithms.
 
 **Payments:** in-app subscriptions use Apple StoreKit / In-App Purchase. (Any
 Stripe code in the project is for the separate web surface only and is not reachable
@@ -67,8 +70,7 @@ from this iOS build.)
 - [ ] **Deploy** the `delete-account` edge function to the live Supabase project:
       `supabase functions deploy delete-account`
 - [x] **In-App Purchases** — code now matches the EXISTING ASC product IDs
-      (one M+ tier, two billing lengths):
-        - `Mangasm2cute4u001`  → $9.99 / 1 month
+      (one M+ tier, two billing lengths): - `Mangasm2cute4u001` → $9.99 / 1 month
         - `Mangasm0001`        → $24.99 / 3 months
       Just confirm both are **"Ready to Submit"** and attached to this version.
       (iOS uses StoreKit, NOT Stripe — confirmed in code.)
