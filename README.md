@@ -39,7 +39,7 @@ xcodebuild -scheme MangasmApp -destination 'generic/platform=iOS Simulator' buil
 swift test
 ```
 
-Expected: 27 tests, 0 failures across `AppStateTests`, `ModelTests`, `ServiceTests`, `SkylineTests`, `ThemeTests`.
+Expected: 85 tests, 0 failures across `AppStateTests`, `ModelTests`, `ServiceTests`, `SkylineTests`, `ThemeTests`, and the compliance/crypto/chat suites.
 
 ## Architecture
 
@@ -73,12 +73,12 @@ Tests/
 
 ### Key types
 
-| Type | Role |
-|------|------|
-| `AppState` | `@EnvironmentObject` — phase (launch/app), tab, weather, profile, selectedMatch |
-| `AppEnvironment` | `@EnvironmentObject` — DI container holding service protocol instances |
-| `MGColor` / `MGFont` / `MGGradient` | Design-system tokens (single source of truth) |
-| `MangasmRootView` | Root router: launch phase → `LaunchFlow`; app phase → `MainTabView` |
+| Type                                | Role                                                                            |
+| ----------------------------------- | ------------------------------------------------------------------------------- |
+| `AppState`                          | `@EnvironmentObject` — phase (launch/app), tab, weather, profile, selectedMatch |
+| `AppEnvironment`                    | `@EnvironmentObject` — DI container holding service protocol instances          |
+| `MGColor` / `MGFont` / `MGGradient` | Design-system tokens (single source of truth)                                   |
+| `MangasmRootView`                   | Root router: launch phase → `LaunchFlow`; app phase → `MainTabView`             |
 
 ### Routing flow
 
@@ -115,16 +115,26 @@ Until the files are present, `MGFont` falls back transparently to system `.serif
 
 ## Production assets
 
-| Asset | Status |
-|-------|--------|
-| `lambo_hero.jpg` | Bundled — Lamborghini background photo |
-| `runway.mp4` | Bundled — splash screen runway video |
+| Asset             | Status                                    |
+| ----------------- | ----------------------------------------- |
+| `lambo_hero.jpg`  | Bundled — Lamborghini background photo    |
+| `runway.mp4`      | Bundled — splash screen runway video      |
 | Font `.ttf` files | Not bundled — add from Google Fonts (OFL) |
 
 ## Spec and plan
 
 - Design spec: [`docs/superpowers/specs/2026-06-21-mangasm-launch-and-app-design.md`](docs/superpowers/specs/2026-06-21-mangasm-launch-and-app-design.md)
 - Implementation plan: [`docs/superpowers/plans/2026-06-21-mangasm-launch-and-app.md`](docs/superpowers/plans/2026-06-21-mangasm-launch-and-app.md)
+
+## Release history
+
+Version numbers live in `project.yml` (`MARKETING_VERSION` / `CURRENT_PROJECT_VERSION`); the XcodeGen project and Info.plist inherit from there.
+
+| Version (build) | Date       | Branch                        | Changes                                                                                                                 |
+| --------------- | ---------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| 1.1.0 (21)      | 2026-07-23 | `ci/ios-build-21`             | Build-number bump for the next App Store / TestFlight upload of `com.mangasm.app`. No code changes over build 20.       |
+| 1.1.0 (20)      | 2026-07-22 | `ci/ios-build-20`             | Pre-commit hooks, graphics polish for App Review, storybook shipped on mangasm.app; archived and uploaded via fastlane. |
+| 1.1.0 (19)      | —          | `ci/ios-build-19-export-auth` | Export/auth work for the 1.1.0 upload pipeline.                                                                         |
 
 ## Known limitations
 
