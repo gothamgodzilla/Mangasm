@@ -24,3 +24,20 @@ final class SupabaseConfigTests: XCTestCase {
         )
     }
 }
+
+extension SupabaseConfigTests {
+    /// Build-23 regression: xcconfig comment truncation produced "https:",
+    /// which URL(string:) happily parses — resolveURL must reject it.
+    func testTruncatedXcconfigURLFallsBackToDefault() {
+        XCTAssertEqual(SupabaseConfig.resolveURL("https:"), SupabaseConfig.defaultURL)
+        XCTAssertEqual(SupabaseConfig.resolveURL("https://"), SupabaseConfig.defaultURL)
+        XCTAssertEqual(SupabaseConfig.resolveURL("$(SUPABASE_URL)"), SupabaseConfig.defaultURL)
+        XCTAssertEqual(SupabaseConfig.resolveURL(nil), SupabaseConfig.defaultURL)
+        XCTAssertEqual(SupabaseConfig.resolveURL(""), SupabaseConfig.defaultURL)
+    }
+
+    func testRealURLIsAccepted() {
+        let real = "https://dvomzrvslwdabwcwtvrg.supabase.co"
+        XCTAssertEqual(SupabaseConfig.resolveURL(real).absoluteString, real)
+    }
+}

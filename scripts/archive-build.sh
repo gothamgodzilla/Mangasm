@@ -59,4 +59,13 @@ if [[ -z "$EMBEDDED_KEY" || "$EMBEDDED_KEY" == *'$('* || "${#EMBEDDED_KEY}" -lt 
 fi
 echo "✓ Supabase config embedded (key length ${#EMBEDDED_KEY})"
 
+# If a URL is embedded it must be a real https://host (build-23 shipped a
+# truncated "https:" via the xcconfig //-comment gotcha). Absent is fine —
+# the app falls back to SupabaseConfig.defaultURL.
+EMBEDDED_URL="$(plutil -extract SUPABASE_URL raw "$APP_PLIST" 2>/dev/null || true)"
+if [[ -n "$EMBEDDED_URL" ]] && ! [[ "$EMBEDDED_URL" =~ ^https://[a-z0-9.-]+ ]]; then
+  echo "✗ SUPABASE_URL embedded but malformed ('$EMBEDDED_URL') — xcconfig //-comment truncation?" >&2
+  exit 1
+fi
+
 echo "✓ build/export/Mangasm.ipa ready"
