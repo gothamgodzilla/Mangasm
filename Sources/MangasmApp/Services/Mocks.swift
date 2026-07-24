@@ -20,6 +20,10 @@ public final class MockAuthService: AuthService {
         try await enterMock(consent: consent)
     }
 
+    public func signInWithEmail(email: String, password: String, consent: OnboardingConsent) async throws {
+        try await enterMock(consent: consent)
+    }
+
     public func enterMock(consent: OnboardingConsent) async throws {
         guard consent.mayEnter else { throw AuthError.consentRequired }
     }

@@ -11,32 +11,47 @@ submitting as-is risks rejection under Guidelines 1.2 (UGC controls) and 2.3.1
 (inaccurate metadata). Making the code match the notes (chosen remedy) requires the
 blockers below; the majors close the gaps a reviewer could stumble into.
 
+## Status 2026-07-23 (see SPEC_INDEX.md claim matrix for detail)
+
+Code for all five blockers landed on `ci/ios-build-21` (post-build-21-upload; ships in build 22+):
+
+- **B1 ✅ code** — `ContentFilter` on message send + profile save; `ContentFilterTests`; server trigger written in migration 0008 (live apply pending).
+- **B2 ✅ code** — email/password sign-in (sign-in-only, Q3) in `SupabaseAuthService` + `SignInView`; mock "Enter" button no longer renders in live builds. Demo account creation + clean-install test still pending (user).
+- **B3 ✅** — Release builds now `fatalError` when SupabaseConfig is missing; mock fallback is Debug-only.
+- **B4 ✅** — sample backfill removed from live match service; empty featured slot shows a labeled "Demo content" placeholder (Q4); notes' location paragraph rewritten (no location collected at all).
+- **B5 ⚠️ code-side done** — migration 0008 canonicalizes the flat messages schema (aborts if a populated conversation_id table exists) + blocks-aware insert RLS; `delete-account` no longer swallows purge errors. **Still gated on `supabase login`:** live-schema diff, apply 0008, deploy `delete-account`, then the live E2E acceptance (send DM → block → purge; delete account → rows gone, verified by query).
+
 ## Confirmed BLOCKERS (must fix before submit)
 
 ### B1 — No content filter exists (claim #1 is false)
+
 - Message path: `ChatThreadScreen.swift:363-378` → `SupabaseChatService.swift:161-176` inserts raw body; only whitespace trimming (`ChatInboxCache.swift:34-44`).
 - Profile path: `SupabaseMatchService.swift:61-94` renders raw bio/headline. No backend trigger/constraint/function inspects content.
 - **Requirement:** objectionable-content filtering applied to message send and profile save (shared denylist in the domain layer + server-side enforcement), with regression tests that fail without the filter.
 - **Acceptance:** typing test profanity into a bio or message is filtered/rejected in the live build.
 
 ### B2 — No email/password login exists in live auth (demo account impossible)
+
 - `SignInView.swift:163-179`: when `usesLiveAuth`, ONLY Sign in with Apple renders; Google/Phone buttons are mock-mode only; the only TextField is the invite code.
 - Review notes promise an email/password demo login (required — reviewers can't use SIWA). Demo creds "Opal" exist in secrets.env but no UI can consume them.
 - **Requirement:** email/password sign-in reachable in live mode (Supabase email provider already enabled per notes).
 - **Acceptance:** clean install → log in with the Opal demo credentials → reach the main tabs.
 
 ### B3 — Archive silently falls back to all-mock services
+
 - `AppEnvironment.swift:52` returns the mock environment when `SupabaseConfig.fromInfoPlist()` is nil; adversarial check escalated to blocker after inspecting the actual archive. Mock blocks/reports are in-memory only — every 1.2 control would be fake in front of the reviewer.
 - **Requirement:** the shipped archive must run live services; missing config must fail the build (not silently mock).
 - **Acceptance:** archive build boots against `dvomzrvslwdabwcwtvrg`; a debug assertion/CI check proves config is embedded.
 
 ### B4 — Location claim is fiction; fake distance labels shown in live mode
+
 - Zero CoreLocation/MapKit anywhere; `PrivacyInfo.xcprivacy` declares no location; the "map" is decorative `FakeMap.swift`. Notes claim coordinates are "jittered" — Apple can read the privacy manifest and will see the contradiction (2.3.1).
 - Worse: `SupabaseMatchService.swift:96-102` backfills the LIVE candidate list with `Candidate.samples` (fake profiles with fake "km" distances) whenever the DB returns few rows — the reviewer, on an empty network, will see mostly fake people.
-- **Requirement:** rewrite the location paragraph truthfully (stronger story: *no location is collected at all*); stop backfilling sample candidates in live mode (or label them as demo content); remove fake distance labels from live surfaces.
+- **Requirement:** rewrite the location paragraph truthfully (stronger story: _no location is collected at all_); stop backfilling sample candidates in live mode (or label them as demo content); remove fake distance labels from live surfaces.
 - **Acceptance:** notes match the privacy manifest; live Discover shows only real rows (or clearly-marked onboarding content).
 
 ### B5 — Client ↔ schema drift; live DB is missing migrations
+
 - Client chat uses `sender_id`/`recipient_id` (`SupabaseChatService.swift:60-67,166-175`); repo migrations define `conversation_id`-based messages with RLS on conversation membership (`0001:83-91`, `0004:66,72`). Live probe (unauth, harmless) confirmed `purge_conversation_with` RPC absent on `dvomzrvslwdabwcwtvrg` (PGRST202); prior note says messages table itself was missing.
 - `delete-account/index.ts:55-58` deletes messages by `recipient_id` — a column the repo schema doesn't have — and never checks the result: **account deletion would silently not purge messages** (claim #4 at risk).
 - **Requirement:** one canonical messages schema (client shape vs repo migrations reconciled), applied deliberately to the live project — respecting the open `mangasm-backend` migration-lineage hazard — then `delete-account` fixed to match and deployed.

@@ -27,13 +27,9 @@ Deno.serve(async (req: Request) => {
 
   const url = Deno.env.get("SUPABASE_URL") ?? "";
   const publishable =
-    Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ??
-    Deno.env.get("SUPABASE_ANON_KEY") ??
-    "";
+    Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ?? Deno.env.get("SUPABASE_ANON_KEY") ?? "";
   const secret =
-    Deno.env.get("SUPABASE_SECRET_KEY") ??
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ??
-    "";
+    Deno.env.get("SUPABASE_SECRET_KEY") ?? Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
   if (!url || !publishable || !secret) {
     return json({ error: "Server misconfigured" }, 500);
@@ -52,12 +48,23 @@ Deno.serve(async (req: Request) => {
   const admin = createClient(url, secret);
 
   // Explicit purge before auth delete (block/report/DM leftovers).
-  await admin
-    .from("messages")
-    .delete()
-    .or(`sender_id.eq.${userId},recipient_id.eq.${userId}`);
-  await admin.from("blocks").delete().eq("blocker_id", userId);
-  await admin.from("reports").delete().eq("reporter_id", userId);
+  // Errors here must FAIL the deletion (B5): a swallowed purge error would
+  // delete the auth user while leaving their messages behind.
+  const purges: Array<[string, { error: { message: string } | null }]> = [
+    [
+      "messages",
+      await admin.from("messages").delete().or(`sender_id.eq.${userId},recipient_id.eq.${userId}`),
+    ],
+    ["blocks", await admin.from("blocks").delete().eq("blocker_id", userId)],
+    ["reports", await admin.from("reports").delete().eq("reporter_id", userId)],
+  ];
+  for (const [table, { error }] of purges) {
+    // A missing table is tolerated (schema not yet migrated everywhere);
+    // any other failure aborts so no partial deletion happens.
+    if (error && !/does not exist|relation .* not/i.test(error.message)) {
+      return json({ error: `Purge failed for ${table}: ${error.message}` }, 500);
+    }
+  }
 
   const { error: deleteError } = await admin.auth.admin.deleteUser(userId);
   if (deleteError) {

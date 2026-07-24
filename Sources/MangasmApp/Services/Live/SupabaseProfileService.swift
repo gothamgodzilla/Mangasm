@@ -53,6 +53,15 @@ public final class SupabaseProfileService: ProfileService {
     }
 
     public func saveToServer() async throws {
+        if ContentFilter.profileViolation(
+            name: profile.name,
+            headline: profile.headline,
+            bio: profile.bio,
+            hobbies: profile.hobbies
+        ) != nil {
+            throw ProfileError.server("Your profile contains language that violates our community guidelines. Please edit and try again.")
+        }
+
         let userID = try await currentUserID()
         let payload = ProfileRowMapper.updatePayload(profile: profile, visibility: visibility)
 

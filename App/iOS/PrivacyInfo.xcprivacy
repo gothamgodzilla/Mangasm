@@ -3,18 +3,16 @@
 <!--
   Privacy manifest for the Mangasm iOS app target.
 
-  BASELINE — honest for the CURRENT binary, which uses no required-reason APIs
-  directly and ships no analytics/tracking SDKs. This MUST be extended in Phase 2
-  when SDKs are added:
-    - supabase-swift persists the session via UserDefaults -> add CA92.1 under
-      NSPrivacyAccessedAPITypes (NSPrivacyAccessedAPICategoryUserDefaults).
-    - StoreKit purchases -> declare "Purchases" under NSPrivacyCollectedDataTypes.
-    - Precise location (Discover) -> add NSPrivacyCollectedDataTypePreciseLocation
-      + the WhenInUse usage string in Info.plist settings.
-    - Photos/camera (avatar upload) -> declare "Photos or Videos".
-  Sensitive categories (health/HIV, sexual orientation) are collected only with
-  explicit opt-in consent and must be declared accurately in the App Store Connect
-  nutrition label as well as here.
+  Updated 2026-07-23 for the live-services binary (build 21+). The Phase-0
+  "empty baseline" no longer matched the shipped app: supabase-swift live
+  services, Sign in with Apple, StoreKit purchases, and E2E-encrypted DMs are
+  all in the binary. Declarations below reflect that. Keep this file in sync
+  with the App Store Connect nutrition label — see SPEC_INDEX.md.
+
+  Still NOT collected (do not declare until shipped): location of any kind
+  (no CoreLocation anywhere), photos/camera (avatar upload not shipped),
+  contacts, tracking of any kind. Health data was removed entirely
+  (roadmap Decision D) and must not be reintroduced.
 -->
 <plist version="1.0">
 <dict>
@@ -22,9 +20,102 @@
     <false/>
     <key>NSPrivacyTrackingDomains</key>
     <array/>
-    <key>NSPrivacyCollectedDataTypes</key>
-    <array/>
     <key>NSPrivacyAccessedAPITypes</key>
-    <array/>
+    <array>
+        <!-- supabase-swift persists the auth session via UserDefaults -->
+        <dict>
+            <key>NSPrivacyAccessedAPIType</key>
+            <string>NSPrivacyAccessedAPICategoryUserDefaults</string>
+            <key>NSPrivacyAccessedAPITypeReasons</key>
+            <array>
+                <string>CA92.1</string>
+            </array>
+        </dict>
+    </array>
+    <key>NSPrivacyCollectedDataTypes</key>
+    <array>
+        <!-- Auth: email (SIWA relay or email provider) -->
+        <dict>
+            <key>NSPrivacyCollectedDataType</key>
+            <string>NSPrivacyCollectedDataTypeEmailAddress</string>
+            <key>NSPrivacyCollectedDataTypeLinked</key>
+            <true/>
+            <key>NSPrivacyCollectedDataTypeTracking</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypePurposes</key>
+            <array>
+                <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+            </array>
+        </dict>
+        <!-- Supabase auth.users id, referenced by all owned rows -->
+        <dict>
+            <key>NSPrivacyCollectedDataType</key>
+            <string>NSPrivacyCollectedDataTypeUserID</string>
+            <key>NSPrivacyCollectedDataTypeLinked</key>
+            <true/>
+            <key>NSPrivacyCollectedDataTypeTracking</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypePurposes</key>
+            <array>
+                <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+            </array>
+        </dict>
+        <!-- Profile display name / handle -->
+        <dict>
+            <key>NSPrivacyCollectedDataType</key>
+            <string>NSPrivacyCollectedDataTypeName</string>
+            <key>NSPrivacyCollectedDataTypeLinked</key>
+            <true/>
+            <key>NSPrivacyCollectedDataTypeTracking</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypePurposes</key>
+            <array>
+                <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+            </array>
+        </dict>
+        <!-- Profiles (bio/headline) and DMs. DM bodies are E2E-encrypted
+             client-side; the server stores ciphertext only. -->
+        <dict>
+            <key>NSPrivacyCollectedDataType</key>
+            <string>NSPrivacyCollectedDataTypeOtherUserContent</string>
+            <key>NSPrivacyCollectedDataTypeLinked</key>
+            <true/>
+            <key>NSPrivacyCollectedDataTypeTracking</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypePurposes</key>
+            <array>
+                <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+            </array>
+        </dict>
+        <!-- StoreKit subscriptions; verify-purchase edge function binds
+             entitlement to the user id -->
+        <dict>
+            <key>NSPrivacyCollectedDataType</key>
+            <string>NSPrivacyCollectedDataTypePurchaseHistory</string>
+            <key>NSPrivacyCollectedDataTypeLinked</key>
+            <true/>
+            <key>NSPrivacyCollectedDataTypeTracking</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypePurposes</key>
+            <array>
+                <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+            </array>
+        </dict>
+        <!-- A profile on a gay dating app inherently discloses sexual
+             orientation (opt-in by signing up; declared per Apple's
+             Sensitive Info category) -->
+        <dict>
+            <key>NSPrivacyCollectedDataType</key>
+            <string>NSPrivacyCollectedDataTypeSensitiveInfo</string>
+            <key>NSPrivacyCollectedDataTypeLinked</key>
+            <true/>
+            <key>NSPrivacyCollectedDataTypeTracking</key>
+            <false/>
+            <key>NSPrivacyCollectedDataTypePurposes</key>
+            <array>
+                <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+            </array>
+        </dict>
+    </array>
 </dict>
 </plist>

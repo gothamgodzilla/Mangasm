@@ -30,6 +30,16 @@ public final class SupabaseAuthService: AuthService {
         #endif
     }
 
+    public func signInWithEmail(email: String, password: String, consent: OnboardingConsent) async throws {
+        guard consent.mayEnter else { throw AuthError.consentRequired }
+        let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedEmail.isEmpty, !password.isEmpty else {
+            throw AuthError.server("Enter your email and password.")
+        }
+        try await client.auth.signIn(email: trimmedEmail, password: password)
+        try await logConsent(consent)
+    }
+
     public func signInWithGoogle(consent: OnboardingConsent) async throws {
         guard consent.mayEnter else { throw AuthError.consentRequired }
         throw AuthError.notImplemented("Google sign-in")

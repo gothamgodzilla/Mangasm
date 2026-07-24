@@ -1,0 +1,7 @@
+npx lint-staged
+# Full Swift suite only when Swift code/tests/package config are staged —
+# docs/config commits shouldn't pay the ~1 min build+test tax.
+if command -v swift >/dev/null 2>&1 \
+   && git diff --cached --name-only | grep -qE '\.swift$|^Package\.(swift|resolved)$|^Tests/'; then
+  swift test --parallel
+fi

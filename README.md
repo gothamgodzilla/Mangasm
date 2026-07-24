@@ -39,7 +39,7 @@ xcodebuild -scheme MangasmApp -destination 'generic/platform=iOS Simulator' buil
 swift test
 ```
 
-Expected: 27 tests, 0 failures across `AppStateTests`, `ModelTests`, `ServiceTests`, `SkylineTests`, `ThemeTests`.
+Expected: 85 tests, 0 failures across `AppStateTests`, `ModelTests`, `ServiceTests`, `SkylineTests`, `ThemeTests`, and the compliance/crypto/chat suites.
 
 ## Architecture
 
@@ -73,12 +73,12 @@ Tests/
 
 ### Key types
 
-| Type | Role |
-|------|------|
-| `AppState` | `@EnvironmentObject` — phase (launch/app), tab, weather, profile, selectedMatch |
-| `AppEnvironment` | `@EnvironmentObject` — DI container holding service protocol instances |
-| `MGColor` / `MGFont` / `MGGradient` | Design-system tokens (single source of truth) |
-| `MangasmRootView` | Root router: launch phase → `LaunchFlow`; app phase → `MainTabView` |
+| Type                                | Role                                                                            |
+| ----------------------------------- | ------------------------------------------------------------------------------- |
+| `AppState`                          | `@EnvironmentObject` — phase (launch/app), tab, weather, profile, selectedMatch |
+| `AppEnvironment`                    | `@EnvironmentObject` — DI container holding service protocol instances          |
+| `MGColor` / `MGFont` / `MGGradient` | Design-system tokens (single source of truth)                                   |
+| `MangasmRootView`                   | Root router: launch phase → `LaunchFlow`; app phase → `MainTabView`             |
 
 ### Routing flow
 
@@ -115,10 +115,10 @@ Until the files are present, `MGFont` falls back transparently to system `.serif
 
 ## Production assets
 
-| Asset | Status |
-|-------|--------|
-| `lambo_hero.jpg` | Bundled — Lamborghini background photo |
-| `runway.mp4` | Bundled — splash screen runway video |
+| Asset             | Status                                    |
+| ----------------- | ----------------------------------------- |
+| `lambo_hero.jpg`  | Bundled — Lamborghini background photo    |
+| `runway.mp4`      | Bundled — splash screen runway video      |
 | Font `.ttf` files | Not bundled — add from Google Fonts (OFL) |
 
 ## Spec and plan
@@ -126,10 +126,24 @@ Until the files are present, `MGFont` falls back transparently to system `.serif
 - Design spec: [`docs/superpowers/specs/2026-06-21-mangasm-launch-and-app-design.md`](docs/superpowers/specs/2026-06-21-mangasm-launch-and-app-design.md)
 - Implementation plan: [`docs/superpowers/plans/2026-06-21-mangasm-launch-and-app.md`](docs/superpowers/plans/2026-06-21-mangasm-launch-and-app.md)
 
+## Release history
+
+Version numbers live in `project.yml` (`MARKETING_VERSION` / `CURRENT_PROJECT_VERSION`); the XcodeGen project and Info.plist inherit from there.
+
+| Version (build) | Date       | Branch                        | Changes                                                                                                                 |
+| --------------- | ---------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| 1.1.0 (21)      | 2026-07-23 | `ci/ios-build-21`             | Build-number bump for the next App Store / TestFlight upload of `com.mangasm.app`. No code changes over build 20.       |
+| 1.1.0 (20)      | 2026-07-22 | `ci/ios-build-20`             | Pre-commit hooks, graphics polish for App Review, storybook shipped on mangasm.app; archived and uploaded via fastlane. |
+| 1.1.0 (19)      | —          | `ci/ios-build-19-export-auth` | Export/auth work for the 1.1.0 upload pipeline.                                                                         |
+
 ## Known limitations
 
-- **Mock backend only** — all data is seeded from `Profile.sample`, `Candidate.samples`, etc. No real auth, network calls, or persistence.
+_Updated 2026-07-23 — the earlier "mock-only prototype" description was stale. See `SPEC_INDEX.md` for the authoritative claim/blocker status._
+
+- **Live/mock split** — real Supabase services live in `Sources/MangasmApp/Services/Live/` (auth, profile, match, chat, safety, referral) and are selected when `SupabaseConfig` is present in Info.plist; otherwise the app falls back to the mock environment (`AppEnvironment.swift`). Previews and tests intentionally use mocks. ⚠️ The fallback is currently unconditional — a Release archive without config silently ships all-mock services (review-polish blocker B3).
+- **Live auth is Sign in with Apple only** — Google/phone buttons render in mock mode only; email/password sign-in is specified (phase-1 auth spec §4a) but not yet built (blocker B2).
+- **No content filter yet** — moderation/filtering on messages and profiles is not implemented (blocker B1).
+- **Map is stylized, not functional** — `FakeMap` renders gradient streets and pinned avatars; no MapKit, no GPS, no location collection of any kind. Live Discover currently backfills `Candidate.samples` when the DB returns few rows (blocker B4).
+- **DMs are E2E-encrypted** (`MessageCrypto.swift`, CryptoKit sealed boxes), but the client chat schema has drifted from the repo migrations and the live DB (blocker B5).
 - **Placeholder art / fonts** — `lambo_hero.jpg` and `runway.mp4` are the bundled prototype assets. Custom OFL fonts are not included; system fallbacks are active.
-- **Map is stylized, not functional** — `FakeMap` renders gradient streets and pinned avatars; it does not use MapKit or real GPS data.
-- **Auth controls are visual only** — every provider button and "Enter" control calls `onEnter()` and advances the phase. No real OAuth flow is wired.
 - **macOS preview is a dev tool** — `MangasmPreview` is excluded from the iOS product; it exists solely to let engineers run screens on a Mac.

@@ -20,10 +20,22 @@ public struct SupabaseConfig: Sendable {
     /// Returns nil if no publishable key is configured (so callers can stay on mocks).
     public static func fromInfoPlist(_ bundle: Bundle = .main) -> SupabaseConfig? {
         let info = bundle.infoDictionary
-        let url = (info?["SUPABASE_URL"] as? String).flatMap(URL.init(string:)) ?? defaultURL
+        let url = resolveURL(info?["SUPABASE_URL"] as? String)
         guard let key = info?["SUPABASE_PUBLISHABLE_KEY"] as? String,
               isUsablePublishableKey(key) else { return nil }
         return SupabaseConfig(url: url, publishableKey: key)
+    }
+
+    /// A plist URL value must be https with a real host to be trusted;
+    /// anything else falls back to the known-good default. Guards against the
+    /// xcconfig `//`-comment truncation that shipped "https:" in build 23.
+    public static func resolveURL(_ raw: String?) -> URL {
+        guard let raw,
+              let url = URL(string: raw.trimmingCharacters(in: .whitespacesAndNewlines)),
+              url.scheme == "https",
+              let host = url.host, !host.isEmpty
+        else { return defaultURL }
+        return url
     }
 
     /// Reject empty, unresolved xcconfig vars, and explicit placeholders.

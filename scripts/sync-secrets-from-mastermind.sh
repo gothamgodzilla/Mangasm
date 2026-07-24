@@ -29,9 +29,13 @@ XCCONFIG="$ROOT/App/iOS/Secrets.xcconfig"
 ENVLOCAL="$ROOT/supabase/.env.local"
 REF="$(echo "$URL" | sed -E 's|https://([^.]+)\.supabase\.co.*|\1|')"
 
+# xcconfig treats // as a comment — a raw https:// URL silently truncates to
+# "https:" (shipped broken in build 23). $() breaks up the slashes safely.
+XCCONFIG_URL="${URL/:\/\//:\/\$()\/}"
+
 cat >"$XCCONFIG" <<EOF
 // Auto-synced from mastermind secrets.env — DO NOT COMMIT
-SUPABASE_URL = $URL
+SUPABASE_URL = $XCCONFIG_URL
 SUPABASE_PUBLISHABLE_KEY = $KEY
 EOF
 chmod 600 "$XCCONFIG"
