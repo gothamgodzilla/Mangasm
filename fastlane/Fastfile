@@ -35,27 +35,23 @@ platform :ios do
   desc "Upload exported IPA (build/export/Mangasm.ipa) to App Store Connect"
   lane :upload_build do
     api_key_path = File.expand_path("api_key.json", __dir__)
-    if File.exist?(api_key_path)
-      api_key = Fastlane::Actions::AppStoreConnectApiKeyAction.run(
-        path: api_key_path,
-        duration: 1200,
-        in_house: false
-      )
-      Actions.lane_context[SharedValues::APP_STORE_CONNECT_API_KEY] = api_key
-    else
-      load_api_key!
-    end
+    # api_key.json (key_id / issuer_id / key) goes straight to upload_to_testflight;
+    # otherwise fall back to env vars + .p8 via load_api_key!.
+    use_json_key = File.exist?(api_key_path)
+    load_api_key! unless use_json_key
 
     ipa = ENV["MANGASM_IPA"] || File.expand_path("../build/export/Mangasm.ipa", __dir__)
     UI.user_error!("IPA not found at #{ipa}. Run scripts/archive-build.sh first.") unless File.exist?(ipa)
 
     # TestFlight-only upload avoids deliver version checks (ASC has invalid version "2cute4uVer1.0").
-    upload_to_testflight(
+    upload_opts = {
       ipa: ipa,
       skip_waiting_for_build_processing: true,
       distribute_external: false,
       notify_external_testers: false
-    )
+    }
+    upload_opts[:api_key_path] = api_key_path if use_json_key
+    upload_to_testflight(**upload_opts)
 
     UI.success("Uploaded #{ipa} — wait for the new build to finish Processing in TestFlight → Builds")
   end
